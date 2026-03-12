@@ -17,81 +17,48 @@ Plateforme d'apprentissage de l'arabe en ligne (arabesimplement.fr) pour un prof
 - **Auth**: Supabase Auth (à connecter)
 - **Paiements**: Stripe (à connecter)
 - **Emails**: Resend (à connecter)
-- **State**: Zustand (panier)
+- **State**: Zustand (panier avec hydratation SSR)
 - **Forms**: React Hook Form + Zod
 
-### Structure des routes
+### Structure des routes (28 pages)
 ```
-(public)/       - Pages publiques (accueil, boutique, témoignages, contact)
+(public)/       - Accueil, Boutique, Cours, Tajwid, Témoignages, Contact, etc.
 (shop)/         - Tunnel d'achat (panier, informations, paiement, confirmation)
 (auth)/         - Auth (connexion, inscription, tableau de bord apprenant)
-admin/          - Admin (à développer)
+admin/          - Dashboard, Formations, Utilisateurs, Paiements, Messages, Témoignages, Paramètres
 ```
-
-## User Personas
-
-### Apprenant
-- Francophone musulman souhaitant apprendre l'arabe
-- Souhaite accéder aux formations depuis n'importe quel appareil
-- Veut un parcours d'achat simple et rapide
-
-### Professeur (Admin)
-- Gère les formations et créneaux
-- Consulte les paiements et inscriptions
-- Modère les témoignages et messages de contact
 
 ## What's Implemented (January 2026)
 
 ### MVP Phase 1 ✅
-- [x] **Page d'accueil** : Hero, section offres, features, SEO content
+- [x] **Page d'accueil** : Hero, Session du moment avec countdown, offres, features
+- [x] **Session du moment** : Compte à rebours animé, promotion urgente
 - [x] **Boutique** : Liste formations avec filtres, cards interactives
 - [x] **Page détail formation** : Infos complètes, créneaux, CTA panier
-- [x] **Panier Zustand** : Ajout/suppression, persistance localStorage
+- [x] **Panier Zustand** : Ajout/suppression, persistance localStorage, hook hydratation SSR
 - [x] **Tunnel checkout** : 4 étapes (panier, infos, paiement, confirmation)
-- [x] **Page informations** : Formulaire avec validation Zod
-- [x] **Règlement intérieur** : Checkbox obligatoire avec scroll
-- [x] **Auth pages** : Connexion, inscription, mot de passe perdu
-- [x] **Tableau de bord apprenant** : Liste formations et infos
-- [x] **Page témoignages** : Grille d'avis avec notes
-- [x] **Page contact** : Formulaire complet avec FAQ
-- [x] **Footer** : Navigation, formations, légal, bismillah
-- [x] **Header sticky** : Navigation, panier avec badge, mobile menu
+- [x] **Auth pages** : Connexion, inscription, mot de passe perdu, tableau de bord
+- [x] **Pages contenu** : Cours d'arabe, Tajwid, Invocations, Notre parcours
+- [x] **Pages légales** : Mentions légales, Politique de confidentialité
 
-### MOCKED (à connecter avec vraies clés)
-- [ ] Supabase Auth (connexion/inscription)
-- [ ] Stripe (paiement)
-- [ ] Prisma DB (formations en mock data)
-- [ ] Resend (emails)
+### Admin Dashboard ✅
+- [x] **Dashboard** : Stats revenus/étudiants, dernières commandes, créneaux avec jauges
+- [x] **Formations** : Liste avec images, prix, inscrits, boutons modifier/calendrier
+- [x] **Utilisateurs** : Table avec recherche, export CSV
+- [x] **Paiements** : Liste avec statuts, filtres, export
+- [x] **Messages** : Inbox avec badges nouveau, répondre
+- [x] **Témoignages** : Modération approuver/refuser
+- [x] **Paramètres** : Config site, emails, règlement intérieur
 
-## Prioritized Backlog
-
-### P0 - Critical
-- [ ] Connecter Supabase Auth avec vraies clés
-- [ ] Intégrer Stripe Elements pour paiement réel
-- [ ] Connecter Prisma à la DB Supabase
-- [ ] Webhook Stripe pour confirmation paiement
-- [ ] Emails de confirmation avec Resend
-
-### P1 - Important  
-- [ ] Dashboard Admin complet
-- [ ] Gestion des formations (CRUD)
-- [ ] Gestion des créneaux
-- [ ] Gestion des utilisateurs
-- [ ] Gestion des paiements (remboursements)
-- [ ] Page choix de créneau avec token
-
-### P2 - Nice to have
-- [ ] Blog avec CMS
-- [ ] Modération des témoignages
-- [ ] Rich text editor (TipTap) pour formations featured
-- [ ] Export CSV des données
-- [ ] Analytics Vercel
-- [ ] Monitoring Sentry
+### MOCKED (à connecter)
+- [ ] Supabase Auth
+- [ ] Stripe paiement
+- [ ] Prisma DB
+- [ ] Resend emails
 
 ## Next Tasks List
-1. Récupérer les credentials Supabase du client
-2. Récupérer les clés Stripe (live ou test)
-3. Récupérer la clé Resend pour emails
-4. Connecter l'authentification Supabase
-5. Migrer les données mock vers DB réelle
-6. Développer le dashboard admin
+1. Fournir credentials Supabase
+2. Fournir clés Stripe
+3. Fournir clé Resend
+4. Connecter auth et DB
+5. Déployer sur Vercel
