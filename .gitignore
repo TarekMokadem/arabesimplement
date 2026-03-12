@@ -1,12 +1,46 @@
--e 
 # Environment files
 *.env
 *.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
+
+# Node modules (all subfolders)
+**/node_modules/
+node_modules/
+
+# Next.js build output (all subfolders)
+**/.next/
+.next/
+
+# Package manager locks (optional, can be committed)
+# package-lock.json
+# yarn.lock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+/build
+/dist
+/out
+
+# Cache
+.cache/
+*.tsbuildinfo
+
+# Prisma generated
+**/src/generated/
+
+# Vercel
+.vercel
