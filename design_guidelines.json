@@ -1,0 +1,149 @@
+{
+  "brand_identity": {
+    "name": "arabesimplement.fr",
+    "tone": "Serene, Luxurious, Educational, Spiritual",
+    "archetype": "The Sage / The Creator",
+    "keywords": ["Clean", "Islamic", "Luxury", "Serenity", "Knowledge"],
+    "visual_theme": "Modern Islamic Luxury Library"
+  },
+  "typography": {
+    "primary_font": {
+      "name": "Libre Baskerville",
+      "usage": "Headings (h1-h3), Quotes, Hero Text",
+      "weights": ["400", "700"],
+      "class": "font-serif"
+    },
+    "secondary_font": {
+      "name": "Inter",
+      "usage": "Body text, UI elements, Buttons, Navigation",
+      "weights": ["400", "500", "600"],
+      "class": "font-sans"
+    },
+    "arabic_font": {
+      "name": "Amiri",
+      "usage": "All Arabic content, Quranic verses",
+      "weights": ["400", "700"],
+      "class": "font-arabic"
+    }
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "name": "Midnight Blue",
+        "hex": "#0F2A45",
+        "variable": "--primary",
+        "usage": "Headers, Primary Buttons (Hover), Text Highlighting"
+      },
+      "secondary": {
+        "name": "Luxury Gold",
+        "hex": "#B7860B",
+        "variable": "--secondary",
+        "usage": "CTAs, Borders, Icons, Progress Bars"
+      },
+      "accent": {
+        "name": "Emerald Green",
+        "hex": "#1A7A4A",
+        "variable": "--accent",
+        "usage": "Success states, Price tags, Growth indicators"
+      },
+      "background": {
+        "name": "Pure White",
+        "hex": "#FFFFFF",
+        "variable": "--background",
+        "usage": "Main background"
+      },
+      "surface": {
+        "name": "Soft Sand",
+        "hex": "#F9F7F2",
+        "variable": "--surface",
+        "usage": "Section backgrounds, Cards"
+      },
+      "text": {
+        "primary": "#0F2A45",
+        "secondary": "#4B5563",
+        "muted": "#9CA3AF"
+      }
+    },
+    "gradients": {
+      "gold_shimmer": "linear-gradient(135deg, #B7860B 0%, #D4AF37 50%, #B7860B 100%)",
+      "midnight_depth": "linear-gradient(to bottom, #0F2A45, #0a1d30)"
+    }
+  },
+  "layout_strategies": {
+    "spacing": {
+      "base": "4",
+      "section_padding": "py-24 md:py-32",
+      "container_padding": "px-6 md:px-12",
+      "card_padding": "p-8"
+    },
+    "grid_system": {
+      "bento_grid": "grid grid-cols-1 md:grid-cols-3 gap-8",
+      "hero_layout": "grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+    },
+    "container_width": "max-w-7xl mx-auto"
+  },
+  "component_library": {
+    "buttons": {
+      "primary": "bg-[#B7860B] text-white hover:bg-[#0F2A45] transition-all duration-300 rounded-md px-8 py-3 font-medium shadow-lg hover:shadow-xl",
+      "secondary": "border-2 border-[#0F2A45] text-[#0F2A45] hover:bg-[#0F2A45] hover:text-white transition-all duration-300 rounded-md px-8 py-3 font-medium",
+      "ghost": "text-[#0F2A45] hover:text-[#B7860B] transition-colors duration-200 font-medium"
+    },
+    "cards": {
+      "course_card": "bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group",
+      "feature_card": "bg-[#F9F7F2] p-8 rounded-xl border border-transparent hover:border-[#B7860B]/20 transition-all duration-300"
+    },
+    "inputs": {
+      "default": "border-gray-200 focus:border-[#B7860B] focus:ring-[#B7860B]/20 rounded-md h-12"
+    }
+  },
+  "visual_enhancers": {
+    "shadows": {
+      "soft": "0 4px 20px -2px rgba(15, 42, 69, 0.05)",
+      "gold_glow": "0 0 15px rgba(183, 134, 11, 0.2)"
+    },
+    "borders": {
+      "subtle": "1px solid #E5E7EB",
+      "gold_accent": "1px solid #B7860B"
+    },
+    "textures": {
+      "noise": "url('/noise.png')",
+      "geometric": "url('/patterns/islamic-geo.svg')"
+    }
+  },
+  "image_assets": {
+    "hero_section": {
+      "url": "https://images.unsplash.com/photo-1769428197773-e4adbe22aa8e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDR8MHwxfHNlYXJjaHwxfHxtb3NxdWUlMjBleHRlcmlvciUyMHN1bnNldCUyMHNlcmVuZSUyMGFyY2hpdGVjdHVyZXxlbnwwfHx8fDE3NzMzMDgyNzl8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Grand mosque illuminated at sunset",
+      "description": "Use full width with an overlay gradient for text readability"
+    },
+    "background_pattern": {
+      "url": "https://images.unsplash.com/photo-1756808862471-46ad2f6c6fc0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwzfHxpc2xhbWljJTIwZ2VvbWV0cmljJTIwcGF0dGVybiUyMGdvbGQlMjBibHVlJTIwdGV4dHVyZXxlbnwwfHx8fDE3NzMzMDgyODB8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Islamic geometric pattern",
+      "description": "Use as a section background with low opacity (5-10%) or blend mode"
+    },
+    "placeholders": {
+      "course_thumbnail": "https://images.unsplash.com/photo-1622228862102-d691d3e2a334?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwyfHxpc2xhbWljJTIwZ2VvbWV0cmljJTIwcGF0dGVybiUyMGdvbGQlMjBibHVlJTIwdGV4dHVyZXxlbnwwfHx8fDE3NzMzMDgyODB8MA&ixlib=rb-4.1.0&q=85"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Install 'lucide-react' for icons.",
+    "Configure Tailwind theme to use the custom font families: 'Libre Baskerville' for serif, 'Inter' for sans, 'Amiri' for arabic.",
+    "Implement a 'gold-shimmer' animation for premium buttons.",
+    "Ensure all images have 'object-cover' and are optimized.",
+    "Use 'Midnight Blue' for the Footer background.",
+    "For the Funnel steps, use a horizontal stepper with Gold active state.",
+    "Strictly avoid any images of human faces. Use architectural or nature shots.",
+    "Ensure high contrast text (WCAG AA).",
+    "Use shadcn/ui components but override default rounded-lg to rounded-md or rounded-xl based on the component type.",
+    "Add 'dir=\"rtl\"' attribute to any container holding Arabic text."
+  ],
+  "universal_guidelines": [
+    "Do not use gradients for dark colors.",
+    "Avoid generic centered layouts; use asymmetry where appropriate.",
+    "Create depth with layered z-indexes.",
+    "Use glassmorphism with backdrop-blur-xl for sticky headers.",
+    "No 'transition: all'; specify properties.",
+    "Micro-animations on all interactive elements.",
+    "Use 2-3x more spacing than standard."
+  ]
+}
