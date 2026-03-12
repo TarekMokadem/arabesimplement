@@ -1,0 +1,182 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { Trash2, ShoppingBag, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
+import { useCart } from "@/hooks/useCart";
+import { formatPrice } from "@/lib/utils/format";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+
+export default function PanierPage() {
+  const { items, removeItem, getTotal, isHydrated } = useCart();
+
+  if (!isHydrated) {
+    return (
+      <div className="pt-20 min-h-screen bg-[#F9F7F2] flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="pt-20 min-h-screen bg-[#F9F7F2]">
+        <div className="max-w-4xl mx-auto px-6 py-16">
+          <CheckoutStepper currentStep={1} />
+
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+              <ShoppingBag className="h-12 w-12 text-gray-300" />
+            </div>
+            <h1 className="font-serif text-2xl font-bold text-[#0F2A45] mb-4">
+              Votre panier est vide
+            </h1>
+            <p className="text-gray-500 mb-8">
+              Découvrez nos formations pour commencer votre apprentissage de
+              l&apos;arabe.
+            </p>
+            <Link href="/boutique">
+              <Button className="bg-[#B7860B] hover:bg-[#0F2A45] text-white">
+                Voir les formations
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-20 min-h-screen bg-[#F9F7F2]">
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        <CheckoutStepper currentStep={1} />
+
+        <h1 className="font-serif text-3xl font-bold text-[#0F2A45] mb-8">
+          Votre panier
+        </h1>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Cart Items */}
+          <div className="lg:col-span-2 space-y-4">
+            {items.map((item) => (
+              <Card
+                key={item.id}
+                className="bg-white"
+                data-testid={`cart-item-${item.id}`}
+              >
+                <CardContent className="p-4">
+                  <div className="flex gap-4">
+                    <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                      {item.imageUrl ? (
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.titre}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#0F2A45] to-[#1B6CA8] flex items-center justify-center">
+                          <span className="font-arabic text-2xl text-white/80">
+                            ع
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <Link
+                        href={`/boutique/${item.slug}`}
+                        className="font-serif font-bold text-[#0F2A45] hover:text-[#B7860B] transition-colors line-clamp-2"
+                      >
+                        {item.titre}
+                      </Link>
+
+                      <div className="flex items-center gap-2 mt-2">
+                        {item.prixPromo ? (
+                          <>
+                            <span className="text-lg font-bold text-[#1A7A4A]">
+                              {formatPrice(item.prixPromo)}
+                            </span>
+                            <span className="text-sm text-gray-400 line-through">
+                              {formatPrice(item.prix)}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-lg font-bold text-[#0F2A45]">
+                            {formatPrice(item.prix)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeItem(item.id)}
+                      className="text-gray-400 hover:text-red-500"
+                      data-testid={`remove-${item.id}`}
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Summary */}
+          <div>
+            <Card className="bg-white sticky top-24">
+              <CardContent className="p-6">
+                <h2 className="font-serif text-lg font-bold text-[#0F2A45] mb-6">
+                  Récapitulatif
+                </h2>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between text-gray-600">
+                    <span>Sous-total</span>
+                    <span>{formatPrice(getTotal())}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>Frais</span>
+                    <span className="text-[#1A7A4A]">Gratuit</span>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4 mb-6">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-[#0F2A45]">Total</span>
+                    <span className="text-2xl font-bold text-[#0F2A45]">
+                      {formatPrice(getTotal())}
+                    </span>
+                  </div>
+                </div>
+
+                <Link href="/commande/informations">
+                  <Button
+                    className="w-full bg-[#B7860B] hover:bg-[#0F2A45] text-white py-6"
+                    data-testid="proceed-to-checkout"
+                  >
+                    Procéder au paiement
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+
+                <Link
+                  href="/boutique"
+                  className="block text-center text-sm text-gray-500 hover:text-[#B7860B] mt-4 transition-colors"
+                >
+                  Continuer mes achats
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

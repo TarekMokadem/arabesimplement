@@ -1,0 +1,216 @@
+import Link from "next/link";
+import { BookOpen, Calendar, Award, Settings, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+// Mock user data
+const mockUser = {
+  prenom: "Ahmed",
+  nom: "Benali",
+  email: "ahmed@example.com",
+};
+
+// Mock enrollments
+const mockEnrollments = [
+  {
+    id: "1",
+    formation: {
+      titre: "Lire l'arabe en 10 leçons",
+      slug: "lire-en-10-lecons",
+    },
+    creneau: {
+      nom: "Session Matin",
+      jours: ["Lundi", "Mercredi"],
+      heureDebut: "10:00",
+    },
+    tokenUsed: true,
+  },
+  {
+    id: "2",
+    formation: {
+      titre: "Sessions Invocations",
+      slug: "sessions-invocations",
+    },
+    creneau: null,
+    tokenUsed: false,
+    tokenExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  },
+];
+
+export default function TableauDeBordPage() {
+  return (
+    <div className="min-h-screen bg-[#F9F7F2]">
+      {/* Header */}
+      <header className="bg-[#0F2A45] text-white py-6">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+          <div>
+            <Link href="/" className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#B7860B] to-[#D4AF37] rounded-lg flex items-center justify-center">
+                <span className="font-arabic text-white text-lg font-bold">
+                  ع
+                </span>
+              </div>
+              <span className="font-serif font-bold text-xl">
+                ArabeSimplement
+              </span>
+            </Link>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-300">
+              {mockUser.prenom} {mockUser.nom}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-300 hover:text-white hover:bg-white/10"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Welcome */}
+        <div className="mb-8">
+          <h1 className="font-serif text-3xl font-bold text-[#0F2A45] mb-2">
+            Assalamou alaykoum, {mockUser.prenom} !
+          </h1>
+          <p className="text-gray-600">
+            Bienvenue dans votre espace apprenant.
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Formations */}
+          <div className="lg:col-span-2">
+            <Card className="bg-white">
+              <CardHeader>
+                <CardTitle className="font-serif flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-[#B7860B]" />
+                  Mes formations
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {mockEnrollments.map((enrollment) => (
+                  <div
+                    key={enrollment.id}
+                    className="p-4 border rounded-lg hover:border-[#B7860B]/30 transition-colors"
+                    data-testid={`enrollment-${enrollment.id}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="font-medium text-[#0F2A45]">
+                          {enrollment.formation.titre}
+                        </h3>
+                        {enrollment.creneau ? (
+                          <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+                            <Calendar className="h-4 w-4" />
+                            <span>
+                              {enrollment.creneau.nom} -{" "}
+                              {enrollment.creneau.jours.join(", ")} à{" "}
+                              {enrollment.creneau.heureDebut}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="mt-2">
+                            <Link href={`/creneaux/${enrollment.id}`}>
+                              <Button
+                                size="sm"
+                                className="bg-[#B7860B] hover:bg-[#0F2A45] text-white"
+                              >
+                                Choisir mon créneau
+                              </Button>
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                      <Badge
+                        className={
+                          enrollment.tokenUsed
+                            ? "bg-[#1A7A4A]/10 text-[#1A7A4A]"
+                            : "bg-[#B7860B]/10 text-[#B7860B]"
+                        }
+                      >
+                        {enrollment.tokenUsed ? "Inscrit" : "En attente"}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+
+                {mockEnrollments.length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 mb-4">
+                      Vous n&apos;avez pas encore de formation.
+                    </p>
+                    <Link href="/boutique">
+                      <Button className="bg-[#B7860B] hover:bg-[#0F2A45] text-white">
+                        Découvrir nos formations
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Profile */}
+            <Card className="bg-white">
+              <CardHeader>
+                <CardTitle className="font-serif text-lg flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-[#B7860B]" />
+                  Mes informations
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div>
+                  <span className="text-gray-500">Nom complet</span>
+                  <p className="font-medium text-[#0F2A45]">
+                    {mockUser.prenom} {mockUser.nom}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-gray-500">Email</span>
+                  <p className="font-medium text-[#0F2A45]">{mockUser.email}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-4 border-[#0F2A45] text-[#0F2A45]"
+                >
+                  Modifier mes informations
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Quick Links */}
+            <Card className="bg-white">
+              <CardHeader>
+                <CardTitle className="font-serif text-lg">
+                  Liens utiles
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Link
+                  href="/boutique"
+                  className="block p-3 rounded-lg hover:bg-[#F9F7F2] transition-colors text-[#0F2A45]"
+                >
+                  Voir les formations
+                </Link>
+                <Link
+                  href="/contactez-nous"
+                  className="block p-3 rounded-lg hover:bg-[#F9F7F2] transition-colors text-[#0F2A45]"
+                >
+                  Nous contacter
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

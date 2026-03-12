@@ -1,0 +1,46 @@
+import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  change?: string;
+  changeType?: "positive" | "negative" | "neutral";
+  icon: LucideIcon;
+  iconColor?: string;
+}
+
+export function StatCard({
+  title,
+  value,
+  change,
+  changeType = "neutral",
+  icon: Icon,
+  iconColor = "text-[#B7860B]",
+}: StatCardProps) {
+  return (
+    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm text-gray-500 mb-1">{title}</p>
+          <p className="text-2xl font-bold text-[#0F2A45]">{value}</p>
+          {change && (
+            <p
+              className={cn(
+                "text-sm mt-1",
+                changeType === "positive" && "text-green-600",
+                changeType === "negative" && "text-red-600",
+                changeType === "neutral" && "text-gray-500"
+              )}
+            >
+              {change}
+            </p>
+          )}
+        </div>
+        <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center bg-gray-50")}>
+          <Icon className={cn("h-6 w-6", iconColor)} />
+        </div>
+      </div>
+    </div>
+  );
+}

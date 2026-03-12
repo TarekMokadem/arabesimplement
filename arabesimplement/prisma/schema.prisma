@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+enum UserRole {
+  STUDENT
+  ADMIN
+}
+
+enum FormationStatus {
+  ACTIVE
+  INACTIVE
+  COMING_SOON
+  ARCHIVED
+}
+
+enum CreneauStatus {
+  OPEN
+  FULL
+  CLOSED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  prenom       String
+  nom          String
+  telephone    String?
+  role         UserRole  @default(STUDENT)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  orders       Order[]
+  enrollments  Enrollment[]
+
+  @@map("users")
+}
+
+model Formation {
+  id                String          @id @default(uuid())
+  titre             String
+  slug              String          @unique
+  descriptionCourte String          @map("description_courte")
+  description       String?         @db.Text
+  prix              Decimal         @db.Decimal(10, 2)
+  prixPromo         Decimal?        @map("prix_promo") @db.Decimal(10, 2)
+  imageUrl          String?         @map("image_url")
+  placesMax         Int?            @map("places_max")
+  categorie         String
+  statut            FormationStatus @default(ACTIVE)
+  featured          Boolean         @default(false)
+  featuredContent   String?         @map("featured_content") @db.Text
+  featuredTitre     String?         @map("featured_titre")
+  featuredBadge     String?         @map("featured_badge")
+  featuredExpiresAt DateTime?       @map("featured_expires_at")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  creneaux    Creneau[]
+  orderItems  OrderItem[]
+  enrollments Enrollment[]
+
+  @@map("formations")
+}
+
+model Creneau {
+  id            String        @id @default(uuid())
+  formationId   String        @map("formation_id")
+  nom           String
+  jours         String[]
+  heureDebut    String        @map("heure_debut")
+  dureeMinutes  Int           @map("duree_minutes")
+  placesMax     Int           @map("places_max")
+  whatsappLink  String?       @map("whatsapp_link")
+  statut        CreneauStatus @default(OPEN)
+  createdAt     DateTime      @default(now()) @map("created_at")
+
+  formation   Formation    @relation(fields: [formationId], references: [id], onDelete: Cascade)
+  enrollments Enrollment[]
+
+  @@map("creneaux")
+}
+
+model Order {
+  id                    String      @id @default(uuid())
+  userId                String      @map("user_id")
+  total                 Decimal     @db.Decimal(10, 2)
+  statut                OrderStatus @default(PENDING)
+  stripePaymentIntentId String?     @unique @map("stripe_payment_intent_id")
+  reglementSigneAt      DateTime?   @map("reglement_signe_at")
+  reglementIp           String?     @map("reglement_ip")
+  reglementVersion      String?     @map("reglement_version")
+  createdAt             DateTime    @default(now()) @map("created_at")
+
+  user       User        @relation(fields: [userId], references: [id])
+  orderItems OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id           String  @id @default(uuid())
+  orderId      String  @map("order_id")
+  formationId  String  @map("formation_id")
+  prixUnitaire Decimal @map("prix_unitaire") @db.Decimal(10, 2)
+
+  order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  formation Formation @relation(fields: [formationId], references: [id])
+
+  @@map("order_items")
+}
+
+model Enrollment {
+  id             String    @id @default(uuid())
+  userId         String    @map("user_id")
+  formationId    String    @map("formation_id")
+  creneauId      String?   @map("creneau_id")
+  token          String    @unique @default(uuid())
+  tokenExpiresAt DateTime  @map("token_expires_at")
+  tokenUsed      Boolean   @default(false) @map("token_used")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  user      User       @relation(fields: [userId], references: [id])
+  formation Formation  @relation(fields: [formationId], references: [id])
+  creneau   Creneau?   @relation(fields: [creneauId], references: [id])
+
+  @@map("enrollments")
+}
+
+model ReglementInterieur {
+  id        String   @id @default(uuid())
+  contenu   String   @db.Text
+  version   String
+  actif     Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("reglement_interieur")
+}
+
+model Testimonial {
+  id        String   @id @default(uuid())
+  nom       String
+  texte     String   @db.Text
+  note      Int
+  approuve  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("testimonials")
+}
+
+model BlogPost {
+  id          String   @id @default(uuid())
+  titre       String
+  slug        String   @unique
+  contenu     String   @db.Text
+  imageUrl    String?  @map("image_url")
+  publie      Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("blog_posts")
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  nom       String
+  email     String
+  telephone String?
+  sujet     String
+  message   String   @db.Text
+  lu        Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("contact_messages")
+}
