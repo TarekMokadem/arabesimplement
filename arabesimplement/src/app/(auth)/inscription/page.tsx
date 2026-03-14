@@ -5,13 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { signupSchema, type SignupInput } from "@/lib/validations/auth.schema";
 import { toast } from "sonner";
+import { signUp } from "../actions";
 
 export default function InscriptionPage() {
   const router = useRouter();
@@ -30,23 +31,11 @@ export default function InscriptionPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement Supabase auth
-      // const supabase = createSupabaseClient();
-      // const { error } = await supabase.auth.signUp({
-      //   email: data.email,
-      //   password: data.password,
-      //   options: {
-      //     data: { prenom: data.prenom, nom: data.nom }
-      //   }
-      // });
-
-      // Mock signup
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      toast.success(
-        "Inscription réussie ! Vérifiez votre email pour confirmer votre compte."
-      );
-      router.push("/connexion");
+      const result = await signUp(data.email, data.password, data.prenom, data.nom);
+      if (result?.redirectTo) {
+        toast.success("Inscription réussie ! Bienvenue sur ArabeSimplement.");
+        router.push(result.redirectTo);
+      }
     } catch (error) {
       toast.error("Une erreur est survenue. Veuillez réessayer.");
       console.error(error);
@@ -58,6 +47,15 @@ export default function InscriptionPage() {
   return (
     <div className="min-h-screen bg-[#F9F7F2] flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
+        {/* Retour accueil */}
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-[#0F2A45] hover:text-[#B7860B] text-sm font-medium mb-6 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour à l&apos;accueil
+        </Link>
+
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">

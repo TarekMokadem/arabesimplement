@@ -30,12 +30,16 @@ export default function ContactezNousPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement contact form submission
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const { submitContact } = await import("@/app/(public)/actions/contact.actions");
+      const result = await submitContact(data);
 
-      setIsSubmitted(true);
-      reset();
-      toast.success("Message envoyé avec succès !");
+      if (result.success) {
+        setIsSubmitted(true);
+        reset();
+        toast.success("Message envoyé avec succès !");
+      } else {
+        toast.error(result.error ?? "Une erreur est survenue.");
+      }
     } catch (error) {
       toast.error("Une erreur est survenue. Veuillez réessayer.");
       console.error(error);

@@ -17,7 +17,12 @@ const navLinks = [
   { href: "/contactez-nous", label: "Contact" },
 ];
 
-export function Header() {
+interface HeaderProps {
+  isLoggedIn?: boolean;
+  isAdmin?: boolean;
+}
+
+export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { getItemCount } = useCart();
@@ -96,14 +101,17 @@ export function Header() {
             </Link>
 
             {/* Account */}
-            <Link href="/connexion" className="hidden sm:block">
+            <Link
+              href={isLoggedIn ? "/tableau-de-bord" : "/connexion"}
+              className="hidden sm:block"
+            >
               <Button
                 variant="outline"
                 className="border-[#0F2A45] text-[#0F2A45] hover:bg-[#0F2A45] hover:text-white"
                 data-testid="account-button"
               >
                 <User className="h-4 w-4 mr-2" />
-                Mon compte
+                {isLoggedIn ? "Tableau de bord" : "Mon compte"}
               </Button>
             </Link>
 
@@ -138,13 +146,26 @@ export function Header() {
                     ))}
                   </nav>
 
-                  <div className="pt-6 border-t mt-auto">
-                    <Link href="/connexion" onClick={() => setIsMobileMenuOpen(false)}>
+                  <div className="pt-6 border-t mt-auto space-y-2">
+                    <Link
+                      href={isLoggedIn ? "/tableau-de-bord" : "/connexion"}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
                       <Button className="w-full bg-[#B7860B] hover:bg-[#0F2A45] text-white">
                         <User className="h-4 w-4 mr-2" />
-                        Mon compte
+                        {isLoggedIn ? "Tableau de bord" : "Mon compte"}
                       </Button>
                     </Link>
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Button variant="outline" className="w-full border-[#0F2A45] text-[#0F2A45]">
+                          Administration
+                        </Button>
+                      </Link>
+                    )}
                   </div>
                 </div>
               </SheetContent>

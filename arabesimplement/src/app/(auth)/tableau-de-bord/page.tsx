@@ -1,17 +1,12 @@
 import Link from "next/link";
-import { BookOpen, Calendar, Award, Settings, LogOut } from "lucide-react";
+import { BookOpen, Calendar, Settings, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { getSession } from "../actions";
+import { LogoutButton } from "./LogoutButton";
 
-// Mock user data
-const mockUser = {
-  prenom: "Ahmed",
-  nom: "Benali",
-  email: "ahmed@example.com",
-};
-
-// Mock enrollments
+// Mock enrollments (sera remplacé par Prisma)
 const mockEnrollments = [
   {
     id: "1",
@@ -38,7 +33,12 @@ const mockEnrollments = [
   },
 ];
 
-export default function TableauDeBordPage() {
+export default async function TableauDeBordPage() {
+  const session = await getSession();
+  const user = session
+    ? { prenom: session.prenom, nom: session.nom, email: session.email }
+    : { prenom: "Invité", nom: "", email: "" };
+
   return (
     <div className="min-h-screen bg-[#F9F7F2]">
       {/* Header */}
@@ -58,15 +58,9 @@ export default function TableauDeBordPage() {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-300">
-              {mockUser.prenom} {mockUser.nom}
+              {user.prenom} {user.nom}
             </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-gray-300 hover:text-white hover:bg-white/10"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
+            <LogoutButton />
           </div>
         </div>
       </header>
@@ -75,7 +69,7 @@ export default function TableauDeBordPage() {
         {/* Welcome */}
         <div className="mb-8">
           <h1 className="font-serif text-3xl font-bold text-[#0F2A45] mb-2">
-            Assalamou alaykoum, {mockUser.prenom} !
+            Assalamou alaykoum, {user.prenom} !
           </h1>
           <p className="text-gray-600">
             Bienvenue dans votre espace apprenant.
@@ -169,12 +163,12 @@ export default function TableauDeBordPage() {
                 <div>
                   <span className="text-gray-500">Nom complet</span>
                   <p className="font-medium text-[#0F2A45]">
-                    {mockUser.prenom} {mockUser.nom}
+                    {user.prenom} {user.nom}
                   </p>
                 </div>
                 <div>
                   <span className="text-gray-500">Email</span>
-                  <p className="font-medium text-[#0F2A45]">{mockUser.email}</p>
+                  <p className="font-medium text-[#0F2A45]">{user.email}</p>
                 </div>
                 <Button
                   variant="outline"

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "@/app/(auth)/actions";
 import {
   LayoutDashboard,
   BookOpen,
@@ -71,16 +72,25 @@ export function AdminSidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-700">
+      <div className="p-4 border-t border-gray-700 space-y-1">
         <Link href="/" target="_blank">
           <Button
             variant="ghost"
             className="w-full justify-start text-gray-400 hover:text-white hover:bg-gray-700"
           >
-            <LogOut className="h-4 w-4 mr-3" />
             Retour au site
           </Button>
         </Link>
+        <form action={signOut}>
+          <Button
+            type="submit"
+            variant="ghost"
+            className="w-full justify-start text-gray-400 hover:text-white hover:bg-gray-700"
+          >
+            <LogOut className="h-4 w-4 mr-3" />
+            Déconnexion
+          </Button>
+        </form>
       </div>
     </div>
   );

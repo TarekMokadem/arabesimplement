@@ -6,9 +6,10 @@ export const orderFormSchema = z.object({
   email: z.string().email("Adresse email invalide"),
   telephone: z
     .string()
+    .min(10, "Le numéro doit contenir au moins 10 chiffres")
     .regex(
-      /^\+?[1-9]\d{1,14}$/,
-      "Numéro de téléphone invalide (format international attendu)"
+      /^[\d\s+.-]{10,20}$/,
+      "Numéro de téléphone invalide (ex: 0612345678 ou +33612345678)"
     ),
   pays: z.string().min(2, "Veuillez sélectionner un pays"),
   acceptReglement: z.boolean().refine((val) => val === true, {

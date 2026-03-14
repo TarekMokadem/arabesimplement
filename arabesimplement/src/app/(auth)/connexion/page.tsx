@@ -5,13 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth.schema";
 import { toast } from "sonner";
+import { signIn } from "../actions";
 
 export default function ConnexionPage() {
   const router = useRouter();
@@ -30,18 +31,13 @@ export default function ConnexionPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement Supabase auth
-      // const supabase = createSupabaseClient();
-      // const { error } = await supabase.auth.signInWithPassword({
-      //   email: data.email,
-      //   password: data.password,
-      // });
-
-      // Mock login for now
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      toast.success("Connexion réussie !");
-      router.push("/tableau-de-bord");
+      const result = await signIn(data.email, data.password);
+      if (result?.error) {
+        toast.error(result.error);
+      } else if (result?.redirectTo) {
+        toast.success("Connexion réussie !");
+        router.push(result.redirectTo);
+      }
     } catch (error) {
       toast.error("Email ou mot de passe incorrect");
       console.error(error);
@@ -53,6 +49,15 @@ export default function ConnexionPage() {
   return (
     <div className="min-h-screen bg-[#F9F7F2] flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
+        {/* Retour accueil */}
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-[#0F2A45] hover:text-[#B7860B] text-sm font-medium mb-6 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour à l&apos;accueil
+        </Link>
+
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">

@@ -39,31 +39,8 @@ const countries = [
   "Autre",
 ];
 
-// Mock règlement intérieur
-const reglementInterieur = `
-<h3>Règlement Intérieur - ArabeSimplement</h3>
-
-<h4>Article 1 : Objet</h4>
-<p>Le présent règlement intérieur définit les conditions d'utilisation des services de formation proposés par ArabeSimplement.</p>
-
-<h4>Article 2 : Inscription</h4>
-<p>L'inscription à une formation implique l'acceptation sans réserve du présent règlement. Le paiement de la formation vaut acceptation définitive.</p>
-
-<h4>Article 3 : Accès aux cours</h4>
-<p>L'accès aux cours en ligne est personnel et non cessible. Tout partage des identifiants de connexion est strictement interdit.</p>
-
-<h4>Article 4 : Comportement</h4>
-<p>Les apprenants s'engagent à adopter un comportement respectueux envers les formateurs et les autres apprenants. Tout comportement inapproprié pourra entraîner l'exclusion sans remboursement.</p>
-
-<h4>Article 5 : Propriété intellectuelle</h4>
-<p>Tous les contenus (vidéos, documents, supports) sont la propriété exclusive d'ArabeSimplement. Toute reproduction ou diffusion est interdite.</p>
-
-<h4>Article 6 : Remboursement</h4>
-<p>Conformément au droit de rétractation, vous disposez de 14 jours pour demander un remboursement, à condition de n'avoir pas accédé aux contenus de formation.</p>
-
-<h4>Article 7 : Protection des données</h4>
-<p>Vos données personnelles sont traitées conformément à notre politique de confidentialité et au RGPD.</p>
-`;
+import { REGLEMENT_INTERIEUR_HTML } from "@/lib/content/reglement-interieur";
+import { createOrder } from "@/app/(shop)/actions/order.actions";
 
 export default function InformationsPage() {
   const router = useRouter();
@@ -106,19 +83,22 @@ export default function InformationsPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Call createOrder Server Action
-      // const result = await createOrder(data, items);
+      const result = await createOrder(data, items);
 
-      // For now, simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (!result.success) {
+        toast.error(result.error ?? "Une erreur est survenue.");
+        return;
+      }
 
-      // Store order info in session
       sessionStorage.setItem(
         "orderInfo",
         JSON.stringify({
-          ...data,
+          prenom: data.prenom,
+          nom: data.nom,
+          email: data.email,
           items,
           total: getTotal(),
+          orderId: result.orderId,
           createdAt: new Date().toISOString(),
         })
       );
@@ -266,7 +246,7 @@ export default function InformationsPage() {
                   <ScrollArea className="h-64 border rounded-lg p-4">
                     <div
                       className="prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ __html: reglementInterieur }}
+                      dangerouslySetInnerHTML={{ __html: REGLEMENT_INTERIEUR_HTML }}
                     />
                   </ScrollArea>
 
