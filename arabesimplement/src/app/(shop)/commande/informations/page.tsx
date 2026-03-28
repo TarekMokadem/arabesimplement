@@ -212,7 +212,9 @@ export default function InformationsPage() {
                       <Select
                         value={watch("pays") ?? ""}
                         onValueChange={(value) => {
-                          setValue("pays", value, { shouldValidate: true });
+                          setValue("pays", value ?? "", {
+                            shouldValidate: true,
+                          });
                         }}
                       >
                         <SelectTrigger
