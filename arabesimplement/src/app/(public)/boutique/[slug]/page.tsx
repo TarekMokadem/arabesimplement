@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatPrice } from "@/lib/utils/format";
 import { AddToCartButton } from "./AddToCartButton";
+import { SchedulingModeExplainer } from "@/components/shop/SchedulingModeExplainer";
 import {
   getFormationBySlug,
   getFormationSlugsForStaticParams,
@@ -125,13 +126,15 @@ export default async function FormationPage({ params }: PageProps) {
               </CardContent>
             </Card>
 
-            {formation.creneaux.length > 0 && (
+            {(formation.creneaux ?? []).length > 0 && (
               <div>
                 <h3 className="font-serif text-xl font-bold text-primary mb-4">
-                  Créneaux disponibles
+                  {formation.schedulingMode === "FIXED_SLOTS"
+                    ? "Créneaux disponibles"
+                    : "Horaires / sessions (indicatif)"}
                 </h3>
                 <div className="space-y-3">
-                  {formation.creneaux.map((creneau) => (
+                  {(formation.creneaux ?? []).map((creneau) => (
                     <div
                       key={creneau.id}
                       className="p-4 bg-white rounded-lg border border-gray-100 flex items-center justify-between"

@@ -9,6 +9,11 @@ export interface User {
   updatedAt: Date;
 }
 
+export type FormationSchedulingMode =
+  | "HOURLY_PURCHASE"
+  | "FLEXIBLE_FORMATION"
+  | "FIXED_SLOTS";
+
 export interface Formation {
   id: string;
   titre: string;
@@ -20,6 +25,7 @@ export interface Formation {
   imageUrl?: string;
   placesMax?: number;
   categorie: string;
+  schedulingMode: FormationSchedulingMode;
   statut: "ACTIVE" | "INACTIVE" | "COMING_SOON" | "ARCHIVED";
   featured: boolean;
   featuredContent?: string;
@@ -46,6 +52,7 @@ export type FormationBoutiqueCard = Pick<
   | "imageUrl"
   | "placesMax"
   | "categorie"
+  | "schedulingMode"
   | "statut"
   | "featured"
 >;

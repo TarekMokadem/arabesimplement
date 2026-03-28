@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     template: "%s | ArabeSimplement",
   },
   description:
-    "Découvrez une méthode révolutionnaire pour apprendre à lire l'arabe en seulement 10 leçons. Cours en ligne avec suivi personnalisé.",
+    "Cours d'arabe en ligne : partenariat avec un institut en Égypte, méthodes et supports (livre niveaux 1 à 11), formations et accompagnement pour francophones.",
   keywords: [
     "apprendre arabe",
     "cours arabe en ligne",

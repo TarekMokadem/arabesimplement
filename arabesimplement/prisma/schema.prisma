@@ -18,6 +18,13 @@ enum FormationStatus {
   ARCHIVED
 }
 
+/** Mode d'organisation : heures à la carte, formation flexible, ou créneaux fixes. */
+enum FormationSchedulingMode {
+  HOURLY_PURCHASE
+  FLEXIBLE_FORMATION
+  FIXED_SLOTS
+}
+
 enum CreneauStatus {
   OPEN
   FULL
@@ -59,6 +66,7 @@ model Formation {
   imageUrl          String?         @map("image_url")
   placesMax         Int?            @map("places_max")
   categorie         String
+  schedulingMode    FormationSchedulingMode @default(FIXED_SLOTS) @map("scheduling_mode")
   statut            FormationStatus @default(ACTIVE)
   featured          Boolean         @default(false)
   featuredContent   String?         @map("featured_content") @db.Text

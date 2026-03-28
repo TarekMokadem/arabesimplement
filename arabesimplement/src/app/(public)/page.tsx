@@ -42,18 +42,22 @@ function HeroSection({ trust }: { trust: HomeHeroTrust }) {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-32">
         <div className="max-w-2xl">
           <Badge className="mb-6 bg-secondary/20 text-secondary border-secondary/30 hover:bg-secondary/30">
-            Méthode révolutionnaire
+            Pédagogie & partenariat Égypte
           </Badge>
 
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-            Une méthode encore jamais vue pour{" "}
-            <span className="text-secondary">apprendre l&apos;arabe</span>
+            Apprendre l&apos;arabe avec une équipe{" "}
+            <span className="text-secondary">solide et ancrée</span>
           </h1>
 
           <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-            Tu vas apprendre à lire en l&apos;espace de{" "}
-            <span className="font-bold text-white">10 leçons</span>. Une
-            approche unique, pensée pour les francophones.
+            Méthodes inspirées de l&apos;enseignement en Égypte, supports
+            (livre du niveau 1 au 11) et accompagnement pour progresser{" "}
+            <span className="font-bold text-white">
+              à votre rythme, en ligne
+            </span>
+            . Pas de promesse miraculeuse — du travail encadré et des repères
+            clairs.
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -138,7 +142,7 @@ const offers = [
   },
   {
     title: "Équilibre",
-    subtitle: "Le meilleur compromis",
+    subtitle: "Accompagnement renforcé",
     price: 25,
     features: [
       "Tout le programme Autonome",
@@ -242,21 +246,21 @@ function FeaturesSection() {
   const features = [
     {
       icon: BookOpen,
-      title: "Méthode unique",
+      title: "Partenariat avec un institut en Égypte",
       description:
-        "Une approche pédagogique révolutionnaire, spécialement conçue pour les francophones.",
+        "Un lien direct avec une structure d’enseignement en Égypte pour des contenus et des repères fiables, adaptés aux francophones.",
     },
     {
       icon: Users,
-      title: "Suivi personnalisé",
+      title: "Livre d’Égypte — niveaux 1 à 11",
       description:
-        "Accompagnement individuel et groupes WhatsApp pour ne jamais être seul(e).",
+        "Progression structurée avec le support du livre jusqu’au niveau 11, pour avancer étape par étape sans improvisation.",
     },
     {
       icon: Award,
-      title: "Résultats garantis",
+      title: "Pédagogie d’inspiration égyptienne",
       description:
-        "Apprenez à lire l'arabe en seulement 10 leçons avec notre méthode éprouvée.",
+        "Méthodes et exercices calqués sur des pratiques éprouvées en Égypte, avec des explications en français quand il le faut.",
     },
   ];
 
@@ -269,13 +273,14 @@ function FeaturesSection() {
               Notre approche
             </Badge>
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-6">
-              Apprendre l&apos;arabe, c&apos;est possible pour tout le monde
+              Un parcours sérieux, sans effet d’annonce
             </h2>
             <p className="text-gray-600 mb-8 leading-relaxed">
-              Que vous partiez de zéro ou que vous souhaitiez perfectionner
-              votre lecture, notre méthode s&apos;adapte à votre niveau et à
-              votre rythme. Rejoignez des centaines d&apos;étudiants qui ont
-              déjà transformé leur relation avec la langue arabe.
+              Nous misons sur la régularité, des supports clairs et des
+              enseignants impliqués. Notre différence : l’expérience d’un
+              partenaire en Égypte, des méthodes inspirées de là-bas, et un
+              matériel pédagogique cohérent jusqu’au niveau 11 — pas de
+              superlatifs vides, plutôt du concret et du suivi.
             </p>
 
             <div className="space-y-6">
@@ -330,15 +335,15 @@ function SEOContentSection() {
       <div className="max-w-4xl mx-auto px-6">
         <div className="prose prose-lg max-w-none">
           <h2 className="font-serif text-3xl font-bold text-primary mb-8">
-            Apprendre l&apos;arabe : votre guide complet
+            ArabeSimplement : pour qui, pourquoi
           </h2>
 
           <p className="text-gray-600 leading-relaxed">
-            L&apos;apprentissage de l&apos;arabe représente un voyage fascinant
-            vers une langue riche de plus de 1400 ans d&apos;histoire.
-            L&apos;alphabet arabe, composé de 28 lettres, peut sembler
-            intimidant au premier abord, mais avec la bonne méthode, il devient
-            accessible à tous.
+            L&apos;arabe mérite un enseignement patient et structuré. Chez
+            ArabeSimplement, nous combinons des approches utilisées en Égypte
+            avec des explications adaptées aux francophones, un partenariat avec
+            un institut sur place, et un partage pédagogique (livre niveaux 1 à
+            11) pour que vous sachiez toujours où vous en êtes.
           </p>
 
           <h3 className="font-serif text-2xl font-bold text-primary mt-12 mb-4">
@@ -353,13 +358,13 @@ function SEOContentSection() {
           </p>
 
           <h3 className="font-serif text-2xl font-bold text-primary mt-12 mb-4">
-            Notre méthode en 10 leçons
+            Lecture et progression
           </h3>
           <p className="text-gray-600 leading-relaxed">
-            Notre approche pédagogique unique permet d&apos;apprendre à lire
-            l&apos;arabe en seulement 10 leçons. Chaque leçon est construite de
-            manière progressive, vous permettant de maîtriser les lettres, les
-            voyelles et les règles de lecture étape par étape.
+            Selon les parcours, nous proposons entre autres un programme de
+            lecture en dix leçons structurées : objectifs clairs, révisions et
+            mise en pratique. L’efficacité dépend aussi de votre assiduité —
+            nous posons le cadre, vous avancez avec régularité.
           </p>
 
           <h3 className="font-serif text-2xl font-bold text-primary mt-12 mb-4">

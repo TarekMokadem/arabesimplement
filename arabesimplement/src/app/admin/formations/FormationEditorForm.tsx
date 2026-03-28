@@ -171,6 +171,28 @@ export function FormationEditorForm(
                 <option value="ARCHIVED">Archivée</option>
               </select>
             </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="schedulingMode">Organisation des cours</Label>
+              <select
+                id="schedulingMode"
+                className={selectClass}
+                {...register("schedulingMode")}
+              >
+                <option value="FIXED_SLOTS">
+                  Créneaux proposés — l’élève choisit un horaire parmi la liste
+                </option>
+                <option value="FLEXIBLE_FORMATION">
+                  Paiement forfaitaire — l’élève s’organise avec le prof jusqu’à la fin
+                </option>
+                <option value="HOURLY_PURCHASE">
+                  Cours à la carte — tarifs par durée (10 €/h, 8 €/40 min, 5 €/30 min)
+                </option>
+              </select>
+              <p className="text-xs text-gray-500">
+                Affiché sur la fiche produit. La section « créneaux » ci-dessous est
+                surtout utile pour le mode « créneaux proposés ».
+              </p>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="prix">Prix (€)</Label>
               <Input

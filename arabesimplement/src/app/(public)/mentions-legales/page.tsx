@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/shared/PageHeader";
+import { SITE_CONTACT } from "@/lib/site-contact";
 
 export default function MentionsLegalesPage() {
   return (
@@ -15,7 +16,15 @@ export default function MentionsLegalesPage() {
           </p>
           <ul className="text-gray-600">
             <li>Responsable de publication : ArabeSimplement</li>
-            <li>Email : contact@arabesimplement.fr</li>
+            <li>
+              Email :{" "}
+              <a
+                href={`mailto:${SITE_CONTACT.email}`}
+                className="text-secondary hover:underline"
+              >
+                {SITE_CONTACT.email}
+              </a>
+            </li>
             <li>Localisation : Égypte</li>
           </ul>
 

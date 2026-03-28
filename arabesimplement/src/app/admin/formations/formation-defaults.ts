@@ -11,6 +11,7 @@ export function getDefaultFormationValues(): FormationEditorDefaults {
     imageUrl: undefined,
     placesMax: undefined,
     categorie: "Lecture",
+    schedulingMode: "FIXED_SLOTS",
     statut: "ACTIVE",
     featured: false,
     featuredTitre: "",

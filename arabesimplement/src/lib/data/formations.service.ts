@@ -24,6 +24,7 @@ export function toBoutiqueCard(f: Formation): FormationBoutiqueCard {
     imageUrl: f.imageUrl,
     placesMax: f.placesMax,
     categorie: f.categorie,
+    schedulingMode: f.schedulingMode,
     statut: f.statut,
     featured: f.featured,
   };
@@ -79,6 +80,7 @@ function toFormationListItem(f: PrismaFormation): Formation {
     imageUrl: f.imageUrl ?? undefined,
     placesMax: f.placesMax ?? undefined,
     categorie: f.categorie,
+    schedulingMode: f.schedulingMode,
     statut: f.statut,
     featured: f.featured,
     featuredContent: f.featuredContent ?? undefined,
@@ -162,7 +164,7 @@ export async function getFeaturedSessionHome(): Promise<FeaturedSessionHome> {
     titre: tajwid?.featuredTitre ?? "Formation Tajwid — Offre spéciale",
     description:
       tajwid?.featuredContent ??
-      "Maîtrisez les règles de récitation du Coran avec notre formation complète. Accès à vie + groupe WhatsApp de suivi.",
+      "Formation Tajwid structurée : règles de récitation, supports et accompagnement. Détails et inscription sur la fiche formation.",
     badge: tajwid?.featuredBadge ?? "Offre limitée",
     prix: tajwid ? Number(tajwid.prix) : 75,
     prixPromo: tajwid?.prixPromo != null ? Number(tajwid.prixPromo) : 49,

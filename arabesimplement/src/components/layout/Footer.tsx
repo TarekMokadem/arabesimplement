@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Send } from "lucide-react";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
+import { SITE_CONTACT } from "@/lib/site-contact";
 
 const footerLinks = {
   navigation: [
@@ -41,8 +42,9 @@ export function Footer() {
               بِسْمِ اللَّهِ الرَّحْمَانِ الرَّحِيمِ
             </p>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Une méthode révolutionnaire pour apprendre à lire l&apos;arabe en
-              seulement 10 leçons.
+              Cours en ligne, partenariat avec un institut en Égypte, livre
+              partagé (niveaux 1 à 11) et pédagogie inspirée des méthodes sur
+              place.
             </p>
           </div>
 
@@ -89,19 +91,58 @@ export function Footer() {
             <h3 className="font-serif font-bold text-lg mb-6 text-secondary">
               Contact
             </h3>
-            <ul className="space-y-4">
-              <li className="flex items-center gap-3 text-gray-400 text-sm">
-                <Mail className="h-4 w-4 text-secondary" />
+            <ul className="space-y-3">
+              <li className="flex items-start gap-3 text-gray-400 text-sm">
+                <Mail className="h-4 w-4 text-secondary shrink-0 mt-0.5" />
                 <a
-                  href="mailto:contact@arabesimplement.fr"
+                  href={`mailto:${SITE_CONTACT.email}`}
+                  className="hover:text-white transition-colors break-all"
+                >
+                  {SITE_CONTACT.email}
+                </a>
+              </li>
+              <li className="flex items-start gap-3 text-gray-400 text-sm">
+                <MessageCircle className="h-4 w-4 text-secondary shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <a
+                    href={SITE_CONTACT.whatsappHommes.href}
+                    className="block hover:text-white transition-colors"
+                  >
+                    {SITE_CONTACT.whatsappHommes.label} —{" "}
+                    {SITE_CONTACT.whatsappHommes.display}
+                  </a>
+                  <a
+                    href={SITE_CONTACT.whatsappFemmes.href}
+                    className="block hover:text-white transition-colors"
+                  >
+                    {SITE_CONTACT.whatsappFemmes.label} —{" "}
+                    {SITE_CONTACT.whatsappFemmes.display}
+                  </a>
+                </div>
+              </li>
+              <li className="flex items-center gap-3 text-gray-400 text-sm">
+                <Send className="h-4 w-4 text-secondary shrink-0" />
+                <a
+                  href={SITE_CONTACT.telegram.href}
                   className="hover:text-white transition-colors"
                 >
-                  contact@arabesimplement.fr
+                  {SITE_CONTACT.telegram.display} (Telegram)
                 </a>
               </li>
               <li className="flex items-center gap-3 text-gray-400 text-sm">
-                <MapPin className="h-4 w-4 text-secondary" />
-                <span>Égypte</span>
+                <span className="h-4 w-4 text-secondary shrink-0 text-center text-xs font-bold">
+                  S
+                </span>
+                <a
+                  href={SITE_CONTACT.snapchat.href}
+                  className="hover:text-white transition-colors"
+                >
+                  {SITE_CONTACT.snapchat.display} (Snapchat)
+                </a>
+              </li>
+              <li className="flex items-center gap-3 text-gray-400 text-sm">
+                <MapPin className="h-4 w-4 text-secondary shrink-0" />
+                <span>Partenaire — Égypte</span>
               </li>
             </ul>
 

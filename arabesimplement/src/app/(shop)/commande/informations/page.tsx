@@ -209,10 +209,10 @@ export default function InformationsPage() {
 
                     <div className="space-y-2">
                       <Label htmlFor="pays">Pays *</Label>
-                      <Select 
-                        value={watch("pays") || undefined}
+                      <Select
+                        value={watch("pays") ?? ""}
                         onValueChange={(value) => {
-                          if (value) setValue("pays", value);
+                          setValue("pays", value, { shouldValidate: true });
                         }}
                       >
                         <SelectTrigger

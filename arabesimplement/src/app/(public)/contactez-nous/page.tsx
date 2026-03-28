@@ -3,7 +3,15 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Send, Loader2, Mail, MapPin, CheckCircle } from "lucide-react";
+import {
+  Send,
+  Loader2,
+  Mail,
+  MapPin,
+  CheckCircle,
+  MessageCircle,
+} from "lucide-react";
+import { SITE_CONTACT } from "@/lib/site-contact";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -72,10 +80,58 @@ export default function ContactezNousPage() {
                     <div>
                       <p className="font-medium text-primary">Email</p>
                       <a
-                        href="mailto:contact@arabesimplement.fr"
+                        href={`mailto:${SITE_CONTACT.email}`}
+                        className="text-gray-600 hover:text-secondary break-all"
+                      >
+                        {SITE_CONTACT.email}
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <MessageCircle className="h-5 w-5 text-secondary" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-medium text-primary">WhatsApp</p>
+                      <a
+                        href={SITE_CONTACT.whatsappHommes.href}
+                        className="block text-gray-600 hover:text-secondary"
+                      >
+                        Hommes — {SITE_CONTACT.whatsappHommes.display}
+                      </a>
+                      <a
+                        href={SITE_CONTACT.whatsappFemmes.href}
+                        className="block text-gray-600 hover:text-secondary"
+                      >
+                        Femmes — {SITE_CONTACT.whatsappFemmes.display}
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Send className="h-5 w-5 text-secondary" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-primary">Telegram</p>
+                      <a
+                        href={SITE_CONTACT.telegram.href}
                         className="text-gray-600 hover:text-secondary"
                       >
-                        contact@arabesimplement.fr
+                        @{SITE_CONTACT.telegram.display}
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <span className="text-secondary font-bold text-sm">S</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-primary">Snapchat</p>
+                      <a
+                        href={SITE_CONTACT.snapchat.href}
+                        className="text-gray-600 hover:text-secondary"
+                      >
+                        {SITE_CONTACT.snapchat.display}
                       </a>
                     </div>
                   </div>
@@ -84,8 +140,8 @@ export default function ContactezNousPage() {
                       <MapPin className="h-5 w-5 text-secondary" />
                     </div>
                     <div>
-                      <p className="font-medium text-primary">Localisation</p>
-                      <p className="text-gray-600">Égypte</p>
+                      <p className="font-medium text-primary">Partenaire</p>
+                      <p className="text-gray-600">Institut en Égypte</p>
                     </div>
                   </div>
                 </div>

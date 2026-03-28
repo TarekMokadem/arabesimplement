@@ -10,7 +10,8 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
     titre: "Lire l'arabe en 10 leçons",
     slug: "lire-en-10-lecons",
     descriptionCourte:
-      "Apprenez à lire l'arabe en seulement 10 leçons avec notre méthode révolutionnaire.",
+      "Programme progressif pour apprendre à lire l’arabe en dix leçons structurées, adapté aux francophones.",
+    schedulingMode: "FIXED_SLOTS",
     description: `
       <h3>Une méthode unique pour apprendre à lire l'arabe</h3>
       <p>Notre programme "Lire l'arabe en 10 leçons" est le fruit de plusieurs années d'expérience dans l'enseignement de l'arabe aux francophones.</p>
@@ -85,6 +86,7 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
       "https://images.unsplash.com/photo-1756808862471-46ad2f6c6fc0?w=600&q=80",
     placesMax: 20,
     categorie: "Invocations",
+    schedulingMode: "FLEXIBLE_FORMATION",
     statut: "ACTIVE",
     featured: false,
     createdAt: new Date(),
@@ -128,6 +130,7 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
       "https://images.unsplash.com/photo-1769428197773-e4adbe22aa8e?w=600&q=80",
     placesMax: 12,
     categorie: "Tajwid",
+    schedulingMode: "HOURLY_PURCHASE",
     statut: "ACTIVE",
     featured: true,
     featuredTitre: "Formation Tajwid - Offre spéciale",

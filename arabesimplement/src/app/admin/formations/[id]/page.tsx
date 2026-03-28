@@ -33,7 +33,11 @@ export default async function ModifierFormationPage({
         defaultValues={formationVersFormInput(f)}
       />
       <hr className="border-gray-200" />
-      <CreneauManager formationId={f.id} creneaux={creneaux} />
+      <CreneauManager
+        formationId={f.id}
+        creneaux={creneaux}
+        schedulingMode={f.schedulingMode}
+      />
     </div>
   );
 }

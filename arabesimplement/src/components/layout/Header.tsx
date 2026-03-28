@@ -29,6 +29,12 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
   const { getItemCount } = useCart();
   const itemCount = getItemCount();
 
+  const accountHref = !isLoggedIn
+    ? "/connexion"
+    : isAdmin
+      ? "/admin"
+      : "/tableau-de-bord";
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -92,10 +98,7 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
             </Link>
 
             {/* Account */}
-            <Link
-              href={isLoggedIn ? "/tableau-de-bord" : "/connexion"}
-              className="hidden sm:block"
-            >
+            <Link href={accountHref} className="hidden sm:block">
               <Button
                 variant="outline"
                 className="border-primary text-primary hover:bg-primary hover:text-white"
@@ -134,25 +137,12 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
                   </nav>
 
                   <div className="pt-6 border-t mt-auto space-y-2">
-                    <Link
-                      href={isLoggedIn ? "/tableau-de-bord" : "/connexion"}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
+                    <Link href={accountHref} onClick={() => setIsMobileMenuOpen(false)}>
                       <Button className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground">
                         <User className="h-4 w-4 mr-2" />
                         {isLoggedIn ? "Tableau de bord" : "Mon compte"}
                       </Button>
                     </Link>
-                    {isAdmin && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        <Button variant="outline" className="w-full border-primary text-primary">
-                          Administration
-                        </Button>
-                      </Link>
-                    )}
                   </div>
                 </div>
               </SheetContent>

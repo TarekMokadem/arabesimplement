@@ -22,7 +22,7 @@ export default function ParametresPage() {
             </div>
             <div className="space-y-2">
               <Label>Email de contact</Label>
-              <Input type="email" defaultValue="contact@arabesimplement.fr" />
+              <Input type="email" defaultValue="arabeen10@gmail.com" />
             </div>
             <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"><Save className="h-4 w-4 mr-2" />Enregistrer</Button>
           </CardContent>
@@ -36,7 +36,7 @@ export default function ParametresPage() {
             </div>
             <div className="space-y-2">
               <Label>Email admin</Label>
-              <Input defaultValue="contact@arabesimplement.fr" />
+              <Input defaultValue="arabeen10@gmail.com" />
             </div>
             <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"><Save className="h-4 w-4 mr-2" />Enregistrer</Button>
           </CardContent>

@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/shared/PageHeader";
+import { SITE_CONTACT } from "@/lib/site-contact";
 
 export default function PolitiqueConfidentialitePage() {
   return (
@@ -73,14 +74,20 @@ export default function PolitiqueConfidentialitePage() {
             <li>Droit d&apos;opposition</li>
           </ul>
           <p className="text-gray-600">
-            Pour exercer ces droits, contactez-nous à : contact@arabesimplement.fr
+            Pour exercer ces droits, contactez-nous à :{" "}
+            <a
+              href={`mailto:${SITE_CONTACT.email}`}
+              className="text-secondary hover:underline"
+            >
+              {SITE_CONTACT.email}
+            </a>
           </p>
 
           <h2 className="font-serif text-2xl font-bold text-primary mt-8">
             6. Sécurité
           </h2>
           <p className="text-gray-600">
-            Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données contre tout accès non autorisé, modification, divulgation ou destruction. Les paiements sont sécurisés par Stripe (certification PCI-DSS).
+            Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données contre tout accès non autorisé, modification, divulgation ou destruction. Les paiements en ligne passent par Stripe (carte bancaire, PayPal selon les moyens affichés au moment du paiement — certification PCI-DSS côté prestataire).
           </p>
 
           <h2 className="font-serif text-2xl font-bold text-primary mt-8">
@@ -97,7 +104,15 @@ export default function PolitiqueConfidentialitePage() {
             Pour toute question concernant cette politique ou vos données personnelles :
           </p>
           <ul className="text-gray-600">
-            <li>Email : contact@arabesimplement.fr</li>
+            <li>
+              Email :{" "}
+              <a
+                href={`mailto:${SITE_CONTACT.email}`}
+                className="text-secondary hover:underline"
+              >
+                {SITE_CONTACT.email}
+              </a>
+            </li>
           </ul>
 
           <p className="text-gray-500 mt-12 text-sm">

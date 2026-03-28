@@ -7,6 +7,12 @@ const formationStatus = z.enum([
   "ARCHIVED",
 ]);
 
+const formationSchedulingMode = z.enum([
+  "HOURLY_PURCHASE",
+  "FLEXIBLE_FORMATION",
+  "FIXED_SLOTS",
+]);
+
 const emptyToUndef = <T extends z.ZodType>(
   schema: T
 ) =>
@@ -65,6 +71,7 @@ export const formationAdminSchema = z.object({
   imageUrl: optionalUrl,
   placesMax: optionalPositiveInt,
   categorie: z.string().min(1, "Catégorie requise"),
+  schedulingMode: formationSchedulingMode,
   statut: formationStatus,
   featured: z.boolean(),
   featuredTitre: z.string().optional(),

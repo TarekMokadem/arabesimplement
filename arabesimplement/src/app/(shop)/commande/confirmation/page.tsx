@@ -4,8 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
 import { ConfirmationCleanup } from "@/components/shop/ConfirmationCleanup";
+import { getSession } from "@/app/(auth)/actions";
 
-export default function ConfirmationPage() {
+export default async function ConfirmationPage() {
+  const session = await getSession();
+  const espaceHref =
+    session?.role === "ADMIN" ? "/admin" : "/tableau-de-bord";
+
   return (
     <div className="pt-20 min-h-screen bg-surface">
       <ConfirmationCleanup />
@@ -81,7 +86,7 @@ export default function ConfirmationPage() {
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/tableau-de-bord">
+              <Link href={espaceHref}>
                 <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground">
                   Accéder à mon espace
                   <ArrowRight className="ml-2 h-4 w-4" />

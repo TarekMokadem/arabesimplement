@@ -10,6 +10,7 @@ import { useCart } from "@/hooks/useCart";
 import { type CartItem } from "@/store/cart.store";
 import { formatPrice } from "@/lib/utils/format";
 import type { FormationBoutiqueCard } from "@/types/domain.types";
+import { schedulingModeShortLabel } from "@/lib/scheduling-mode";
 import { toast } from "sonner";
 
 interface FormationCardProps {
@@ -113,6 +114,12 @@ export function FormationCard({ formation }: FormationCardProps) {
             {formation.titre}
           </h3>
         </Link>
+        <Badge
+          variant="outline"
+          className="mb-3 text-[10px] font-normal border-primary/25 text-primary bg-primary/5"
+        >
+          {schedulingModeShortLabel(formation.schedulingMode)}
+        </Badge>
 
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
           {formation.descriptionCourte}

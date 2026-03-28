@@ -106,6 +106,8 @@ export function StripePaymentSection({
         theme: "stripe" as const,
         variables: { colorPrimary: "#324530" },
       },
+      /** PayPal avant la carte lorsque le compte Stripe l’autorise (Dashboard Stripe). */
+      paymentMethodOrder: ["paypal", "card"],
     }),
     [clientSecret]
   );

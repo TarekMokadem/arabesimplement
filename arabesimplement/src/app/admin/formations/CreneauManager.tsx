@@ -20,6 +20,7 @@ import {
   updateCreneau,
   deleteCreneau,
 } from "./actions";
+import type { FormationSchedulingMode } from "@/types/domain.types";
 
 const selectClass =
   "flex h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
@@ -209,9 +210,14 @@ type Props = {
   formationId: string;
   creneaux: CreneauListeItem[];
   refreshKey?: number;
+  schedulingMode?: FormationSchedulingMode;
 };
 
-export function CreneauManager({ formationId, creneaux }: Props) {
+export function CreneauManager({
+  formationId,
+  creneaux,
+  schedulingMode = "FIXED_SLOTS",
+}: Props) {
   const [, bump] = useTransition();
   const refresh = () => {
     bump(() => {
@@ -227,8 +233,20 @@ export function CreneauManager({ formationId, creneaux }: Props) {
           Créneaux ({creneaux.length})
         </h2>
       </div>
+      {schedulingMode !== "FIXED_SLOTS" && (
+        <p className="text-sm rounded-lg border border-amber-200 bg-amber-50 text-amber-950 px-3 py-2">
+          Mode «{" "}
+          {schedulingMode === "HOURLY_PURCHASE"
+            ? "cours à la carte"
+            : "formation flexible"}{" "}
+          » : les créneaux ci-dessous servent surtout d’information ou de
+          réservation optionnelle ; précisez vos règles dans la description de
+          la formation.
+        </p>
+      )}
       <p className="text-sm text-gray-500">
-        Chaque créneau correspond à une session récurrente (jours + horaire).
+        Chaque créneau correspond à une session récurrente (jours + horaire),
+        surtout pour les formations avec choix d’horaires fixes.
       </p>
       <div className="space-y-4">
         {creneaux.map((c) => (

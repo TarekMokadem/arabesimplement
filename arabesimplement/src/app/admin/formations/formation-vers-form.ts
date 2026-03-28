@@ -19,6 +19,7 @@ export function formationVersFormInput(f: {
   imageUrl: string | null;
   placesMax: number | null;
   categorie: string;
+  schedulingMode: FormationAdminInput["schedulingMode"];
   statut: FormationAdminInput["statut"];
   featured: boolean;
   featuredTitre: string | null;
@@ -43,6 +44,7 @@ export function formationVersFormInput(f: {
     imageUrl: f.imageUrl ?? undefined,
     placesMax: f.placesMax ?? undefined,
     categorie: f.categorie,
+    schedulingMode: f.schedulingMode,
     statut: f.statut,
     featured: f.featured,
     featuredTitre: f.featuredTitre ?? "",
