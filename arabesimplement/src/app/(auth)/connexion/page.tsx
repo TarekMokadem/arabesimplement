@@ -32,12 +32,16 @@ export default function ConnexionPage() {
 
     try {
       const result = await signIn(data.email, data.password);
-      if (result?.error) {
-        toast.error(result.error);
-      } else if (result?.redirectTo) {
-        toast.success("Connexion réussie !");
-        router.push(result.redirectTo);
+      if (!result) {
+        toast.error("Réponse invalide");
+        return;
       }
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Connexion réussie !");
+      router.push(result.redirectTo);
     } catch (error) {
       toast.error("Email ou mot de passe incorrect");
       console.error(error);
@@ -47,12 +51,12 @@ export default function ConnexionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F7F2] flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-surface flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
         {/* Retour accueil */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-[#0F2A45] hover:text-[#B7860B] text-sm font-medium mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-primary hover:text-secondary text-sm font-medium mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Retour à l&apos;accueil
@@ -61,10 +65,10 @@ export default function ConnexionPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#B7860B] to-[#D4AF37] rounded-xl flex items-center justify-center">
-              <span className="font-arabic text-white text-xl font-bold">ع</span>
+            <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary-light rounded-xl flex items-center justify-center">
+              <span className="font-arabic text-secondary-foreground text-xl font-bold">ع</span>
             </div>
-            <span className="font-serif font-bold text-2xl text-[#0F2A45]">
+            <span className="font-serif font-bold text-2xl text-primary">
               ArabeSimplement
             </span>
           </Link>
@@ -72,7 +76,7 @@ export default function ConnexionPage() {
 
         <Card className="bg-white shadow-lg">
           <CardHeader className="text-center">
-            <CardTitle className="font-serif text-2xl text-[#0F2A45]">
+            <CardTitle className="font-serif text-2xl text-primary">
               Connexion
             </CardTitle>
             <p className="text-gray-500 text-sm mt-2">
@@ -101,7 +105,7 @@ export default function ConnexionPage() {
                   <Label htmlFor="password">Mot de passe</Label>
                   <Link
                     href="/mot-de-passe-perdu"
-                    className="text-sm text-[#B7860B] hover:underline"
+                    className="text-sm text-secondary hover:underline"
                   >
                     Mot de passe oublié ?
                   </Link>
@@ -137,7 +141,7 @@ export default function ConnexionPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#B7860B] hover:bg-[#0F2A45] text-white py-6"
+                className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground py-6"
                 data-testid="login-submit"
               >
                 {isLoading ? (
@@ -156,7 +160,7 @@ export default function ConnexionPage() {
                 Pas encore de compte ?{" "}
                 <Link
                   href="/inscription"
-                  className="text-[#B7860B] font-medium hover:underline"
+                  className="text-secondary font-medium hover:underline"
                 >
                   S&apos;inscrire
                 </Link>

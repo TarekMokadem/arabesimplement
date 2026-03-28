@@ -1,3 +1,6 @@
+/** Version du règlement acceptée à la commande (à incrémenter si le contenu change). */
+export const REGLEMENT_VERSION = "2025-03-25";
+
 export const REGLEMENT_INTERIEUR_HTML = `
 <h3>Règlement Intérieur - ArabeSimplement</h3>
 

@@ -1,11 +1,36 @@
 "use server";
 
+import { headers } from "next/headers";
 import type { OrderFormInput } from "@/lib/validations/order.schema";
 import type { CartItem } from "@/store/cart.store";
+import { isDatabaseConfigured } from "@/lib/utils/database";
+import { isStripeConfigured } from "@/lib/stripe/config";
+import { getServerStripe } from "@/lib/stripe/server";
+import {
+  attachPaymentIntentToOrder,
+  createPendingOrderWithItems,
+  deletePendingOrder,
+} from "@/lib/orders/create-pending-order";
+import { ensureEnrollmentsForPaidOrder } from "@/lib/orders/fulfill-order";
+import { prisma } from "@/lib/prisma";
 
 export type CreateOrderResult =
-  | { success: true; orderId: string }
+  | {
+      success: true;
+      orderId: string;
+      clientSecret: string | null;
+      stripePublishableKey: string | null;
+      paymentMode: "stripe" | "mock";
+    }
   | { success: false; error: string };
+
+async function getClientIp(): Promise<string | null> {
+  const h = await headers();
+  const forwarded = h.get("x-forwarded-for");
+  return (
+    forwarded?.split(",")[0]?.trim() ?? h.get("x-real-ip") ?? null
+  );
+}
 
 export async function createOrder(
   data: OrderFormInput,
@@ -15,20 +40,109 @@ export async function createOrder(
     return { success: false, error: "Le panier est vide" };
   }
 
-  // Sans BDD configurée : retourne un orderId mock
-  // Quand Prisma + Stripe seront configurés : créer Order, PaymentIntent, etc.
-  const hasDatabase =
-    !!process.env.DATABASE_URL &&
-    !process.env.DATABASE_URL.includes("placeholder");
-
-  if (!hasDatabase) {
-    return { success: true, orderId: `ORD-MOCK-${Date.now()}` };
+  if (!isDatabaseConfigured()) {
+    return {
+      success: true,
+      orderId: `ORD-MOCK-${Date.now()}`,
+      clientSecret: null,
+      stripePublishableKey: null,
+      paymentMode: "mock",
+    };
   }
 
-  // TODO: Implémentation avec Prisma
-  // - Créer ou récupérer User
-  // - Créer Order (PENDING) + OrderItems
-  // - Créer Stripe PaymentIntent
-  // - Retourner orderId / clientSecret
-  return { success: true, orderId: `ORD-${Date.now()}` };
+  const clientIp = await getClientIp();
+  const pending = await createPendingOrderWithItems(data, items, clientIp);
+  if (!pending.success) {
+    return { success: false, error: pending.error };
+  }
+
+  const { orderId, totalEuros } = pending;
+  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? null;
+
+  if (!isStripeConfigured()) {
+    return {
+      success: true,
+      orderId,
+      clientSecret: null,
+      stripePublishableKey: publishableKey,
+      paymentMode: "mock",
+    };
+  }
+
+  if (!publishableKey) {
+    await deletePendingOrder(orderId).catch(() => {});
+    return {
+      success: false,
+      error:
+        "Configuration incomplète : ajoutez NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.",
+    };
+  }
+
+  try {
+    const stripe = getServerStripe();
+    const amountCents = Math.max(50, Math.round(totalEuros * 100));
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amountCents,
+      currency: "eur",
+      metadata: { orderId },
+      automatic_payment_methods: { enabled: true },
+    });
+
+    if (!paymentIntent.client_secret) {
+      throw new Error("Stripe : client_secret manquant");
+    }
+
+    await attachPaymentIntentToOrder(orderId, paymentIntent.id);
+
+    return {
+      success: true,
+      orderId,
+      clientSecret: paymentIntent.client_secret,
+      stripePublishableKey: publishableKey,
+      paymentMode: "stripe",
+    };
+  } catch (e) {
+    console.error("[createOrder] Stripe", e);
+    await deletePendingOrder(orderId).catch(() => {});
+    return {
+      success: false,
+      error:
+        "Paiement indisponible pour le moment. Réessayez plus tard ou contactez le support.",
+    };
+  }
+}
+
+export type FinalizeMockPaymentResult =
+  | { success: true }
+  | { success: false; error: string };
+
+/** Sans Stripe : marque la commande comme payée (BDD uniquement). */
+export async function finalizeMockPayment(
+  orderId: string
+): Promise<FinalizeMockPaymentResult> {
+  if (orderId.startsWith("ORD-MOCK-")) {
+    return { success: true };
+  }
+
+  if (isStripeConfigured()) {
+    return {
+      success: false,
+      error: "Utilisez le paiement sécurisé par carte.",
+    };
+  }
+
+  if (!isDatabaseConfigured()) {
+    return { success: true };
+  }
+
+  try {
+    await prisma.order.updateMany({
+      where: { id: orderId, statut: "PENDING" },
+      data: { statut: "PAID" },
+    });
+    await ensureEnrollmentsForPaidOrder(orderId);
+    return { success: true };
+  } catch {
+    return { success: false, error: "Mise à jour de la commande impossible." };
+  }
 }

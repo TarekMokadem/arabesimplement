@@ -35,16 +35,16 @@ export default function TajwidPage() {
       {/* Intro Section */}
       <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <Badge className="mb-6 bg-[#1A7A4A]/10 text-[#1A7A4A] border-[#1A7A4A]/20">
+          <Badge className="mb-6 bg-accent/10 text-accent border-accent/20">
             Science de la récitation
           </Badge>
-          <h2 className="font-serif text-3xl font-bold text-[#0F2A45] mb-6">
+          <h2 className="font-serif text-3xl font-bold text-primary mb-6">
             Qu&apos;est-ce que le Tajwid ?
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed mb-8">
             Le tajwid (تجويد) est l&apos;art de réciter le Coran correctement, en respectant les règles de prononciation et d&apos;articulation établies. Son apprentissage est considéré comme une obligation pour tout musulman souhaitant réciter le Livre d&apos;Allah comme il se doit.
           </p>
-          <p className="font-arabic text-2xl text-[#B7860B]" dir="rtl">
+          <p className="font-arabic text-2xl text-secondary" dir="rtl">
             وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا
           </p>
           <p className="text-gray-500 mt-2">
@@ -54,10 +54,10 @@ export default function TajwidPage() {
       </section>
 
       {/* Rules Section */}
-      <section className="py-20 bg-[#F9F7F2]">
+      <section className="py-20 bg-surface">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-3xl font-bold text-[#0F2A45] mb-4">
+            <h2 className="font-serif text-3xl font-bold text-primary mb-4">
               Les principales règles du Tajwid
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
@@ -69,13 +69,13 @@ export default function TajwidPage() {
             {tajwidRules.map((category, index) => (
               <Card key={index} className="bg-white">
                 <CardContent className="p-6">
-                  <h3 className="font-serif text-xl font-bold text-[#0F2A45] mb-4">
+                  <h3 className="font-serif text-xl font-bold text-primary mb-4">
                     {category.title}
                   </h3>
                   <ul className="space-y-2">
                     {category.rules.map((rule, i) => (
                       <li key={i} className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-[#1A7A4A]" />
+                        <CheckCircle className="h-5 w-5 text-accent" />
                         <span className="text-gray-600">{rule}</span>
                       </li>
                     ))}
@@ -92,10 +92,10 @@ export default function TajwidPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-[#B7860B]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="h-8 w-8 text-[#B7860B]" />
+              <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="h-8 w-8 text-secondary" />
               </div>
-              <h3 className="font-serif text-lg font-bold text-[#0F2A45] mb-2">
+              <h3 className="font-serif text-lg font-bold text-primary mb-2">
                 Théorie complète
               </h3>
               <p className="text-gray-600 text-sm">
@@ -103,10 +103,10 @@ export default function TajwidPage() {
               </p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-[#B7860B]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Mic className="h-8 w-8 text-[#B7860B]" />
+              <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Mic className="h-8 w-8 text-secondary" />
               </div>
-              <h3 className="font-serif text-lg font-bold text-[#0F2A45] mb-2">
+              <h3 className="font-serif text-lg font-bold text-primary mb-2">
                 Audio de qualité
               </h3>
               <p className="text-gray-600 text-sm">
@@ -114,10 +114,10 @@ export default function TajwidPage() {
               </p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-[#B7860B]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="h-8 w-8 text-[#B7860B]" />
+              <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Clock className="h-8 w-8 text-secondary" />
               </div>
-              <h3 className="font-serif text-lg font-bold text-[#0F2A45] mb-2">
+              <h3 className="font-serif text-lg font-bold text-primary mb-2">
                 À votre rythme
               </h3>
               <p className="text-gray-600 text-sm">
@@ -129,13 +129,13 @@ export default function TajwidPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-[#0F2A45]">
+      <section className="py-16 bg-primary">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="font-serif text-3xl font-bold text-white mb-6">
             Prêt à perfectionner votre récitation ?
           </h2>
           <Link href="/boutique/formation-tajwid">
-            <Button className="bg-[#B7860B] hover:bg-white hover:text-[#0F2A45] text-white px-8 py-6 text-lg">
+            <Button className="bg-secondary text-secondary-foreground hover:bg-white hover:text-primary px-8 py-6 text-lg">
               Découvrir la formation Tajwid
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>

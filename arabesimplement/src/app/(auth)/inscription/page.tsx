@@ -31,11 +31,18 @@ export default function InscriptionPage() {
     setIsLoading(true);
 
     try {
-      const result = await signUp(data.email, data.password, data.prenom, data.nom);
-      if (result?.redirectTo) {
-        toast.success("Inscription réussie ! Bienvenue sur ArabeSimplement.");
-        router.push(result.redirectTo);
+      const result = await signUp(
+        data.email,
+        data.password,
+        data.prenom,
+        data.nom
+      );
+      if (!result.success) {
+        toast.error(result.error);
+        return;
       }
+      toast.success("Inscription réussie ! Bienvenue sur ArabeSimplement.");
+      router.push(result.redirectTo);
     } catch (error) {
       toast.error("Une erreur est survenue. Veuillez réessayer.");
       console.error(error);
@@ -45,12 +52,12 @@ export default function InscriptionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F7F2] flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-surface flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
         {/* Retour accueil */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-[#0F2A45] hover:text-[#B7860B] text-sm font-medium mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-primary hover:text-secondary text-sm font-medium mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Retour à l&apos;accueil
@@ -59,10 +66,10 @@ export default function InscriptionPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#B7860B] to-[#D4AF37] rounded-xl flex items-center justify-center">
-              <span className="font-arabic text-white text-xl font-bold">ع</span>
+            <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary-light rounded-xl flex items-center justify-center">
+              <span className="font-arabic text-secondary-foreground text-xl font-bold">ع</span>
             </div>
-            <span className="font-serif font-bold text-2xl text-[#0F2A45]">
+            <span className="font-serif font-bold text-2xl text-primary">
               ArabeSimplement
             </span>
           </Link>
@@ -70,7 +77,7 @@ export default function InscriptionPage() {
 
         <Card className="bg-white shadow-lg">
           <CardHeader className="text-center">
-            <CardTitle className="font-serif text-2xl text-[#0F2A45]">
+            <CardTitle className="font-serif text-2xl text-primary">
               Créer un compte
             </CardTitle>
             <p className="text-gray-500 text-sm mt-2">
@@ -175,7 +182,7 @@ export default function InscriptionPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#B7860B] hover:bg-[#0F2A45] text-white py-6"
+                className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground py-6"
                 data-testid="signup-submit"
               >
                 {isLoading ? (
@@ -194,7 +201,7 @@ export default function InscriptionPage() {
                 Déjà un compte ?{" "}
                 <Link
                   href="/connexion"
-                  className="text-[#B7860B] font-medium hover:underline"
+                  className="text-secondary font-medium hover:underline"
                 >
                   Se connecter
                 </Link>

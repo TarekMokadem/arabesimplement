@@ -55,36 +55,36 @@ export default function ContactezNousPage() {
         subtitle="Une question ? Un projet ? N'hésitez pas à nous écrire."
       />
 
-      <section className="py-16 bg-[#F9F7F2]">
+      <section className="py-16 bg-surface">
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid lg:grid-cols-3 gap-12">
             {/* Contact Info */}
             <div className="space-y-8">
               <div>
-                <h2 className="font-serif text-2xl font-bold text-[#0F2A45] mb-6">
+                <h2 className="font-serif text-2xl font-bold text-primary mb-6">
                   Nos coordonnées
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-[#B7860B]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Mail className="h-5 w-5 text-[#B7860B]" />
+                    <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Mail className="h-5 w-5 text-secondary" />
                     </div>
                     <div>
-                      <p className="font-medium text-[#0F2A45]">Email</p>
+                      <p className="font-medium text-primary">Email</p>
                       <a
                         href="mailto:contact@arabesimplement.fr"
-                        className="text-gray-600 hover:text-[#B7860B]"
+                        className="text-gray-600 hover:text-secondary"
                       >
                         contact@arabesimplement.fr
                       </a>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-[#B7860B]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <MapPin className="h-5 w-5 text-[#B7860B]" />
+                    <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <MapPin className="h-5 w-5 text-secondary" />
                     </div>
                     <div>
-                      <p className="font-medium text-[#0F2A45]">Localisation</p>
+                      <p className="font-medium text-primary">Localisation</p>
                       <p className="text-gray-600">Égypte</p>
                     </div>
                   </div>
@@ -93,14 +93,14 @@ export default function ContactezNousPage() {
 
               {/* FAQ Quick Links */}
               <div className="bg-white rounded-xl p-6">
-                <h3 className="font-serif font-bold text-[#0F2A45] mb-4">
+                <h3 className="font-serif font-bold text-primary mb-4">
                   Questions fréquentes
                 </h3>
                 <ul className="space-y-3 text-sm">
                   <li>
                     <a
                       href="#"
-                      className="text-gray-600 hover:text-[#B7860B] transition-colors"
+                      className="text-gray-600 hover:text-secondary transition-colors"
                     >
                       Comment accéder à mes cours ?
                     </a>
@@ -108,7 +108,7 @@ export default function ContactezNousPage() {
                   <li>
                     <a
                       href="#"
-                      className="text-gray-600 hover:text-[#B7860B] transition-colors"
+                      className="text-gray-600 hover:text-secondary transition-colors"
                     >
                       Comment changer de créneau ?
                     </a>
@@ -116,7 +116,7 @@ export default function ContactezNousPage() {
                   <li>
                     <a
                       href="#"
-                      className="text-gray-600 hover:text-[#B7860B] transition-colors"
+                      className="text-gray-600 hover:text-secondary transition-colors"
                     >
                       Politique de remboursement
                     </a>
@@ -131,10 +131,10 @@ export default function ContactezNousPage() {
                 <CardContent className="p-8">
                   {isSubmitted ? (
                     <div className="text-center py-12">
-                      <div className="w-16 h-16 bg-[#1A7A4A]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle className="h-8 w-8 text-[#1A7A4A]" />
+                      <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="h-8 w-8 text-accent" />
                       </div>
-                      <h3 className="font-serif text-xl font-bold text-[#0F2A45] mb-2">
+                      <h3 className="font-serif text-xl font-bold text-primary mb-2">
                         Message envoyé !
                       </h3>
                       <p className="text-gray-600 mb-6">
@@ -143,7 +143,7 @@ export default function ContactezNousPage() {
                       <Button
                         onClick={() => setIsSubmitted(false)}
                         variant="outline"
-                        className="border-[#0F2A45] text-[#0F2A45]"
+                        className="border-primary text-primary"
                       >
                         Envoyer un autre message
                       </Button>
@@ -220,7 +220,7 @@ export default function ContactezNousPage() {
                       <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full sm:w-auto bg-[#B7860B] hover:bg-[#0F2A45] text-white px-8 py-6"
+                        className="w-full sm:w-auto bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground px-8 py-6"
                         data-testid="contact-submit"
                       >
                         {isLoading ? (

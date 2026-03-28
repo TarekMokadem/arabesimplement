@@ -13,15 +13,20 @@
 4. Cliquez sur **Continue**
 
 ### 3. Variables d'environnement
-Ajoutez ces variables (Settings → Environment Variables) pour que le build fonctionne :
+Dans **Settings → Environment Variables**, ajoutez au minimum :
 
-| Variable | Valeur | Obligatoire |
-|----------|--------|-------------|
-| `DATABASE_URL` | `postgresql://placeholder:placeholder@localhost:5432/placeholder` | Oui (pour Prisma generate) |
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://placeholder.supabase.co` | Oui |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `placeholder` | Oui |
+| Variable | Rôle | Build Vercel |
+|----------|------|--------------|
+| `DATABASE_URL` | PostgreSQL (Prisma) | Placeholder possible pour `prisma generate` ; mettez l’URL réelle pour la prod. |
+| `NEXT_PUBLIC_SUPABASE_URL` | Auth Supabase (futur) | Placeholder accepté si non utilisé. |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Idem | Placeholder accepté. |
+| `STRIPE_SECRET_KEY` | Paiements | Optionnel jusqu’à activation Stripe. |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Paiements côté client | Optionnel. |
+| `STRIPE_WEBHOOK_SECRET` | Webhook `/api/webhooks/stripe` | Optionnel. |
 
-> Ces valeurs placeholder permettent au build de passer. Remplacez-les par vos vraies clés quand vous les aurez configurées.
+Référence locale : copier `.env.example` vers `.env` dans `arabesimplement/` et remplir.
+
+> Des valeurs placeholder (comme dans `.env.example`) permettent souvent au **build** de passer ; sans base réelle, le site utilise les mocks catalogue / commande.
 
 ### 4. Déployer
 - Cliquez sur **Deploy**

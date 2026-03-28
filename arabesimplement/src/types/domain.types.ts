@@ -34,6 +34,28 @@ export interface Formation {
   };
 }
 
+/** Carte boutique (champs sérialisables côté client). */
+export type FormationBoutiqueCard = Pick<
+  Formation,
+  | "id"
+  | "titre"
+  | "slug"
+  | "descriptionCourte"
+  | "prix"
+  | "prixPromo"
+  | "imageUrl"
+  | "placesMax"
+  | "categorie"
+  | "statut"
+  | "featured"
+>;
+
+/** Données panier / bouton d’ajout (composants client). */
+export type FormationCartInput = Pick<
+  Formation,
+  "id" | "titre" | "slug" | "prix" | "prixPromo" | "imageUrl"
+>;
+
 export interface Creneau {
   id: string;
   formationId: string;

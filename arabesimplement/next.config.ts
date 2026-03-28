@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "res.cloudinary.com",
       },
+      {
+        protocol: "https",
+        hostname: "arche-informatique.com",
+      },
+      /* Ajoutez d’autres hostname ici pour chaque domaine d’images utilisé en admin (URL absolues). */
     ],
   },
 };

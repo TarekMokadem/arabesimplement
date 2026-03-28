@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
 import { type CartItem } from "@/store/cart.store";
 import { toast } from "sonner";
-import type { Formation } from "@/types/domain.types";
+import type { FormationCartInput } from "@/types/domain.types";
 
 interface AddToCartButtonProps {
-  formation: Formation;
+  formation: FormationCartInput;
 }
 
 export function AddToCartButton({ formation }: AddToCartButtonProps) {
@@ -40,7 +40,7 @@ export function AddToCartButton({ formation }: AddToCartButtonProps) {
       className={`w-full py-6 text-lg ${
         isAlreadyInCart
           ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-          : "bg-[#B7860B] hover:bg-[#0F2A45] text-white"
+          : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
       }`}
       data-testid="add-to-cart-detail"
     >

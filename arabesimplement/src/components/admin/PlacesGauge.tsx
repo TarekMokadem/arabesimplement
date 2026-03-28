@@ -5,12 +5,13 @@ interface PlacesGaugeProps {
 }
 
 export function PlacesGauge({ current, max, showLabel = true }: PlacesGaugeProps) {
-  const percentage = Math.min((current / max) * 100, 100);
+  const percentage =
+    max <= 0 ? 0 : Math.min((current / max) * 100, 100);
   
   const getColor = () => {
     if (percentage >= 90) return "bg-red-500";
     if (percentage >= 70) return "bg-orange-500";
-    return "bg-[#1A7A4A]";
+    return "bg-accent";
   };
 
   return (

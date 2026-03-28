@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, ShoppingCart, User } from "lucide-react";
+import { Menu, ShoppingCart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/hooks/useCart";
 import { cn } from "@/lib/utils";
+import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 
 const navLinks = [
   { href: "/", label: "Accueil" },
@@ -49,15 +50,8 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-gold rounded-lg flex items-center justify-center">
-              <span className="font-arabic text-white text-lg font-bold">ع</span>
-            </div>
-            <span
-              className={cn(
-                "font-serif font-bold text-xl transition-colors duration-300",
-                isScrolled ? "text-[#0F2A45]" : "text-[#0F2A45]"
-              )}
-            >
+            <BrandLogoMark size={40} />
+            <span className="font-serif font-bold text-xl transition-colors duration-300 text-primary">
               ArabeSimplement
             </span>
           </Link>
@@ -68,10 +62,7 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={cn(
-                  "text-sm font-medium transition-colors duration-200 hover:text-[#B7860B]",
-                  isScrolled ? "text-[#0F2A45]" : "text-[#0F2A45]"
-                )}
+                className="text-sm font-medium transition-colors duration-200 text-primary hover:text-secondary"
               >
                 {link.label}
               </Link>
@@ -85,13 +76,13 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative hover:bg-[#B7860B]/10"
+                className="relative hover:bg-secondary/10"
                 data-testid="cart-button"
               >
-                <ShoppingCart className="h-5 w-5 text-[#0F2A45]" />
+                <ShoppingCart className="h-5 w-5 text-primary" />
                 {itemCount > 0 && (
                   <span
-                    className="absolute -top-1 -right-1 bg-[#B7860B] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+                    className="absolute -top-1 -right-1 bg-secondary text-secondary-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
                     data-testid="cart-count"
                   >
                     {itemCount}
@@ -107,7 +98,7 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
             >
               <Button
                 variant="outline"
-                className="border-[#0F2A45] text-[#0F2A45] hover:bg-[#0F2A45] hover:text-white"
+                className="border-primary text-primary hover:bg-primary hover:text-white"
                 data-testid="account-button"
               >
                 <User className="h-4 w-4 mr-2" />
@@ -118,17 +109,13 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
             {/* Mobile Menu */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger className="lg:hidden p-2 hover:bg-gray-100 rounded-md">
-                <Menu className="h-6 w-6 text-[#0F2A45]" />
+                <Menu className="h-6 w-6 text-primary" />
               </SheetTrigger>
               <SheetContent side="right" className="w-80 bg-white">
                 <div className="flex flex-col gap-6 mt-8">
                   <div className="flex items-center gap-3 pb-6 border-b">
-                    <div className="w-10 h-10 bg-gradient-gold rounded-lg flex items-center justify-center">
-                      <span className="font-arabic text-white text-lg font-bold">
-                        ع
-                      </span>
-                    </div>
-                    <span className="font-serif font-bold text-xl text-[#0F2A45]">
+                    <BrandLogoMark size={40} />
+                    <span className="font-serif font-bold text-xl text-primary">
                       ArabeSimplement
                     </span>
                   </div>
@@ -139,7 +126,7 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
                         key={link.href}
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-[#0F2A45] font-medium py-2 hover:text-[#B7860B] transition-colors"
+                        className="text-primary font-medium py-2 hover:text-secondary transition-colors"
                       >
                         {link.label}
                       </Link>
@@ -151,7 +138,7 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
                       href={isLoggedIn ? "/tableau-de-bord" : "/connexion"}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <Button className="w-full bg-[#B7860B] hover:bg-[#0F2A45] text-white">
+                      <Button className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground">
                         <User className="h-4 w-4 mr-2" />
                         {isLoggedIn ? "Tableau de bord" : "Mon compte"}
                       </Button>
@@ -161,7 +148,7 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
                         href="/admin"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <Button variant="outline" className="w-full border-[#0F2A45] text-[#0F2A45]">
+                        <Button variant="outline" className="w-full border-primary text-primary">
                           Administration
                         </Button>
                       </Link>

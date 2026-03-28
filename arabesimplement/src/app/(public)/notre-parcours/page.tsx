@@ -16,7 +16,7 @@ export default function NotreParcours() {
       <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-6">
           <div className="prose prose-lg max-w-none">
-            <h2 className="font-serif text-3xl font-bold text-[#0F2A45] mb-8">
+            <h2 className="font-serif text-3xl font-bold text-primary mb-8">
               D&apos;où vient ArabeSimplement ?
             </h2>
             
@@ -37,7 +37,7 @@ export default function NotreParcours() {
               />
             </div>
 
-            <h3 className="font-serif text-2xl font-bold text-[#0F2A45] mb-4">
+            <h3 className="font-serif text-2xl font-bold text-primary mb-4">
               Notre mission
             </h3>
             
@@ -53,20 +53,20 @@ export default function NotreParcours() {
       </section>
 
       {/* Values Section */}
-      <section className="py-20 bg-[#F9F7F2]">
+      <section className="py-20 bg-surface">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-3xl font-bold text-[#0F2A45] mb-4">
+            <h2 className="font-serif text-3xl font-bold text-primary mb-4">
               Nos valeurs
             </h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 bg-[#B7860B]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Heart className="h-8 w-8 text-[#B7860B]" />
+              <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Heart className="h-8 w-8 text-secondary" />
               </div>
-              <h3 className="font-serif text-xl font-bold text-[#0F2A45] mb-3">
+              <h3 className="font-serif text-xl font-bold text-primary mb-3">
                 Bienveillance
               </h3>
               <p className="text-gray-600">
@@ -75,10 +75,10 @@ export default function NotreParcours() {
             </div>
 
             <div className="bg-white rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 bg-[#B7860B]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <BookOpen className="h-8 w-8 text-[#B7860B]" />
+              <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <BookOpen className="h-8 w-8 text-secondary" />
               </div>
-              <h3 className="font-serif text-xl font-bold text-[#0F2A45] mb-3">
+              <h3 className="font-serif text-xl font-bold text-primary mb-3">
                 Excellence
               </h3>
               <p className="text-gray-600">
@@ -87,10 +87,10 @@ export default function NotreParcours() {
             </div>
 
             <div className="bg-white rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 bg-[#B7860B]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Award className="h-8 w-8 text-[#B7860B]" />
+              <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Award className="h-8 w-8 text-secondary" />
               </div>
-              <h3 className="font-serif text-xl font-bold text-[#0F2A45] mb-3">
+              <h3 className="font-serif text-xl font-bold text-primary mb-3">
                 Accessibilité
               </h3>
               <p className="text-gray-600">
@@ -102,16 +102,16 @@ export default function NotreParcours() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-[#0F2A45] text-white text-center">
+      <section className="py-20 bg-primary text-white text-center">
         <div className="max-w-3xl mx-auto px-6">
-          <p className="font-arabic text-3xl text-[#B7860B] mb-6" dir="rtl">
+          <p className="font-arabic text-3xl text-secondary mb-6" dir="rtl">
             وَعَلَّمَكَ مَا لَمْ تَكُن تَعْلَمُ
           </p>
           <p className="text-gray-300 mb-8">
             &quot;Et Il t&apos;a enseigné ce que tu ne savais pas&quot; - Sourate An-Nisa, verset 113
           </p>
           <Link href="/boutique">
-            <Button className="bg-[#B7860B] hover:bg-white hover:text-[#0F2A45] text-white px-8 py-6 text-lg">
+            <Button className="bg-secondary text-secondary-foreground hover:bg-white hover:text-primary px-8 py-6 text-lg">
               Commencer mon apprentissage
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>

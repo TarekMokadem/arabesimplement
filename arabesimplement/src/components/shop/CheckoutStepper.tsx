@@ -31,9 +31,9 @@ export function CheckoutStepper({ currentStep }: CheckoutStepperProps) {
                 className={cn(
                   "w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm transition-all duration-300",
                   currentStep > step.id
-                    ? "bg-[#1A7A4A] text-white"
+                    ? "bg-accent text-white"
                     : currentStep === step.id
-                    ? "bg-[#B7860B] text-white shadow-gold"
+                    ? "bg-secondary text-secondary-foreground shadow-gold"
                     : "bg-gray-200 text-gray-500"
                 )}
                 data-testid={`step-${step.id}`}
@@ -47,7 +47,7 @@ export function CheckoutStepper({ currentStep }: CheckoutStepperProps) {
               <span
                 className={cn(
                   "mt-2 text-xs font-medium hidden sm:block",
-                  currentStep >= step.id ? "text-[#0F2A45]" : "text-gray-400"
+                  currentStep >= step.id ? "text-primary" : "text-gray-400"
                 )}
               >
                 {step.label}
@@ -59,7 +59,7 @@ export function CheckoutStepper({ currentStep }: CheckoutStepperProps) {
               <div
                 className={cn(
                   "w-12 sm:w-20 h-0.5 mx-2 transition-colors duration-300",
-                  currentStep > step.id ? "bg-[#1A7A4A]" : "bg-gray-200"
+                  currentStep > step.id ? "bg-accent" : "bg-gray-200"
                 )}
               />
             )}

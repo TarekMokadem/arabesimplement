@@ -9,7 +9,7 @@ export default function ParametresPage() {
   return (
     <div className="p-6 lg:p-8">
       <div className="mb-8">
-        <h1 className="font-serif text-3xl font-bold text-[#0F2A45]">Paramètres</h1>
+        <h1 className="font-serif text-3xl font-bold text-primary">Paramètres</h1>
         <p className="text-gray-500 mt-1">Configuration du site</p>
       </div>
       <div className="grid lg:grid-cols-2 gap-8">
@@ -24,7 +24,7 @@ export default function ParametresPage() {
               <Label>Email de contact</Label>
               <Input type="email" defaultValue="contact@arabesimplement.fr" />
             </div>
-            <Button className="bg-[#B7860B] hover:bg-[#0F2A45] text-white"><Save className="h-4 w-4 mr-2" />Enregistrer</Button>
+            <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"><Save className="h-4 w-4 mr-2" />Enregistrer</Button>
           </CardContent>
         </Card>
         <Card className="bg-white">
@@ -38,7 +38,7 @@ export default function ParametresPage() {
               <Label>Email admin</Label>
               <Input defaultValue="contact@arabesimplement.fr" />
             </div>
-            <Button className="bg-[#B7860B] hover:bg-[#0F2A45] text-white"><Save className="h-4 w-4 mr-2" />Enregistrer</Button>
+            <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"><Save className="h-4 w-4 mr-2" />Enregistrer</Button>
           </CardContent>
         </Card>
         <Card className="bg-white lg:col-span-2">
@@ -52,7 +52,7 @@ export default function ParametresPage() {
               <Label>Contenu</Label>
               <Textarea rows={8} defaultValue="Article 1 : Objet..." />
             </div>
-            <Button className="bg-[#B7860B] hover:bg-[#0F2A45] text-white"><Save className="h-4 w-4 mr-2" />Mettre à jour</Button>
+            <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"><Save className="h-4 w-4 mr-2" />Mettre à jour</Button>
           </CardContent>
         </Card>
       </div>

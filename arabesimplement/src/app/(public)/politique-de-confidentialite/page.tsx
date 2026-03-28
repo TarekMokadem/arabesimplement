@@ -11,7 +11,7 @@ export default function PolitiqueConfidentialitePage() {
             La protection de vos données personnelles est une priorité pour ArabeSimplement. Cette politique de confidentialité vous informe sur la manière dont nous collectons, utilisons et protégeons vos informations.
           </p>
 
-          <h2 className="font-serif text-2xl font-bold text-[#0F2A45] mt-8">
+          <h2 className="font-serif text-2xl font-bold text-primary mt-8">
             1. Données collectées
           </h2>
           <p className="text-gray-600">Nous collectons les données suivantes :</p>
@@ -22,7 +22,7 @@ export default function PolitiqueConfidentialitePage() {
             <li>Données de formation : progression, créneaux choisis</li>
           </ul>
 
-          <h2 className="font-serif text-2xl font-bold text-[#0F2A45] mt-8">
+          <h2 className="font-serif text-2xl font-bold text-primary mt-8">
             2. Finalités du traitement
           </h2>
           <p className="text-gray-600">Vos données sont utilisées pour :</p>
@@ -34,7 +34,7 @@ export default function PolitiqueConfidentialitePage() {
             <li>Répondre à vos demandes de contact</li>
           </ul>
 
-          <h2 className="font-serif text-2xl font-bold text-[#0F2A45] mt-8">
+          <h2 className="font-serif text-2xl font-bold text-primary mt-8">
             3. Base légale
           </h2>
           <p className="text-gray-600">
@@ -46,7 +46,7 @@ export default function PolitiqueConfidentialitePage() {
             <li>Notre intérêt légitime (amélioration des services)</li>
           </ul>
 
-          <h2 className="font-serif text-2xl font-bold text-[#0F2A45] mt-8">
+          <h2 className="font-serif text-2xl font-bold text-primary mt-8">
             4. Durée de conservation
           </h2>
           <p className="text-gray-600">
@@ -58,7 +58,7 @@ export default function PolitiqueConfidentialitePage() {
             <li>Données de navigation : 13 mois maximum</li>
           </ul>
 
-          <h2 className="font-serif text-2xl font-bold text-[#0F2A45] mt-8">
+          <h2 className="font-serif text-2xl font-bold text-primary mt-8">
             5. Vos droits
           </h2>
           <p className="text-gray-600">
@@ -76,21 +76,21 @@ export default function PolitiqueConfidentialitePage() {
             Pour exercer ces droits, contactez-nous à : contact@arabesimplement.fr
           </p>
 
-          <h2 className="font-serif text-2xl font-bold text-[#0F2A45] mt-8">
+          <h2 className="font-serif text-2xl font-bold text-primary mt-8">
             6. Sécurité
           </h2>
           <p className="text-gray-600">
             Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données contre tout accès non autorisé, modification, divulgation ou destruction. Les paiements sont sécurisés par Stripe (certification PCI-DSS).
           </p>
 
-          <h2 className="font-serif text-2xl font-bold text-[#0F2A45] mt-8">
+          <h2 className="font-serif text-2xl font-bold text-primary mt-8">
             7. Transferts de données
           </h2>
           <p className="text-gray-600">
             Vos données peuvent être transférées vers des pays hors UE (hébergement Vercel aux USA). Ces transferts sont encadrés par des garanties appropriées (clauses contractuelles types).
           </p>
 
-          <h2 className="font-serif text-2xl font-bold text-[#0F2A45] mt-8">
+          <h2 className="font-serif text-2xl font-bold text-primary mt-8">
             8. Contact
           </h2>
           <p className="text-gray-600">

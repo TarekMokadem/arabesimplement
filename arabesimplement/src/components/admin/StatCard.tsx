@@ -16,14 +16,14 @@ export function StatCard({
   change,
   changeType = "neutral",
   icon: Icon,
-  iconColor = "text-[#B7860B]",
+  iconColor = "text-secondary",
 }: StatCardProps) {
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm text-gray-500 mb-1">{title}</p>
-          <p className="text-2xl font-bold text-[#0F2A45]">{value}</p>
+          <p className="text-2xl font-bold text-primary">{value}</p>
           {change && (
             <p
               className={cn(

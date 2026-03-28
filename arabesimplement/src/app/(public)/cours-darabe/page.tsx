@@ -56,10 +56,10 @@ export default function CoursDarabePage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <Badge className="mb-4 bg-[#B7860B]/10 text-[#B7860B] border-[#B7860B]/20">
+              <Badge className="mb-4 bg-secondary/10 text-secondary border-secondary/20">
                 Notre méthode
               </Badge>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#0F2A45] mb-6">
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-6">
                 Apprendre à lire l&apos;arabe, étape par étape
               </h2>
               <p className="text-gray-600 mb-8 leading-relaxed">
@@ -69,11 +69,11 @@ export default function CoursDarabePage() {
               <div className="space-y-4">
                 {methodSteps.map((step, index) => (
                   <div key={index} className="flex gap-4 items-start">
-                    <div className="w-12 h-12 bg-[#0F2A45] rounded-lg flex items-center justify-center flex-shrink-0">
-                      <span className="text-[#B7860B] font-bold text-sm">{step.number}</span>
+                    <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                      <span className="text-secondary font-bold text-sm">{step.number}</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#0F2A45]">{step.title}</h3>
+                      <h3 className="font-semibold text-primary">{step.title}</h3>
                       <p className="text-gray-600 text-sm">{step.description}</p>
                     </div>
                   </div>
@@ -90,17 +90,17 @@ export default function CoursDarabePage() {
                   className="object-cover"
                 />
               </div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-[#B7860B] rounded-2xl -z-10" />
+              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-secondary rounded-2xl -z-10" />
             </div>
           </div>
         </div>
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 bg-[#F9F7F2]">
+      <section className="py-20 bg-surface">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-3xl font-bold text-[#0F2A45] mb-4">
+            <h2 className="font-serif text-3xl font-bold text-primary mb-4">
               Ce qui est inclus
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
@@ -112,8 +112,8 @@ export default function CoursDarabePage() {
             {benefits.map((benefit, index) => (
               <Card key={index} className="bg-white">
                 <CardContent className="p-6 flex items-center gap-4">
-                  <CheckCircle className="h-6 w-6 text-[#1A7A4A] flex-shrink-0" />
-                  <span className="text-[#0F2A45]">{benefit}</span>
+                  <CheckCircle className="h-6 w-6 text-accent flex-shrink-0" />
+                  <span className="text-primary">{benefit}</span>
                 </CardContent>
               </Card>
             ))}
@@ -121,7 +121,7 @@ export default function CoursDarabePage() {
 
           <div className="text-center mt-12">
             <Link href="/boutique/lire-en-10-lecons">
-              <Button className="bg-[#B7860B] hover:bg-[#0F2A45] text-white px-8 py-6 text-lg">
+              <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg">
                 Commencer maintenant
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -131,23 +131,23 @@ export default function CoursDarabePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-[#0F2A45] text-white">
+      <section className="py-20 bg-primary text-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-[#B7860B] mb-2">500+</div>
+              <div className="text-4xl font-bold text-secondary mb-2">500+</div>
               <p className="text-gray-300">Étudiants formés</p>
             </div>
             <div>
-              <div className="text-4xl font-bold text-[#B7860B] mb-2">10</div>
+              <div className="text-4xl font-bold text-secondary mb-2">10</div>
               <p className="text-gray-300">Leçons seulement</p>
             </div>
             <div>
-              <div className="text-4xl font-bold text-[#B7860B] mb-2">4.9/5</div>
+              <div className="text-4xl font-bold text-secondary mb-2">4.9/5</div>
               <p className="text-gray-300">Note moyenne</p>
             </div>
             <div>
-              <div className="text-4xl font-bold text-[#B7860B] mb-2">8€</div>
+              <div className="text-4xl font-bold text-secondary mb-2">8€</div>
               <p className="text-gray-300">Prix accessible</p>
             </div>
           </div>

@@ -62,19 +62,22 @@ export function SessionDuMoment({
   const discount = Math.round(((prix - prixPromo) / prix) * 100);
 
   return (
-    <section className="py-16 bg-gradient-to-r from-[#FFFDE7] to-[#FFF9E6] border-y-4 border-[#B7860B]" data-testid="session-du-moment">
+    <section
+      className="py-16 bg-gradient-to-r from-brand-mint-100 to-brand-mint-50 border-y-4 border-secondary"
+      data-testid="session-du-moment"
+    >
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
           {/* Left Content */}
           <div className="flex-1 text-center lg:text-left">
             <div className="flex items-center gap-2 justify-center lg:justify-start mb-4">
-              <Flame className="h-5 w-5 text-[#B7860B] animate-pulse" />
-              <Badge className="bg-[#B7860B] text-white hover:bg-[#B7860B] text-sm px-4 py-1">
+              <Flame className="h-5 w-5 text-secondary animate-pulse" />
+              <Badge className="bg-secondary text-secondary-foreground hover:bg-secondary text-sm px-4 py-1">
                 {badge}
               </Badge>
             </div>
 
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#0F2A45] mb-4">
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-4">
               {titre}
             </h2>
 
@@ -83,7 +86,7 @@ export function SessionDuMoment({
             </p>
 
             <div className="flex items-center gap-4 justify-center lg:justify-start mb-6">
-              <span className="text-4xl font-bold text-[#1A7A4A]">{prixPromo}€</span>
+              <span className="text-4xl font-bold text-accent">{prixPromo}€</span>
               <span className="text-xl text-gray-400 line-through">{prix}€</span>
               <Badge className="bg-red-500 text-white hover:bg-red-500">
                 -{discount}%
@@ -91,7 +94,7 @@ export function SessionDuMoment({
             </div>
 
             <Link href={`/boutique/${slug}`}>
-              <Button className="bg-[#B7860B] hover:bg-[#0F2A45] text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all">
+              <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all">
                 Rejoindre le programme
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -100,9 +103,9 @@ export function SessionDuMoment({
 
           {/* Countdown Timer */}
           <div className="flex-shrink-0">
-            <div className="bg-[#0F2A45] rounded-2xl p-6 text-white text-center">
+            <div className="bg-primary rounded-2xl p-6 text-white text-center">
               <div className="flex items-center gap-2 justify-center mb-4">
-                <Clock className="h-5 w-5 text-[#B7860B]" />
+                <Clock className="h-5 w-5 text-secondary" />
                 <span className="text-sm text-gray-300">Offre expire dans</span>
               </div>
 
@@ -122,7 +125,7 @@ export function SessionDuMoment({
 
 function TimeBlock({ value, label }: { value: number; label: string }) {
   return (
-    <div className="bg-[#1B6CA8] rounded-lg p-3 min-w-[60px]">
+    <div className="bg-primary-light rounded-lg p-3 min-w-[60px]">
       <div className="text-3xl font-bold text-white font-mono">
         {value.toString().padStart(2, "0")}
       </div>

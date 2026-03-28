@@ -9,11 +9,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/hooks/useCart";
 import { type CartItem } from "@/store/cart.store";
 import { formatPrice } from "@/lib/utils/format";
-import type { Formation } from "@/types/domain.types";
+import type { FormationBoutiqueCard } from "@/types/domain.types";
 import { toast } from "sonner";
 
 interface FormationCardProps {
-  formation: Formation;
+  formation: FormationBoutiqueCard;
 }
 
 export function FormationCard({ formation }: FormationCardProps) {
@@ -42,13 +42,13 @@ export function FormationCard({ formation }: FormationCardProps) {
     switch (formation.statut) {
       case "ACTIVE":
         return (
-          <Badge className="bg-[#1A7A4A] text-white hover:bg-[#1A7A4A]">
+          <Badge className="bg-accent text-white hover:bg-accent">
             Disponible
           </Badge>
         );
       case "COMING_SOON":
         return (
-          <Badge className="bg-[#1B6CA8] text-white hover:bg-[#1B6CA8]">
+          <Badge className="bg-primary-light text-white hover:bg-primary-light">
             Bientôt
           </Badge>
         );
@@ -77,7 +77,7 @@ export function FormationCard({ formation }: FormationCardProps) {
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#0F2A45] to-[#1B6CA8] flex items-center justify-center">
+          <div className="w-full h-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
             <span className="font-arabic text-5xl text-white/80">ع</span>
           </div>
         )}
@@ -86,7 +86,7 @@ export function FormationCard({ formation }: FormationCardProps) {
         <div className="absolute top-4 left-4 flex gap-2">
           {getStatusBadge()}
           {formation.prixPromo && (
-            <Badge className="bg-[#B7860B] text-white hover:bg-[#B7860B]">
+            <Badge className="bg-secondary text-secondary-foreground hover:bg-secondary">
               Promo
             </Badge>
           )}
@@ -102,14 +102,14 @@ export function FormationCard({ formation }: FormationCardProps) {
             size="icon"
             className="bg-white/90 hover:bg-white"
           >
-            <Eye className="h-4 w-4 text-[#0F2A45]" />
+            <Eye className="h-4 w-4 text-primary" />
           </Button>
         </Link>
       </div>
 
       <CardContent className="p-6">
         <Link href={`/boutique/${formation.slug}`}>
-          <h3 className="font-serif font-bold text-lg text-[#0F2A45] mb-2 group-hover:text-[#B7860B] transition-colors line-clamp-2">
+          <h3 className="font-serif font-bold text-lg text-primary mb-2 group-hover:text-secondary transition-colors line-clamp-2">
             {formation.titre}
           </h3>
         </Link>
@@ -137,7 +137,7 @@ export function FormationCard({ formation }: FormationCardProps) {
           <div className="flex items-center gap-2">
             {formation.prixPromo ? (
               <>
-                <span className="text-xl font-bold text-[#1A7A4A]">
+                <span className="text-xl font-bold text-accent">
                   {formatPrice(formation.prixPromo)}
                 </span>
                 <span className="text-sm text-gray-400 line-through">
@@ -145,7 +145,7 @@ export function FormationCard({ formation }: FormationCardProps) {
                 </span>
               </>
             ) : (
-              <span className="text-xl font-bold text-[#0F2A45]">
+              <span className="text-xl font-bold text-primary">
                 {formatPrice(formation.prix)}
               </span>
             )}
@@ -158,7 +158,7 @@ export function FormationCard({ formation }: FormationCardProps) {
               className={
                 isAlreadyInCart
                   ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                  : "bg-[#B7860B] hover:bg-[#0F2A45] text-white"
+                  : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
               }
               size="sm"
               data-testid={`add-to-cart-${formation.slug}`}
@@ -169,7 +169,7 @@ export function FormationCard({ formation }: FormationCardProps) {
           ) : (
             <Button
               variant="outline"
-              className="border-[#1B6CA8] text-[#1B6CA8]"
+              className="border-primary-light text-primary-light"
               size="sm"
             >
               S&apos;inscrire à la liste

@@ -16,7 +16,7 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "relative bg-[#0F2A45] text-white py-20 overflow-hidden",
+        "relative bg-primary text-white py-20 overflow-hidden",
         className
       )}
     >

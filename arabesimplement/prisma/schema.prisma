@@ -37,6 +37,7 @@ model User {
   prenom       String
   nom          String
   telephone    String?
+  passwordHash String?   @map("password_hash")
   role         UserRole  @default(STUDENT)
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")

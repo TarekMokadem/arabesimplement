@@ -1,55 +1,92 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { CreditCard, Lock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
+import { StripePaymentSection } from "@/components/shop/StripePaymentSection";
 import { useCartStore } from "@/store/cart.store";
 import { formatPrice } from "@/lib/utils/format";
 import { toast } from "sonner";
+import type { StoredCheckoutOrder } from "@/types/checkout.types";
+import type { CartItem } from "@/store/cart.store";
+import { finalizeMockPayment } from "@/app/(shop)/actions/order.actions";
+
+function parseOrderInfo(raw: string | null): StoredCheckoutOrder | null {
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as StoredCheckoutOrder;
+  } catch {
+    return null;
+  }
+}
 
 export default function PaiementPage() {
   const router = useRouter();
   const { items, getTotal, clearCart } = useCartStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [orderInfo, setOrderInfo] = useState<{
-    prenom: string;
-    nom: string;
-    email: string;
-  } | null>(null);
+  const [orderInfo, setOrderInfo] = useState<StoredCheckoutOrder | null>(null);
 
   useEffect(() => {
-    // Check for order info in session
-    const storedInfo = sessionStorage.getItem("orderInfo");
-    if (storedInfo) {
-      setOrderInfo(JSON.parse(storedInfo));
-    } else if (items.length === 0) {
-      router.push("/panier");
+    const raw = sessionStorage.getItem("orderInfo");
+    const parsed = parseOrderInfo(raw);
+    if (!parsed) {
+      if (items.length === 0) {
+        router.push("/panier");
+      } else {
+        router.push("/commande/informations");
+      }
+      return;
     }
-  }, [items, router]);
+    setOrderInfo(parsed);
+  }, [items.length, router]);
 
-  const handlePayment = async () => {
+  const displayItems: CartItem[] = useMemo(() => {
+    if (items.length > 0) return items;
+    return orderInfo?.items ?? [];
+  }, [items, orderInfo]);
+
+  const total = useMemo(() => {
+    if (orderInfo?.total != null) return orderInfo.total;
+    return getTotal();
+  }, [orderInfo, getTotal]);
+
+  const amountLabel = formatPrice(total);
+
+  const useStripeCheckout =
+    orderInfo?.paymentMode === "stripe" &&
+    !!orderInfo.clientSecret &&
+    !!orderInfo.stripePublishableKey;
+
+  const handleMockPayment = async () => {
     setIsLoading(true);
-
     try {
-      // TODO: Integrate real Stripe payment
-      // This is a mock payment for demonstration
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Clear cart and redirect to confirmation
+      if (orderInfo?.orderId) {
+        const result = await finalizeMockPayment(orderInfo.orderId);
+        if (!result.success) {
+          toast.error(result.error);
+          return;
+        }
+      }
       clearCart();
       sessionStorage.removeItem("orderInfo");
-      
-      toast.success("Paiement réussi !");
+      toast.success("Paiement enregistré !");
       router.push("/commande/confirmation");
-    } catch (error) {
+    } catch (e) {
+      console.error(e);
       toast.error("Erreur lors du paiement. Veuillez réessayer.");
-      console.error(error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleStripePaid = () => {
+    clearCart();
+    sessionStorage.removeItem("orderInfo");
+    toast.success("Paiement réussi !");
+    router.push("/commande/confirmation");
   };
 
   if (!orderInfo && items.length === 0) {
@@ -57,72 +94,72 @@ export default function PaiementPage() {
   }
 
   return (
-    <div className="pt-20 min-h-screen bg-[#F9F7F2]">
+    <div className="pt-20 min-h-screen bg-surface">
       <div className="max-w-4xl mx-auto px-6 py-8">
         <CheckoutStepper currentStep={3} />
 
-        <h1 className="font-serif text-3xl font-bold text-[#0F2A45] mb-8">
+        <h1 className="font-serif text-3xl font-bold text-primary mb-8">
           Paiement sécurisé
         </h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Payment Form */}
           <div className="lg:col-span-2">
             <Card className="bg-white">
               <CardContent className="p-6 space-y-6">
                 <div className="flex items-center gap-3 pb-4 border-b">
-                  <Lock className="h-5 w-5 text-[#1A7A4A]" />
+                  <Lock className="h-5 w-5 text-accent" />
                   <span className="text-sm text-gray-600">
                     Paiement sécurisé par Stripe
                   </span>
                 </div>
 
-                {/* Mock Stripe Elements */}
-                <div className="space-y-4">
-                  <div className="p-4 border rounded-lg bg-gray-50">
-                    <p className="text-sm text-gray-500 mb-4">
-                      🔒 Interface de paiement Stripe
-                    </p>
-                    <div className="space-y-3">
-                      <div className="h-12 bg-white border rounded-md flex items-center px-4">
-                        <CreditCard className="h-5 w-5 text-gray-400 mr-3" />
-                        <span className="text-gray-400">
-                          4242 4242 4242 4242
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
+                {useStripeCheckout &&
+                orderInfo.stripePublishableKey &&
+                orderInfo.clientSecret ? (
+                  <StripePaymentSection
+                    publishableKey={orderInfo.stripePublishableKey}
+                    clientSecret={orderInfo.clientSecret}
+                    amountLabel={amountLabel}
+                    onPaid={handleStripePaid}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    <div className="p-4 border rounded-lg bg-gray-50">
+                      <p className="text-sm text-gray-500 mb-4">
+                        {orderInfo?.paymentMode === "mock"
+                          ? "Mode démonstration : finalisez sans carte lorsque Stripe n’est pas configuré."
+                          : "Préparez votre moyen de paiement."}
+                      </p>
+                      <div className="space-y-3">
                         <div className="h-12 bg-white border rounded-md flex items-center px-4">
-                          <span className="text-gray-400">MM / AA</span>
-                        </div>
-                        <div className="h-12 bg-white border rounded-md flex items-center px-4">
-                          <span className="text-gray-400">CVC</span>
+                          <CreditCard className="h-5 w-5 text-gray-400 mr-3" />
+                          <span className="text-gray-400">
+                            4242 4242 4242 4242 (avec Stripe activé)
+                          </span>
                         </div>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-400 mt-3">
-                      Mode démonstration - Stripe sera intégré avec vos clés API
-                    </p>
-                  </div>
-                </div>
 
-                <Button
-                  onClick={handlePayment}
-                  disabled={isLoading}
-                  className="w-full bg-[#B7860B] hover:bg-[#0F2A45] text-white py-6 text-lg"
-                  data-testid="pay-button"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Traitement en cours...
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="mr-2 h-5 w-5" />
-                      Payer {formatPrice(getTotal())}
-                    </>
-                  )}
-                </Button>
+                    <Button
+                      onClick={handleMockPayment}
+                      disabled={isLoading}
+                      className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground py-6 text-lg"
+                      data-testid="pay-button"
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Traitement en cours...
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="mr-2 h-5 w-5" />
+                          Payer {amountLabel}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
 
                 <div className="flex items-center justify-center gap-4 pt-4 text-xs text-gray-400">
                   <span>Paiement sécurisé</span>
@@ -135,11 +172,10 @@ export default function PaiementPage() {
             </Card>
           </div>
 
-          {/* Summary */}
           <div>
             <Card className="bg-white sticky top-24">
               <CardContent className="p-6">
-                <h2 className="font-serif text-lg font-bold text-[#0F2A45] mb-4">
+                <h2 className="font-serif text-lg font-bold text-primary mb-4">
                   Récapitulatif
                 </h2>
 
@@ -153,12 +189,12 @@ export default function PaiementPage() {
                 )}
 
                 <div className="space-y-3 mb-6">
-                  {items.map((item) => (
+                  {displayItems.map((item) => (
                     <div key={item.id} className="flex justify-between text-sm">
                       <span className="text-gray-600 truncate max-w-[60%]">
                         {item.titre}
                       </span>
-                      <span className="font-medium text-[#0F2A45]">
+                      <span className="font-medium text-primary">
                         {formatPrice(item.prixPromo ?? item.prix)}
                       </span>
                     </div>
@@ -167,9 +203,9 @@ export default function PaiementPage() {
 
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-[#0F2A45]">Total</span>
-                    <span className="text-2xl font-bold text-[#0F2A45]">
-                      {formatPrice(getTotal())}
+                    <span className="font-bold text-primary">Total</span>
+                    <span className="text-2xl font-bold text-primary">
+                      {amountLabel}
                     </span>
                   </div>
                 </div>

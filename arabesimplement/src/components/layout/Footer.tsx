@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 
 const footerLinks = {
   navigation: [
@@ -24,22 +25,20 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="bg-[#0F2A45] text-white">
+    <footer className="bg-primary text-white">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-gold rounded-lg flex items-center justify-center">
-                <span className="font-arabic text-white text-lg font-bold">ع</span>
-              </div>
+              <BrandLogoMark size={40} />
               <span className="font-serif font-bold text-xl">ArabeSimplement</span>
             </div>
             <p
-              className="font-arabic text-2xl text-[#B7860B] leading-relaxed"
+              className="font-arabic text-2xl text-secondary leading-relaxed"
               dir="rtl"
             >
-              بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+              بِسْمِ اللَّهِ الرَّحْمَانِ الرَّحِيمِ
             </p>
             <p className="text-gray-400 text-sm leading-relaxed">
               Une méthode révolutionnaire pour apprendre à lire l&apos;arabe en
@@ -49,7 +48,7 @@ export function Footer() {
 
           {/* Navigation */}
           <div>
-            <h3 className="font-serif font-bold text-lg mb-6 text-[#B7860B]">
+            <h3 className="font-serif font-bold text-lg mb-6 text-secondary">
               Navigation
             </h3>
             <ul className="space-y-3">
@@ -68,7 +67,7 @@ export function Footer() {
 
           {/* Formations */}
           <div>
-            <h3 className="font-serif font-bold text-lg mb-6 text-[#B7860B]">
+            <h3 className="font-serif font-bold text-lg mb-6 text-secondary">
               Formations
             </h3>
             <ul className="space-y-3">
@@ -87,12 +86,12 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="font-serif font-bold text-lg mb-6 text-[#B7860B]">
+            <h3 className="font-serif font-bold text-lg mb-6 text-secondary">
               Contact
             </h3>
             <ul className="space-y-4">
               <li className="flex items-center gap-3 text-gray-400 text-sm">
-                <Mail className="h-4 w-4 text-[#B7860B]" />
+                <Mail className="h-4 w-4 text-secondary" />
                 <a
                   href="mailto:contact@arabesimplement.fr"
                   className="hover:text-white transition-colors"
@@ -101,7 +100,7 @@ export function Footer() {
                 </a>
               </li>
               <li className="flex items-center gap-3 text-gray-400 text-sm">
-                <MapPin className="h-4 w-4 text-[#B7860B]" />
+                <MapPin className="h-4 w-4 text-secondary" />
                 <span>Égypte</span>
               </li>
             </ul>
@@ -125,7 +124,7 @@ export function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+        <div className="border-t border-white/15 mt-12 pt-8 text-center">
           <p className="text-gray-500 text-sm">
             © {new Date().getFullYear()} ArabeSimplement. Tous droits réservés.
           </p>

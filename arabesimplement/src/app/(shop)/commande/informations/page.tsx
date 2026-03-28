@@ -99,6 +99,9 @@ export default function InformationsPage() {
           items,
           total: getTotal(),
           orderId: result.orderId,
+          paymentMode: result.paymentMode,
+          clientSecret: result.clientSecret,
+          stripePublishableKey: result.stripePublishableKey,
           createdAt: new Date().toISOString(),
         })
       );
@@ -118,11 +121,11 @@ export default function InformationsPage() {
   }
 
   return (
-    <div className="pt-20 min-h-screen bg-[#F9F7F2]">
+    <div className="pt-20 min-h-screen bg-surface">
       <div className="max-w-4xl mx-auto px-6 py-8">
         <CheckoutStepper currentStep={2} />
 
-        <h1 className="font-serif text-3xl font-bold text-[#0F2A45] mb-8">
+        <h1 className="font-serif text-3xl font-bold text-primary mb-8">
           Vos informations
         </h1>
 
@@ -132,7 +135,7 @@ export default function InformationsPage() {
             <div className="lg:col-span-2 space-y-6">
               <Card className="bg-white">
                 <CardContent className="p-6 space-y-6">
-                  <h2 className="font-serif text-lg font-bold text-[#0F2A45]">
+                  <h2 className="font-serif text-lg font-bold text-primary">
                     Informations personnelles
                   </h2>
 
@@ -239,7 +242,7 @@ export default function InformationsPage() {
               {/* Règlement intérieur */}
               <Card className="bg-white">
                 <CardContent className="p-6 space-y-4">
-                  <h2 className="font-serif text-lg font-bold text-[#0F2A45]">
+                  <h2 className="font-serif text-lg font-bold text-primary">
                     Règlement intérieur
                   </h2>
 
@@ -283,7 +286,7 @@ export default function InformationsPage() {
             <div>
               <Card className="bg-white sticky top-24">
                 <CardContent className="p-6">
-                  <h2 className="font-serif text-lg font-bold text-[#0F2A45] mb-4">
+                  <h2 className="font-serif text-lg font-bold text-primary mb-4">
                     Récapitulatif
                   </h2>
 
@@ -296,7 +299,7 @@ export default function InformationsPage() {
                         <span className="text-gray-600 truncate max-w-[60%]">
                           {item.titre}
                         </span>
-                        <span className="font-medium text-[#0F2A45]">
+                        <span className="font-medium text-primary">
                           {formatPrice(item.prixPromo ?? item.prix)}
                         </span>
                       </div>
@@ -305,8 +308,8 @@ export default function InformationsPage() {
 
                   <div className="border-t pt-4 mb-6">
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-[#0F2A45]">Total</span>
-                      <span className="text-2xl font-bold text-[#0F2A45]">
+                      <span className="font-bold text-primary">Total</span>
+                      <span className="text-2xl font-bold text-primary">
                         {formatPrice(getTotal())}
                       </span>
                     </div>
@@ -315,7 +318,7 @@ export default function InformationsPage() {
                   <Button
                     type="submit"
                     disabled={!isValid || !acceptReglement || isLoading}
-                    className="w-full bg-[#B7860B] hover:bg-[#0F2A45] text-white py-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground py-6 disabled:opacity-50 disabled:cursor-not-allowed"
                     data-testid="continue-button"
                   >
                     {isLoading ? (

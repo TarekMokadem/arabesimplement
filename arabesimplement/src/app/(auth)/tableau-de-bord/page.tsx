@@ -1,37 +1,16 @@
 import Link from "next/link";
-import { BookOpen, Calendar, Settings, LogOut } from "lucide-react";
+import { BookOpen, Calendar, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getSession } from "../actions";
 import { LogoutButton } from "./LogoutButton";
+import { getEnrollmentsForLearner } from "@/lib/data/enrollments.service";
 
-// Mock enrollments (sera remplacé par Prisma)
-const mockEnrollments = [
-  {
-    id: "1",
-    formation: {
-      titre: "Lire l'arabe en 10 leçons",
-      slug: "lire-en-10-lecons",
-    },
-    creneau: {
-      nom: "Session Matin",
-      jours: ["Lundi", "Mercredi"],
-      heureDebut: "10:00",
-    },
-    tokenUsed: true,
-  },
-  {
-    id: "2",
-    formation: {
-      titre: "Sessions Invocations",
-      slug: "sessions-invocations",
-    },
-    creneau: null,
-    tokenUsed: false,
-    tokenExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  },
-];
+function creneauContactHref(formationTitre: string): string {
+  const sujet = encodeURIComponent(`Créneau — ${formationTitre}`);
+  return `/contactez-nous?sujet=${sujet}`;
+}
 
 export default async function TableauDeBordPage() {
   const session = await getSession();
@@ -39,15 +18,19 @@ export default async function TableauDeBordPage() {
     ? { prenom: session.prenom, nom: session.nom, email: session.email }
     : { prenom: "Invité", nom: "", email: "" };
 
+  const enrollments = session
+    ? await getEnrollmentsForLearner(session.id)
+    : [];
+
   return (
-    <div className="min-h-screen bg-[#F9F7F2]">
+    <div className="min-h-screen bg-surface">
       {/* Header */}
-      <header className="bg-[#0F2A45] text-white py-6">
+      <header className="bg-primary text-white py-6">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <div>
             <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#B7860B] to-[#D4AF37] rounded-lg flex items-center justify-center">
-                <span className="font-arabic text-white text-lg font-bold">
+              <div className="w-10 h-10 bg-gradient-to-br from-secondary to-secondary-light rounded-lg flex items-center justify-center">
+                <span className="font-arabic text-secondary-foreground text-lg font-bold">
                   ع
                 </span>
               </div>
@@ -68,7 +51,7 @@ export default async function TableauDeBordPage() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Welcome */}
         <div className="mb-8">
-          <h1 className="font-serif text-3xl font-bold text-[#0F2A45] mb-2">
+          <h1 className="font-serif text-3xl font-bold text-primary mb-2">
             Assalamou alaykoum, {user.prenom} !
           </h1>
           <p className="text-gray-600">
@@ -82,37 +65,37 @@ export default async function TableauDeBordPage() {
             <Card className="bg-white">
               <CardHeader>
                 <CardTitle className="font-serif flex items-center gap-2">
-                  <BookOpen className="h-5 w-5 text-[#B7860B]" />
+                  <BookOpen className="h-5 w-5 text-secondary" />
                   Mes formations
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {mockEnrollments.map((enrollment) => (
+                {enrollments.map((enrollment) => (
                   <div
                     key={enrollment.id}
-                    className="p-4 border rounded-lg hover:border-[#B7860B]/30 transition-colors"
+                    className="p-4 border rounded-lg hover:border-secondary/30 transition-colors"
                     data-testid={`enrollment-${enrollment.id}`}
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h3 className="font-medium text-[#0F2A45]">
+                        <h3 className="font-medium text-primary">
                           {enrollment.formation.titre}
                         </h3>
                         {enrollment.creneau ? (
                           <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
-                            <Calendar className="h-4 w-4" />
+                            <Calendar className="h-4 w-4 shrink-0" />
                             <span>
-                              {enrollment.creneau.nom} -{" "}
+                              {enrollment.creneau.nom} —{" "}
                               {enrollment.creneau.jours.join(", ")} à{" "}
                               {enrollment.creneau.heureDebut}
                             </span>
                           </div>
                         ) : (
                           <div className="mt-2">
-                            <Link href={`/creneaux/${enrollment.id}`}>
+                            <Link href={creneauContactHref(enrollment.formation.titre)}>
                               <Button
                                 size="sm"
-                                className="bg-[#B7860B] hover:bg-[#0F2A45] text-white"
+                                className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
                               >
                                 Choisir mon créneau
                               </Button>
@@ -123,23 +106,28 @@ export default async function TableauDeBordPage() {
                       <Badge
                         className={
                           enrollment.tokenUsed
-                            ? "bg-[#1A7A4A]/10 text-[#1A7A4A]"
-                            : "bg-[#B7860B]/10 text-[#B7860B]"
+                            ? "bg-accent/10 text-accent"
+                            : "bg-secondary/10 text-secondary"
                         }
                       >
-                        {enrollment.tokenUsed ? "Inscrit" : "En attente"}
+                        {enrollment.tokenUsed
+                          ? "Inscrit"
+                          : enrollment.creneau
+                            ? "Créneau choisi"
+                            : "En attente"}
                       </Badge>
                     </div>
                   </div>
                 ))}
 
-                {mockEnrollments.length === 0 && (
+                {enrollments.length === 0 && (
                   <div className="text-center py-8">
                     <p className="text-gray-500 mb-4">
-                      Vous n&apos;avez pas encore de formation.
+                      Vous n&apos;avez pas encore de formation. Les achats
+                      validés apparaissent ici après paiement.
                     </p>
                     <Link href="/boutique">
-                      <Button className="bg-[#B7860B] hover:bg-[#0F2A45] text-white">
+                      <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground">
                         Découvrir nos formations
                       </Button>
                     </Link>
@@ -155,25 +143,26 @@ export default async function TableauDeBordPage() {
             <Card className="bg-white">
               <CardHeader>
                 <CardTitle className="font-serif text-lg flex items-center gap-2">
-                  <Settings className="h-5 w-5 text-[#B7860B]" />
+                  <Settings className="h-5 w-5 text-secondary" />
                   Mes informations
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div>
                   <span className="text-gray-500">Nom complet</span>
-                  <p className="font-medium text-[#0F2A45]">
+                  <p className="font-medium text-primary">
                     {user.prenom} {user.nom}
                   </p>
                 </div>
                 <div>
                   <span className="text-gray-500">Email</span>
-                  <p className="font-medium text-[#0F2A45]">{user.email}</p>
+                  <p className="font-medium text-primary">{user.email}</p>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full mt-4 border-[#0F2A45] text-[#0F2A45]"
+                  className="w-full mt-4 border-primary text-primary"
+                  disabled
                 >
                   Modifier mes informations
                 </Button>
@@ -190,13 +179,13 @@ export default async function TableauDeBordPage() {
               <CardContent className="space-y-2">
                 <Link
                   href="/boutique"
-                  className="block p-3 rounded-lg hover:bg-[#F9F7F2] transition-colors text-[#0F2A45]"
+                  className="block p-3 rounded-lg hover:bg-surface transition-colors text-primary"
                 >
                   Voir les formations
                 </Link>
                 <Link
                   href="/contactez-nous"
-                  className="block p-3 rounded-lg hover:bg-[#F9F7F2] transition-colors text-[#0F2A45]"
+                  className="block p-3 rounded-lg hover:bg-surface transition-colors text-primary"
                 >
                   Nous contacter
                 </Link>

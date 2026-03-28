@@ -1,26 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { SESSION_COOKIE_NAME } from "@/lib/auth/session";
+import { verifyAuthSessionToken } from "@/lib/auth/session-token";
 
 const ADMIN_PATHS = ["/admin"];
 const AUTH_REQUIRED_PATHS = ["/tableau-de-bord"];
-const PUBLIC_AUTH_PATHS = ["/connexion", "/inscription", "/mot-de-passe-perdu"];
 
-function getSession(request: NextRequest) {
-  const cookie = request.cookies.get(SESSION_COOKIE_NAME);
-  if (!cookie?.value) return null;
-  try {
-    const session = JSON.parse(cookie.value);
-    if (session.expiresAt < Date.now()) return null;
-    return session;
-  } catch {
-    return null;
-  }
-}
-
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const session = getSession(request);
+  const raw = request.cookies.get(SESSION_COOKIE_NAME)?.value ?? null;
+  const session = raw ? await verifyAuthSessionToken(raw) : null;
 
   for (const path of ADMIN_PATHS) {
     if (pathname === path || pathname.startsWith(path + "/")) {
@@ -47,8 +36,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/admin/:path*",
-    "/tableau-de-bord/:path*",
-  ],
+  matcher: ["/admin/:path*", "/tableau-de-bord/:path*"],
 };

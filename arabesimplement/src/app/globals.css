@@ -9,34 +9,35 @@
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-arabic: 'Amiri', serif;
 
-  --color-primary: #0F2A45;
-  --color-primary-light: #1B6CA8;
-  --color-primary-foreground: #FFFFFF;
+  /* Logo : primaire #e6eedf · secondaire #a8c694 (+ primaire UI foncé pour contrastes) */
+  --color-primary: #324530;
+  --color-primary-light: #6f8a64;
+  --color-primary-foreground: #ffffff;
 
-  --color-secondary: #B7860B;
-  --color-secondary-light: #D4AF37;
-  --color-secondary-foreground: #FFFFFF;
+  --color-secondary: #a8c694;
+  --color-secondary-light: #b8cfa8;
+  --color-secondary-foreground: #152018;
 
-  --color-accent: #1A7A4A;
-  --color-accent-light: #E9F7EF;
-  --color-accent-foreground: #FFFFFF;
+  --color-accent: #a8c694;
+  --color-accent-light: #e6eedf;
+  --color-accent-foreground: #152018;
 
-  --color-background: #FFFFFF;
-  --color-foreground: #0F2A45;
-  --color-surface: #F9F7F2;
+  --color-background: #ffffff;
+  --color-foreground: #121212;
+  --color-surface: #e6eedf;
 
-  --color-muted: #F9F7F2;
-  --color-muted-foreground: #4B5563;
+  --color-muted: #e6eedf;
+  --color-muted-foreground: #4d5c48;
 
-  --color-border: #E5E7EB;
-  --color-input: #E5E7EB;
-  --color-ring: #B7860B;
+  --color-border: #c8d6be;
+  --color-input: #c8d6be;
+  --color-ring: #a8c694;
 
-  --color-card: #FFFFFF;
-  --color-card-foreground: #0F2A45;
+  --color-card: #ffffff;
+  --color-card-foreground: #121212;
 
-  --color-popover: #FFFFFF;
-  --color-popover-foreground: #0F2A45;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #121212;
 
   --color-destructive: #DC2626;
 
@@ -45,33 +46,57 @@
   --radius-lg: 0.625rem;
   --radius-xl: 0.875rem;
   --radius-2xl: 1rem;
+
+  /* Échelle dérivée des couleurs logo */
+  --color-brand-mint-50: #f2f7ec;
+  --color-brand-mint-100: #e6eedf;
+  --color-brand-mint-200: #d4e0ca;
+  --color-brand-sage-400: #b8cfa8;
+  --color-brand-sage-500: #a8c694;
+  --color-brand-sage-600: #8faa7d;
+  --color-brand-sage-800: #324530;
+  --color-brand-ink: #121212;
 }
 
 :root {
   --background: 0 0% 100%;
-  --foreground: 210 50% 16%;
+  --foreground: 120 6% 7%;
   --card: 0 0% 100%;
-  --card-foreground: 210 50% 16%;
+  --card-foreground: 120 6% 7%;
   --popover: 0 0% 100%;
-  --popover-foreground: 210 50% 16%;
-  --primary: 210 62% 16%;
+  --popover-foreground: 120 6% 7%;
+  --primary: 122 22% 24%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 41 91% 38%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 40 33% 97%;
-  --muted-foreground: 215 14% 34%;
-  --accent: 151 64% 29%;
-  --accent-foreground: 0 0% 100%;
+  --secondary: 88 28% 62%;
+  --secondary-foreground: 125 22% 8%;
+  --muted: 100 28% 91%;
+  --muted-foreground: 110 10% 33%;
+  --accent: 88 28% 62%;
+  --accent-foreground: 125 22% 8%;
   --destructive: 0 84% 60%;
-  --border: 220 13% 91%;
-  --input: 220 13% 91%;
-  --ring: 41 91% 38%;
+  --border: 100 20% 80%;
+  --input: 100 20% 80%;
+  --ring: 88 28% 62%;
   --radius: 0.625rem;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  /* Curseur « main » sur les actions (complète les <Link> stylés via buttonVariants) */
+  button:not(:disabled),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+  button:disabled,
+  [type="button"]:disabled,
+  [type="submit"]:disabled,
+  [type="reset"]:disabled {
+    cursor: not-allowed;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
@@ -89,37 +114,57 @@
     font-family: 'Amiri', serif;
     direction: rtl;
   }
-  
-  .text-gradient-gold {
-    background: linear-gradient(135deg, #B7860B 0%, #D4AF37 50%, #B7860B 100%);
+
+  .text-gradient-brand {
+    background: linear-gradient(135deg, #a8c694 0%, #8faa7d 45%, #324530 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #a8c694 0%, #8faa7d 45%, #324530 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-gradient-brand {
+    background: linear-gradient(135deg, #a8c694 0%, #b8cfa8 40%, #324530 100%);
+  }
+
   .bg-gradient-gold {
-    background: linear-gradient(135deg, #B7860B 0%, #D4AF37 50%, #B7860B 100%);
+    background: linear-gradient(135deg, #a8c694 0%, #b8cfa8 40%, #324530 100%);
   }
-  
+
   .bg-midnight {
-    background-color: #0F2A45;
+    background-color: var(--color-primary);
   }
-  
+
+  .shadow-brand {
+    box-shadow: 0 0 15px rgba(50, 69, 48, 0.2);
+  }
+
   .shadow-gold {
-    box-shadow: 0 0 15px rgba(183, 134, 11, 0.2);
+    box-shadow: 0 0 15px rgba(50, 69, 48, 0.2);
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 0.3s ease-in-out;
   }
-  
+
   .animate-slide-up {
     animation: slideUp 0.4s ease-out;
   }
-  
+
+  .animate-brand-shimmer {
+    background-size: 200% 200%;
+    animation: brandShimmer 3s ease-in-out infinite;
+  }
+
   .animate-gold-shimmer {
     background-size: 200% 200%;
-    animation: goldShimmer 3s ease-in-out infinite;
+    animation: brandShimmer 3s ease-in-out infinite;
   }
 }
 
@@ -139,7 +184,7 @@
   }
 }
 
-@keyframes goldShimmer {
+@keyframes brandShimmer {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
@@ -151,14 +196,14 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #F9F7F2;
+  background: var(--color-brand-mint-50);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #B7860B;
+  background: var(--color-brand-sage-500);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #0F2A45;
+  background: var(--color-brand-sage-800);
 }
