@@ -36,15 +36,6 @@ export async function ensureEnrollmentsForPaidOrder(
   tokenExpiresAt.setDate(tokenExpiresAt.getDate() + ENROLLMENT_DAYS_AFTER_PAYMENT);
 
   for (const item of order.orderItems) {
-    const already = await prisma.enrollment.findFirst({
-      where: {
-        userId: order.userId,
-        formationId: item.formationId,
-        creneauId: item.creneauId ?? null,
-      },
-    });
-    if (already) continue;
-
     await prisma.enrollment.create({
       data: {
         userId: order.userId,
