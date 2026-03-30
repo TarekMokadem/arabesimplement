@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
+import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,8 +15,14 @@ import { loginSchema, type LoginInput } from "@/lib/validations/auth.schema";
 import { toast } from "sonner";
 import { signIn } from "../actions";
 
-export default function ConnexionPage() {
+function safeRedirectPath(raw: string | null): string | null {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return null;
+  return raw;
+}
+
+function ConnexionPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -41,7 +48,14 @@ export default function ConnexionPage() {
         return;
       }
       toast.success("Connexion réussie !");
-      router.push(result.redirectTo);
+      const next = safeRedirectPath(searchParams.get("redirect"));
+      if (result.redirectTo === "/admin") {
+        router.push("/admin");
+      } else if (next) {
+        router.push(next);
+      } else {
+        router.push(result.redirectTo);
+      }
     } catch (error) {
       toast.error("Email ou mot de passe incorrect");
       console.error(error);
@@ -53,7 +67,6 @@ export default function ConnexionPage() {
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
-        {/* Retour accueil */}
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-primary hover:text-secondary text-sm font-medium mb-6 transition-colors"
@@ -62,12 +75,9 @@ export default function ConnexionPage() {
           Retour à l&apos;accueil
         </Link>
 
-        {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary-light rounded-xl flex items-center justify-center">
-              <span className="font-arabic text-secondary-foreground text-xl font-bold">ع</span>
-            </div>
+            <BrandLogoMark size={48} />
             <span className="font-serif font-bold text-2xl text-primary">
               ArabeSimplement
             </span>
@@ -170,5 +180,19 @@ export default function ConnexionPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function ConnexionPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-surface flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-secondary" />
+        </div>
+      }
+    >
+      <ConnexionPageInner />
+    </Suspense>
   );
 }

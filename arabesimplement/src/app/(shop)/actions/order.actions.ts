@@ -10,9 +10,11 @@ import {
   attachPaymentIntentToOrder,
   createPendingOrderWithItems,
   deletePendingOrder,
+  type CheckoutActor,
 } from "@/lib/orders/create-pending-order";
 import { ensureEnrollmentsForPaidOrder } from "@/lib/orders/fulfill-order";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/app/(auth)/actions";
 
 export type CreateOrderResult =
   | {
@@ -50,8 +52,19 @@ export async function createOrder(
     };
   }
 
+  const session = await getSession();
+  const actor: CheckoutActor =
+    session && (session.role === "STUDENT" || session.role === "ADMIN")
+      ? { kind: "authenticated", userId: session.id }
+      : { kind: "guest" };
+
   const clientIp = await getClientIp();
-  const pending = await createPendingOrderWithItems(data, items, clientIp);
+  const pending = await createPendingOrderWithItems(
+    data,
+    items,
+    clientIp,
+    actor
+  );
   if (!pending.success) {
     return { success: false, error: pending.error };
   }
@@ -145,4 +158,48 @@ export async function finalizeMockPayment(
   } catch {
     return { success: false, error: "Mise à jour de la commande impossible." };
   }
+}
+
+export type CheckoutPrefill = {
+  isLoggedIn: boolean;
+  prenom: string;
+  nom: string;
+  email: string;
+  telephone: string;
+};
+
+export async function getCheckoutPrefill(): Promise<CheckoutPrefill> {
+  const session = await getSession();
+  if (!session) {
+    return {
+      isLoggedIn: false,
+      prenom: "",
+      nom: "",
+      email: "",
+      telephone: "",
+    };
+  }
+
+  if (!isDatabaseConfigured()) {
+    return {
+      isLoggedIn: true,
+      prenom: session.prenom,
+      nom: session.nom,
+      email: session.email,
+      telephone: "",
+    };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.id },
+    select: { prenom: true, nom: true, email: true, telephone: true },
+  });
+
+  return {
+    isLoggedIn: true,
+    prenom: user?.prenom ?? session.prenom,
+    nom: user?.nom ?? session.nom,
+    email: user?.email ?? session.email,
+    telephone: user?.telephone ?? "",
+  };
 }

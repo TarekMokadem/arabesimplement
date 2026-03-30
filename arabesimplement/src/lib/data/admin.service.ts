@@ -1,6 +1,7 @@
 import type { FormationStatus, OrderStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/utils/database";
+import { parseBillingSnapshot } from "@/lib/orders/billing-snapshot";
 
 export type AdminStats = {
   revenusThisMois: number;
@@ -70,6 +71,20 @@ function startOfMonth(d: Date): Date {
 
 function previousMonthStart(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth() - 1, 1);
+}
+
+function orderUserLabel(
+  user: { prenom: string; nom: string } | null,
+  billingSnapshot: unknown
+): string {
+  if (user) {
+    return `${user.prenom} ${user.nom.charAt(0)}.`;
+  }
+  const snap = parseBillingSnapshot(billingSnapshot);
+  if (snap) {
+    return `${snap.prenom} ${snap.nom.charAt(0)}. (facturation)`;
+  }
+  return "—";
 }
 
 function formatRelativeTime(date: Date): string {
@@ -165,7 +180,7 @@ export async function getAdminRecentOrders(
 
   return orders.map((o) => ({
     id: o.id,
-    userLabel: `${o.user.prenom} ${o.user.nom.charAt(0)}.`,
+    userLabel: orderUserLabel(o.user, o.billingSnapshot),
     formationLabel: o.orderItems.map((i) => i.formation.titre).join(", "),
     amount: Number(o.total),
     dateIso: o.createdAt.toISOString().slice(0, 10),
@@ -243,11 +258,12 @@ export async function getAdminRecentActivity(
     });
   }
   for (const o of orders) {
+    const label = orderUserLabel(o.user, o.billingSnapshot);
     items.push({
       at: o.createdAt,
       entry: {
         id: `ord-${o.id}`,
-        text: `Paiement reçu de ${o.user.prenom} ${o.user.nom.charAt(0)}. (${Number(o.total)} €)`,
+        text: `Paiement reçu de ${label} (${Number(o.total)} €)`,
         timeLabel: formatRelativeTime(o.createdAt),
       },
     });
@@ -321,7 +337,7 @@ export async function getAdminOrdersList(): Promise<AdminPaymentRow[]> {
   });
   return orders.map((o) => ({
     id: o.id,
-    userLabel: `${o.user.prenom} ${o.user.nom.charAt(0)}.`,
+    userLabel: orderUserLabel(o.user, o.billingSnapshot),
     formationLabel: o.orderItems.map((i) => i.formation.titre).join(", "),
     montant: Number(o.total),
     statut: o.statut,

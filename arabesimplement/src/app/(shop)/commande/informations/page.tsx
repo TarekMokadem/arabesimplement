@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
+import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
 import { useCartStore } from "@/store/cart.store";
 import { orderFormSchema, type OrderFormInput } from "@/lib/validations/order.schema";
 import { formatPrice } from "@/lib/utils/format";
@@ -40,18 +42,22 @@ const countries = [
 ];
 
 import { REGLEMENT_INTERIEUR_HTML } from "@/lib/content/reglement-interieur";
-import { createOrder } from "@/app/(shop)/actions/order.actions";
+import {
+  createOrder,
+  getCheckoutPrefill,
+} from "@/app/(shop)/actions/order.actions";
 
 export default function InformationsPage() {
   const router = useRouter();
   const { items, getTotal } = useCartStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [acceptReglement, setAcceptReglement] = useState(false);
 
   const {
     register,
+    control,
     handleSubmit,
     setValue,
+    reset,
     watch,
     formState: { errors, isValid },
   } = useForm<OrderFormInput>({
@@ -74,10 +80,29 @@ export default function InformationsPage() {
     }
   }, [items, router]);
 
-  // Sync acceptReglement with form
+  const [checkoutLoggedIn, setCheckoutLoggedIn] = useState(false);
+
   useEffect(() => {
-    setValue("acceptReglement", acceptReglement);
-  }, [acceptReglement, setValue]);
+    let cancelled = false;
+    getCheckoutPrefill().then((p) => {
+      if (cancelled) return;
+      setCheckoutLoggedIn(p.isLoggedIn);
+      reset(
+        {
+          prenom: p.prenom,
+          nom: p.nom,
+          email: p.email,
+          telephone: p.telephone,
+          pays: "",
+          acceptReglement: false,
+        },
+        { keepDefaultValues: false }
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [reset]);
 
   const onSubmit = async (data: OrderFormInput) => {
     setIsLoading(true);
@@ -174,7 +199,10 @@ export default function InformationsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email">E-mail *</Label>
+                    <p className="text-muted-foreground text-xs">
+                      Adresse valide : utilisée pour la confirmation et l’envoi de vos accès.
+                    </p>
                     <Input
                       id="email"
                       type="email"
@@ -192,7 +220,12 @@ export default function InformationsPage() {
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="telephone">Téléphone *</Label>
+                      <Label htmlFor="telephone">
+                        WhatsApp ou téléphone *
+                      </Label>
+                      <p className="text-muted-foreground text-xs">
+                        Numéro joignable : cours, rappels et suivi peuvent passer par WhatsApp.
+                      </p>
                       <Input
                         id="telephone"
                         {...register("telephone")}
@@ -256,13 +289,19 @@ export default function InformationsPage() {
                   </ScrollArea>
 
                   <div className="flex items-start gap-3 pt-2">
-                    <Checkbox
-                      id="acceptReglement"
-                      checked={acceptReglement}
-                      onCheckedChange={(checked) =>
-                        setAcceptReglement(checked as boolean)
-                      }
-                      data-testid="checkbox-reglement"
+                    <Controller
+                      name="acceptReglement"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          id="acceptReglement"
+                          checked={field.value}
+                          onCheckedChange={(checked) =>
+                            field.onChange(checked === true)
+                          }
+                          data-testid="checkbox-reglement"
+                        />
+                      )}
                     />
                     <Label
                       htmlFor="acceptReglement"
@@ -295,13 +334,16 @@ export default function InformationsPage() {
                   <div className="space-y-3 mb-6">
                     {items.map((item) => (
                       <div
-                        key={item.id}
-                        className="flex justify-between text-sm"
+                        key={item.lineId}
+                        className="flex justify-between gap-3 text-sm"
                       >
-                        <span className="text-gray-600 truncate max-w-[60%]">
-                          {item.titre}
-                        </span>
-                        <span className="font-medium text-primary">
+                        <div className="text-gray-600 min-w-0 flex-1">
+                          <span className="block font-medium text-primary">
+                            {item.titre}
+                          </span>
+                          <CartItemDetailList item={item} size="sm" />
+                        </div>
+                        <span className="font-medium text-primary shrink-0">
                           {formatPrice(item.prixPromo ?? item.prix)}
                         </span>
                       </div>
@@ -319,7 +361,7 @@ export default function InformationsPage() {
 
                   <Button
                     type="submit"
-                    disabled={!isValid || !acceptReglement || isLoading}
+                    disabled={!isValid || isLoading}
                     className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground py-6 disabled:opacity-50 disabled:cursor-not-allowed"
                     data-testid="continue-button"
                   >

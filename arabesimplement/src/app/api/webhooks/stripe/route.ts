@@ -54,13 +54,24 @@ export async function POST(req: NextRequest) {
   if (event.type === "payment_intent.payment_failed") {
     const pi = event.data.object as Stripe.PaymentIntent;
     const orderId = pi.metadata?.orderId;
-    await prisma.order.updateMany({
+    const candidates = await prisma.order.findMany({
       where: {
         stripePaymentIntentId: pi.id,
+        statut: "PENDING",
         ...(orderId ? { id: orderId } : {}),
       },
-      data: { statut: "FAILED" },
+      select: { id: true, userId: true },
     });
+    for (const o of candidates) {
+      if (o.userId == null) {
+        await prisma.order.delete({ where: { id: o.id } });
+      } else {
+        await prisma.order.update({
+          where: { id: o.id },
+          data: { statut: "FAILED" },
+        });
+      }
+    }
   }
 
   return NextResponse.json({ received: true });

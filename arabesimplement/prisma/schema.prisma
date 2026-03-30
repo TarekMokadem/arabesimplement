@@ -88,6 +88,8 @@ model Creneau {
   formationId   String        @map("formation_id")
   nom           String
   jours         String[]
+  /** Détail par jour : heure et durée propres à chaque jour (JSON). Les champs jours/heureDebut/dureeMinutes restent pour compatibilité et requêtes simples. */
+  journeeSlots  Json?         @map("journee_slots")
   heureDebut    String        @map("heure_debut")
   dureeMinutes  Int           @map("duree_minutes")
   placesMax     Int           @map("places_max")
@@ -97,13 +99,17 @@ model Creneau {
 
   formation   Formation    @relation(fields: [formationId], references: [id], onDelete: Cascade)
   enrollments Enrollment[]
+  orderItems  OrderItem[]
 
   @@map("creneaux")
 }
 
 model Order {
   id                    String      @id @default(uuid())
-  userId                String      @map("user_id")
+  /** Null tant que la commande invité n’est pas payée ; ensuite rattaché à l’utilisateur créé ou existant. */
+  userId                String?     @map("user_id")
+  /** Données de facturation saisies au checkout (toujours renseigné en base). */
+  billingSnapshot       Json?       @map("billing_snapshot")
   total                 Decimal     @db.Decimal(10, 2)
   statut                OrderStatus @default(PENDING)
   stripePaymentIntentId String?     @unique @map("stripe_payment_intent_id")
@@ -112,20 +118,23 @@ model Order {
   reglementVersion      String?     @map("reglement_version")
   createdAt             DateTime    @default(now()) @map("created_at")
 
-  user       User        @relation(fields: [userId], references: [id])
+  user       User?       @relation(fields: [userId], references: [id])
   orderItems OrderItem[]
 
   @@map("orders")
 }
 
 model OrderItem {
-  id           String  @id @default(uuid())
-  orderId      String  @map("order_id")
-  formationId  String  @map("formation_id")
-  prixUnitaire Decimal @map("prix_unitaire") @db.Decimal(10, 2)
+  id            String  @id @default(uuid())
+  orderId       String  @map("order_id")
+  formationId   String  @map("formation_id")
+  creneauId     String? @map("creneau_id")
+  hourlyMinutes Int?    @map("hourly_minutes")
+  prixUnitaire  Decimal @map("prix_unitaire") @db.Decimal(10, 2)
 
   order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
   formation Formation @relation(fields: [formationId], references: [id])
+  creneau   Creneau?  @relation(fields: [creneauId], references: [id], onDelete: SetNull)
 
   @@map("order_items")
 }

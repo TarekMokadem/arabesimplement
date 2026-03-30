@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { attachUserToPaidGuestOrder } from "@/lib/orders/provision-guest-after-payment";
 
 const ENROLLMENT_DAYS_AFTER_PAYMENT = 30;
 
@@ -9,28 +10,46 @@ const ENROLLMENT_DAYS_AFTER_PAYMENT = 30;
 export async function ensureEnrollmentsForPaidOrder(
   orderId: string
 ): Promise<void> {
-  const order = await prisma.order.findFirst({
+  let order = await prisma.order.findFirst({
     where: { id: orderId, statut: "PAID" },
     include: { orderItems: true },
   });
   if (!order) return;
 
+  if (!order.userId) {
+    await attachUserToPaidGuestOrder(orderId);
+    order = await prisma.order.findFirst({
+      where: { id: orderId, statut: "PAID" },
+      include: { orderItems: true },
+    });
+  }
+
+  if (!order?.userId) {
+    console.error(
+      "[ensureEnrollmentsForPaidOrder] userId manquant après provision",
+      orderId
+    );
+    return;
+  }
+
   const tokenExpiresAt = new Date();
   tokenExpiresAt.setDate(tokenExpiresAt.getDate() + ENROLLMENT_DAYS_AFTER_PAYMENT);
 
   for (const item of order.orderItems) {
-    const exists = await prisma.enrollment.findFirst({
+    const already = await prisma.enrollment.findFirst({
       where: {
         userId: order.userId,
         formationId: item.formationId,
+        creneauId: item.creneauId ?? null,
       },
     });
-    if (exists) continue;
+    if (already) continue;
 
     await prisma.enrollment.create({
       data: {
         userId: order.userId,
         formationId: item.formationId,
+        creneauId: item.creneauId,
         tokenExpiresAt,
       },
     });
