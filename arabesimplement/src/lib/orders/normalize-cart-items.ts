@@ -32,13 +32,6 @@ export type NormalizeCartResult =
   | { success: true; items: CartItem[]; totalEuros: number }
   | { success: false; error: string };
 
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-function isUuid(value: string): boolean {
-  return UUID_RE.test(value);
-}
-
 /**
  * Vérifie chaque ligne avec la BDD et recalcule prix / métadonnées (ne jamais faire
  * confiance aux montants envoyés par le client).
@@ -51,15 +44,6 @@ export async function normalizeCartItemsForCheckout(
   }
 
   const formationIds = [...new Set(rawItems.map((i) => i.formationId))];
-  for (const id of formationIds) {
-    if (!isUuid(id)) {
-      return {
-        success: false,
-        error:
-          "Votre panier contient d’anciennes données. Videz-le puis sélectionnez à nouveau vos formations dans la boutique.",
-      };
-    }
-  }
   const formations = await prisma.formation.findMany({
     where: {
       id: { in: formationIds },
@@ -73,14 +57,6 @@ export async function normalizeCartItemsForCheckout(
   let totalEuros = 0;
 
   for (const line of rawItems) {
-    if (line.creneauId != null && line.creneauId !== "" && !isUuid(line.creneauId)) {
-      return {
-        success: false,
-        error:
-          "Créneau invalide dans le panier. Videz-le puis sélectionnez à nouveau vos options.",
-      };
-    }
-
     const f = byId.get(line.formationId);
     if (!f) {
       return {
