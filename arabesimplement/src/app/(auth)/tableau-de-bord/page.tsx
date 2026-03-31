@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { BookOpen, Calendar, Settings } from "lucide-react";
+import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getSession } from "../actions";
 import { LogoutButton } from "./LogoutButton";
 import { getEnrollmentsForLearner } from "@/lib/data/enrollments.service";
+import {
+  formatCreneauSlotLine,
+  normalizeJourneeSlots,
+  parseJourneeSlotsFromJson,
+} from "@/lib/creneau-display";
 
 function creneauContactHref(formationTitre: string): string {
   const sujet = encodeURIComponent(`Créneau — ${formationTitre}`);
@@ -29,11 +35,7 @@ export default async function TableauDeBordPage() {
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <div>
             <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-secondary to-secondary-light rounded-lg flex items-center justify-center">
-                <span className="font-arabic text-secondary-foreground text-lg font-bold">
-                  ع
-                </span>
-              </div>
+              <BrandLogoMark size={40} />
               <span className="font-serif font-bold text-xl">
                 ArabeSimplement
               </span>
@@ -86,8 +88,18 @@ export default async function TableauDeBordPage() {
                             <Calendar className="h-4 w-4 shrink-0" />
                             <span>
                               {enrollment.creneau.nom} —{" "}
-                              {enrollment.creneau.jours.join(", ")} à{" "}
-                              {enrollment.creneau.heureDebut}
+                              {normalizeJourneeSlots(
+                                parseJourneeSlotsFromJson(
+                                  enrollment.creneau.journeeSlots
+                                ),
+                                {
+                                  jours: enrollment.creneau.jours,
+                                  heureDebut: enrollment.creneau.heureDebut,
+                                  dureeMinutes: enrollment.creneau.dureeMinutes,
+                                }
+                              )
+                                .map(formatCreneauSlotLine)
+                                .join(" · ")}
                             </span>
                           </div>
                         ) : (

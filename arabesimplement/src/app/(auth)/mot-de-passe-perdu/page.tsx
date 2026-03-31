@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function MotDePassePerduPage() {
@@ -8,9 +9,7 @@ export default function MotDePassePerduPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary-light rounded-xl flex items-center justify-center">
-              <span className="font-arabic text-secondary-foreground text-xl font-bold">ع</span>
-            </div>
+            <BrandLogoMark size={48} />
             <span className="font-serif font-bold text-2xl text-primary">
               ArabeSimplement
             </span>

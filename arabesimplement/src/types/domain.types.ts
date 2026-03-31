@@ -60,7 +60,13 @@ export type FormationBoutiqueCard = Pick<
 /** Données panier / bouton d’ajout (composants client). */
 export type FormationCartInput = Pick<
   Formation,
-  "id" | "titre" | "slug" | "prix" | "prixPromo" | "imageUrl"
+  | "id"
+  | "titre"
+  | "slug"
+  | "prix"
+  | "prixPromo"
+  | "imageUrl"
+  | "schedulingMode"
 >;
 
 export interface Creneau {
@@ -68,6 +74,12 @@ export interface Creneau {
   formationId: string;
   nom: string;
   jours: string[];
+  /** Horaire détaillé par jour (prioritaire pour l’affichage si présent). */
+  journeeSlots?: {
+    jour: string;
+    heureDebut: string;
+    dureeMinutes: number;
+  }[];
   heureDebut: string;
   dureeMinutes: number;
   placesMax: number;
@@ -98,6 +110,8 @@ export interface OrderItem {
   id: string;
   orderId: string;
   formationId: string;
+  creneauId?: string;
+  hourlyMinutes?: number;
   prixUnitaire: number;
   formation?: Formation;
 }

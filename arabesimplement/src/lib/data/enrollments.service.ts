@@ -8,6 +8,8 @@ export type LearnerEnrollmentRow = {
     nom: string;
     jours: string[];
     heureDebut: string;
+    dureeMinutes: number;
+    journeeSlots: unknown;
   } | null;
   tokenUsed: boolean;
   tokenExpiresAt: Date;
@@ -26,7 +28,13 @@ export async function getEnrollmentsForLearner(
       include: {
         formation: { select: { titre: true, slug: true } },
         creneau: {
-          select: { nom: true, jours: true, heureDebut: true },
+          select: {
+            nom: true,
+            jours: true,
+            heureDebut: true,
+            dureeMinutes: true,
+            journeeSlots: true,
+          },
         },
       },
     });

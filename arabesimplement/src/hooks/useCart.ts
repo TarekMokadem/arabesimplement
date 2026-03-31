@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cart.store";
+import type { CartItem } from "@/store/cart.store";
 
 export function useCart() {
   const store = useCartStore();
@@ -18,7 +19,8 @@ export function useCart() {
     clearCart: store.clearCart,
     getTotal: () => (isHydrated ? store.getTotal() : 0),
     getItemCount: () => (isHydrated ? store.getItemCount() : 0),
-    isInCart: (id: string) => (isHydrated ? store.isInCart(id) : false),
+    hasSameSelection: (item: Omit<CartItem, "lineId"> & { lineId?: string }) =>
+      isHydrated ? store.hasSameSelection(item) : false,
     isHydrated,
   };
 }

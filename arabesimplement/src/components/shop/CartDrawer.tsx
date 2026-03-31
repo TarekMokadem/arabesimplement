@@ -11,8 +11,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/hooks/useCart";
+import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
 import { formatPrice } from "@/lib/utils/format";
 
 export function CartDrawer() {
@@ -56,9 +56,9 @@ export function CartDrawer() {
               <div className="flex-1 overflow-y-auto space-y-4">
                 {items.map((item) => (
                   <div
-                    key={item.id}
+                    key={item.lineId}
                     className="flex gap-4 p-4 bg-surface rounded-lg"
-                    data-testid={`cart-item-${item.id}`}
+                    data-testid={`cart-item-${item.lineId}`}
                   >
                     <div className="relative w-20 h-20 rounded-md overflow-hidden bg-gray-200 flex-shrink-0">
                       {item.imageUrl ? (
@@ -69,17 +69,22 @@ export function CartDrawer() {
                           className="object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="font-arabic text-2xl text-gray-400">
-                            ع
-                          </span>
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/90 to-primary-light p-2">
+                          <Image
+                            src="/brand/logo-arabe-simplement.png"
+                            alt=""
+                            width={64}
+                            height={64}
+                            className="object-contain w-4/5 opacity-95"
+                          />
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-primary truncate">
+                      <h3 className="font-medium text-primary line-clamp-2">
                         {item.titre}
                       </h3>
+                      <CartItemDetailList item={item} size="sm" />
                       <div className="flex items-center gap-2 mt-1">
                         {item.prixPromo ? (
                           <>
@@ -100,9 +105,9 @@ export function CartDrawer() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item.lineId)}
                       className="text-gray-400 hover:text-red-500"
-                      data-testid={`remove-item-${item.id}`}
+                      data-testid={`remove-item-${item.lineId}`}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

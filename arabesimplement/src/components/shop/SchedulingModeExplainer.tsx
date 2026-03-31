@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   HOURLY_SLOTS_PRICING,
   schedulingModeDescription,
+  schedulingModePaymentExplanation,
   schedulingModeTitle,
   type FormationSchedulingMode,
 } from "@/lib/scheduling-mode";
@@ -20,17 +21,26 @@ export function SchedulingModeExplainer({ mode }: Props) {
         <p className="text-sm text-gray-700 leading-relaxed">
           {schedulingModeDescription(mode)}
         </p>
+        <p className="text-sm text-primary/90 font-medium leading-relaxed border-t border-primary/10 pt-3">
+          {schedulingModePaymentExplanation(mode)}
+        </p>
         {mode === "HOURLY_PURCHASE" && (
-          <ul className="text-sm text-gray-700 space-y-2 border-t border-primary/10 pt-3 mt-3">
-            {HOURLY_SLOTS_PRICING.map((row) => (
-              <li key={row.minutes} className="flex justify-between gap-4">
-                <span>{row.durationLabel}</span>
-                <span className="font-semibold text-primary whitespace-nowrap">
-                  {row.priceEuros} €
-                </span>
-              </li>
-            ))}
-          </ul>
+          <>
+            <p className="text-sm text-gray-700 leading-relaxed border-t border-primary/10 pt-3 mt-3">
+              Tarif <strong>par semaine</strong> pour une séance de cette durée, répétée chaque
+              semaine au même créneau (ex. 1 h → 10 € chaque semaine).
+            </p>
+            <ul className="text-sm text-gray-700 space-y-2 pt-2">
+              {HOURLY_SLOTS_PRICING.map((row) => (
+                <li key={row.minutes} className="flex justify-between gap-4">
+                  <span>{row.durationLabel} / semaine</span>
+                  <span className="font-semibold text-primary whitespace-nowrap">
+                    {row.priceEuros} €
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
       </CardContent>
     </Card>

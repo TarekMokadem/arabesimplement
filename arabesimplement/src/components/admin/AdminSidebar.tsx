@@ -15,6 +15,7 @@ import {
   LogOut,
   Menu,
 } from "lucide-react";
+import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -38,9 +39,7 @@ export function AdminSidebar() {
       {/* Logo */}
       <div className="p-6 border-b border-white/15">
         <Link href="/admin" className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-secondary to-secondary-light rounded-lg flex items-center justify-center">
-            <span className="font-arabic text-secondary-foreground text-lg font-bold">ع</span>
-          </div>
+          <BrandLogoMark size={40} />
           <div>
             <span className="font-serif font-bold text-white block">Admin</span>
             <span className="text-xs text-gray-400">ArabeSimplement</span>
@@ -106,9 +105,7 @@ export function AdminSidebar() {
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-primary border-b border-white/15 px-4 py-3">
         <div className="flex items-center justify-between">
           <Link href="/admin" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-secondary to-secondary-light rounded-lg flex items-center justify-center">
-              <span className="font-arabic text-secondary-foreground text-sm font-bold">ع</span>
-            </div>
+            <BrandLogoMark size={32} />
             <span className="font-serif font-bold text-white">Admin</span>
           </Link>
 

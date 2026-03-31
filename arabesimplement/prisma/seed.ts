@@ -65,6 +65,13 @@ async function main() {
     });
 
     for (const c of creneaux) {
+      const journeeSlots =
+        c.journeeSlots ??
+        c.jours.map((jour) => ({
+          jour,
+          heureDebut: c.heureDebut,
+          dureeMinutes: c.dureeMinutes,
+        }));
       await prisma.creneau.upsert({
         where: { id: c.id },
         create: {
@@ -72,6 +79,7 @@ async function main() {
           formationId: formation.id,
           nom: c.nom,
           jours: c.jours,
+          journeeSlots,
           heureDebut: c.heureDebut,
           dureeMinutes: c.dureeMinutes,
           placesMax: c.placesMax,
@@ -82,6 +90,7 @@ async function main() {
           formationId: formation.id,
           nom: c.nom,
           jours: c.jours,
+          journeeSlots,
           heureDebut: c.heureDebut,
           dureeMinutes: c.dureeMinutes,
           placesMax: c.placesMax,

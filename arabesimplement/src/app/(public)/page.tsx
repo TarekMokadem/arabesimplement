@@ -1,8 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, BookOpen, Users, Award, Star, Check } from "lucide-react";
+import { ArrowRight, BookOpen, Users, Award, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SessionDuMoment } from "@/components/shop/SessionDuMoment";
 import {
@@ -119,122 +118,6 @@ function HeroSection({ trust }: { trust: HomeHeroTrust }) {
               </div>
             ) : null}
           </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Offers Section
-const offers = [
-  {
-    title: "Programme 100% Autonome",
-    subtitle: "À votre rythme",
-    price: 8,
-    features: [
-      "Accès à toutes les vidéos",
-      "Livre PDF fourni",
-      "Progression à votre rythme",
-      "Accès à vie",
-    ],
-    popular: false,
-    color: "bg-white",
-  },
-  {
-    title: "Équilibre",
-    subtitle: "Accompagnement renforcé",
-    price: 25,
-    features: [
-      "Tout le programme Autonome",
-      "Suivi personnalisé à distance",
-      "4h de cours particuliers",
-      "Groupe WhatsApp",
-    ],
-    popular: true,
-    color: "bg-surface",
-  },
-  {
-    title: "Maîtrise",
-    subtitle: "Accompagnement total",
-    price: 75,
-    features: [
-      "Accès à vie à toutes les formations",
-      "Cours personnalisés illimités",
-      "Accompagnement individuel",
-      "Certificat de fin de formation",
-    ],
-    popular: false,
-    color: "bg-white",
-  },
-];
-
-function OffersSection() {
-  return (
-    <section className="py-24 bg-white" data-testid="offers-section">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-accent/10 text-accent border-accent/20">
-            Nos offres
-          </Badge>
-          <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-4">
-            Choisissez votre parcours
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Trois formules adaptées à vos besoins et votre rythme
-            d&apos;apprentissage.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {offers.map((offer, index) => (
-            <Card
-              key={index}
-              className={`relative ${offer.color} border-2 ${
-                offer.popular ? "border-secondary" : "border-gray-100"
-              } rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl`}
-              data-testid={`offer-card-${index}`}
-            >
-              {offer.popular && (
-                <div className="absolute top-0 right-0 bg-secondary text-secondary-foreground text-xs font-bold px-4 py-1 rounded-bl-lg">
-                  Populaire
-                </div>
-              )}
-              <CardContent className="p-8">
-                <h3 className="font-serif text-xl font-bold text-primary mb-1">
-                  {offer.title}
-                </h3>
-                <p className="text-gray-500 text-sm mb-6">{offer.subtitle}</p>
-
-                <div className="mb-8">
-                  <span className="text-4xl font-bold text-primary">
-                    {offer.price}€
-                  </span>
-                </div>
-
-                <ul className="space-y-3 mb-8">
-                  {offer.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <Check className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-600 text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link href="/contactez-nous">
-                  <Button
-                    className={`w-full ${
-                      offer.popular
-                        ? "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
-                        : "bg-primary text-primary-foreground hover:bg-secondary hover:text-secondary-foreground"
-                    }`}
-                  >
-                    Je me lance !
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
         </div>
       </div>
     </section>
@@ -395,7 +278,6 @@ export default async function HomePage() {
       <HeroSection trust={heroTrust} />
       <SessionDuMomentSection {...featuredSession} />
       <FeaturesSection />
-      <OffersSection />
       <SEOContentSection />
     </div>
   );

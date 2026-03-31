@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, BookOpen, Users, Clock, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -126,30 +126,6 @@ export default function CoursDarabePage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-20 bg-primary text-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-secondary mb-2">500+</div>
-              <p className="text-gray-300">Étudiants formés</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-secondary mb-2">10</div>
-              <p className="text-gray-300">Leçons seulement</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-secondary mb-2">4.9/5</div>
-              <p className="text-gray-300">Note moyenne</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-secondary mb-2">8€</div>
-              <p className="text-gray-300">Prix accessible</p>
-            </div>
           </div>
         </div>
       </section>

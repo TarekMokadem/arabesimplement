@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
+import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,7 +36,8 @@ export default function InscriptionPage() {
         data.email,
         data.password,
         data.prenom,
-        data.nom
+        data.nom,
+        data.whatsapp
       );
       if (!result.success) {
         toast.error(result.error);
@@ -66,9 +68,7 @@ export default function InscriptionPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary-light rounded-xl flex items-center justify-center">
-              <span className="font-arabic text-secondary-foreground text-xl font-bold">ع</span>
-            </div>
+            <BrandLogoMark size={48} />
             <span className="font-serif font-bold text-2xl text-primary">
               ArabeSimplement
             </span>
@@ -129,6 +129,25 @@ export default function InscriptionPage() {
                 />
                 {errors.email && (
                   <p className="text-red-500 text-xs">{errors.email.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp">Numéro WhatsApp</Label>
+                <Input
+                  id="whatsapp"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  {...register("whatsapp")}
+                  placeholder="+33 6 12 34 56 78"
+                  className={errors.whatsapp ? "border-red-500" : ""}
+                  data-testid="signup-whatsapp"
+                />
+                {errors.whatsapp && (
+                  <p className="text-red-500 text-xs">
+                    {errors.whatsapp.message}
+                  </p>
                 )}
               </div>
 

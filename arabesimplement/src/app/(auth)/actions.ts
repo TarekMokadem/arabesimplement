@@ -118,7 +118,8 @@ export async function signUp(
   email: string,
   password: string,
   prenom: string,
-  nom: string
+  nom: string,
+  whatsapp: string
 ): Promise<
   | { success: true; redirectTo: string }
   | { success: false; error: string }
@@ -140,6 +141,7 @@ export async function signUp(
         email: normalizedEmail,
         prenom: prenom.trim(),
         nom: nom.trim(),
+        telephone: whatsapp.trim() || null,
         passwordHash,
         role: "STUDENT",
       },

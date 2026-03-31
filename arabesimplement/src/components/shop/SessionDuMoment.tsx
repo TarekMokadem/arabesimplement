@@ -5,6 +5,9 @@ import Link from "next/link";
 import { ArrowRight, Clock, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { formatPrice } from "@/lib/utils/format";
+import { hourlyMinPriceEuros } from "@/lib/scheduling-mode";
+import type { FormationSchedulingMode } from "@/types/domain.types";
 
 interface SessionDuMomentProps {
   titre: string;
@@ -14,6 +17,7 @@ interface SessionDuMomentProps {
   prixPromo: number;
   slug: string;
   expiresAt: Date;
+  schedulingMode?: FormationSchedulingMode;
 }
 
 export function SessionDuMoment({
@@ -24,6 +28,7 @@ export function SessionDuMoment({
   prixPromo,
   slug,
   expiresAt,
+  schedulingMode,
 }: SessionDuMomentProps) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -59,7 +64,11 @@ export function SessionDuMoment({
 
   if (isExpired) return null;
 
-  const discount = Math.round(((prix - prixPromo) / prix) * 100);
+  const hourly = schedulingMode === "HOURLY_PURCHASE";
+  const showPromo =
+    !hourly && prix > 0 && prixPromo > 0 && prixPromo < prix;
+  const discount =
+    showPromo ? Math.round(((prix - prixPromo) / prix) * 100) : 0;
 
   return (
     <section
@@ -85,15 +94,34 @@ export function SessionDuMoment({
               {description}
             </p>
 
-            <div className="flex items-center gap-4 justify-center lg:justify-start mb-6">
-              <span className="text-4xl font-bold text-accent">{prixPromo}€</span>
-              <span className="text-xl text-gray-400 line-through">{prix}€</span>
-              <Badge className="bg-red-500 text-white hover:bg-red-500">
-                -{discount}%
-              </Badge>
+            <div className="flex flex-wrap items-center gap-4 justify-center lg:justify-start mb-6">
+              {hourly ? (
+                <>
+                  <span className="text-4xl font-bold text-accent">
+                    Dès {formatPrice(hourlyMinPriceEuros())}
+                  </span>
+                  <span className="text-sm text-gray-600">
+                    par séance (durée au choix sur la fiche)
+                  </span>
+                </>
+              ) : showPromo ? (
+                <>
+                  <span className="text-4xl font-bold text-accent">
+                    {prixPromo}€
+                  </span>
+                  <span className="text-xl text-gray-400 line-through">
+                    {prix}€
+                  </span>
+                  <Badge className="bg-red-500 text-white hover:bg-red-500">
+                    -{discount}%
+                  </Badge>
+                </>
+              ) : (
+                <span className="text-4xl font-bold text-accent">{prix}€</span>
+              )}
             </div>
 
-            <Link href={`/boutique/${slug}`}>
+            <Link href={`/boutique/${slug}#achat`}>
               <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all">
                 Rejoindre le programme
                 <ArrowRight className="ml-2 h-5 w-5" />

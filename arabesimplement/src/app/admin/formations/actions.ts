@@ -8,7 +8,6 @@ import { requireAdminSession } from "@/lib/auth/require-admin";
 import {
   formationAdminSchema,
   creneauAdminSchema,
-  joursDepuisTexte,
   type FormationAdminInput,
   type CreneauAdminInput,
 } from "@/lib/validations/admin-formations.schema";
@@ -193,15 +192,22 @@ export async function createCreneau(
   });
   if (!formation) return { success: false, error: "Formation introuvable." };
 
-  const jours = joursDepuisTexte(parsed.data.joursTexte);
+  const slots = parsed.data.journeeSlots.map((s) => ({
+    jour: s.jour.trim(),
+    heureDebut: heureNormalisee(s.heureDebut),
+    dureeMinutes: s.dureeMinutes,
+  }));
+  const jours = [...new Set(slots.map((s) => s.jour))];
+  const first = slots[0]!;
   try {
     const row = await prisma.creneau.create({
       data: {
         formationId,
         nom: parsed.data.nom.trim(),
         jours,
-        heureDebut: heureNormalisee(parsed.data.heureDebut),
-        dureeMinutes: parsed.data.dureeMinutes,
+        journeeSlots: slots as unknown as Prisma.InputJsonValue,
+        heureDebut: first.heureDebut,
+        dureeMinutes: first.dureeMinutes,
         placesMax: parsed.data.placesMax,
         whatsappLink: parsed.data.whatsappLink?.trim() || null,
         statut: parsed.data.statut,
@@ -239,15 +245,22 @@ export async function updateCreneau(
   });
   if (!c) return { success: false, error: "Créneau introuvable." };
 
-  const jours = joursDepuisTexte(parsed.data.joursTexte);
+  const slots = parsed.data.journeeSlots.map((s) => ({
+    jour: s.jour.trim(),
+    heureDebut: heureNormalisee(s.heureDebut),
+    dureeMinutes: s.dureeMinutes,
+  }));
+  const jours = [...new Set(slots.map((s) => s.jour))];
+  const first = slots[0]!;
   try {
     await prisma.creneau.update({
       where: { id: creneauId },
       data: {
         nom: parsed.data.nom.trim(),
         jours,
-        heureDebut: heureNormalisee(parsed.data.heureDebut),
-        dureeMinutes: parsed.data.dureeMinutes,
+        journeeSlots: slots as unknown as Prisma.InputJsonValue,
+        heureDebut: first.heureDebut,
+        dureeMinutes: first.dureeMinutes,
         placesMax: parsed.data.placesMax,
         whatsappLink: parsed.data.whatsappLink?.trim() || null,
         statut: parsed.data.statut,

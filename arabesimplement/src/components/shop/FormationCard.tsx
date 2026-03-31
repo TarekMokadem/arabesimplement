@@ -2,42 +2,23 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart, Eye, Clock, Users } from "lucide-react";
+import { ArrowRight, Eye, Clock, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { useCart } from "@/hooks/useCart";
-import { type CartItem } from "@/store/cart.store";
 import { formatPrice } from "@/lib/utils/format";
 import type { FormationBoutiqueCard } from "@/types/domain.types";
-import { schedulingModeShortLabel } from "@/lib/scheduling-mode";
-import { toast } from "sonner";
+import {
+  hourlyMinPriceEuros,
+  schedulingModeBoutiquePriceShort,
+  schedulingModeShortLabel,
+} from "@/lib/scheduling-mode";
 
 interface FormationCardProps {
   formation: FormationBoutiqueCard;
 }
 
 export function FormationCard({ formation }: FormationCardProps) {
-  const { addItem, isInCart } = useCart();
-  const isAlreadyInCart = isInCart(formation.id);
-
-  const handleAddToCart = () => {
-    if (isAlreadyInCart) {
-      toast.info("Cette formation est déjà dans votre panier");
-      return;
-    }
-
-    const cartItem: CartItem = {
-      id: formation.id,
-      titre: formation.titre,
-      prix: Number(formation.prix),
-      prixPromo: formation.prixPromo ? Number(formation.prixPromo) : undefined,
-      imageUrl: formation.imageUrl || undefined,
-      slug: formation.slug,
-    };
-    addItem(cartItem);
-    toast.success("Formation ajoutée au panier !");
-  };
 
   const getStatusBadge = () => {
     switch (formation.statut) {
@@ -78,8 +59,14 @@ export function FormationCard({ formation }: FormationCardProps) {
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
-            <span className="font-arabic text-5xl text-white/80">ع</span>
+          <div className="w-full h-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center p-8">
+            <Image
+              src="/brand/logo-arabe-simplement.png"
+              alt=""
+              width={180}
+              height={180}
+              className="object-contain w-[42%] max-w-36 opacity-95 drop-shadow-sm"
+            />
           </div>
         )}
 
@@ -116,10 +103,13 @@ export function FormationCard({ formation }: FormationCardProps) {
         </Link>
         <Badge
           variant="outline"
-          className="mb-3 text-[10px] font-normal border-primary/25 text-primary bg-primary/5"
+          className="mb-2 text-[10px] font-normal border-primary/25 text-primary bg-primary/5"
         >
           {schedulingModeShortLabel(formation.schedulingMode)}
         </Badge>
+        <p className="text-[11px] text-gray-600 leading-snug mb-3">
+          {schedulingModeBoutiquePriceShort(formation.schedulingMode)}
+        </p>
 
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
           {formation.descriptionCourte}
@@ -140,9 +130,16 @@ export function FormationCard({ formation }: FormationCardProps) {
         </div>
 
         {/* Price & Action */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-2">
-            {formation.prixPromo ? (
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100 gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            {formation.schedulingMode === "HOURLY_PURCHASE" ? (
+              <span className="text-lg font-bold text-primary truncate">
+                Dès {formatPrice(hourlyMinPriceEuros())}{" "}
+                <span className="text-sm font-normal text-gray-600">
+                  / durée au choix
+                </span>
+              </span>
+            ) : formation.prixPromo ? (
               <>
                 <span className="text-xl font-bold text-accent">
                   {formatPrice(formation.prixPromo)}
@@ -159,24 +156,18 @@ export function FormationCard({ formation }: FormationCardProps) {
           </div>
 
           {formation.statut === "ACTIVE" ? (
-            <Button
-              onClick={handleAddToCart}
-              disabled={isAlreadyInCart}
-              className={
-                isAlreadyInCart
-                  ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                  : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
-              }
-              size="sm"
+            <Link
+              href={`/boutique/${formation.slug}#achat`}
               data-testid={`add-to-cart-${formation.slug}`}
+              className="inline-flex items-center justify-center rounded-lg text-sm font-medium h-8 px-3 shrink-0 bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
             >
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              {isAlreadyInCart ? "Dans le panier" : "Ajouter"}
-            </Button>
+              Choisir
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </Link>
           ) : (
             <Button
               variant="outline"
-              className="border-primary-light text-primary-light"
+              className="border-primary-light text-primary-light shrink-0"
               size="sm"
             >
               S&apos;inscrire à la liste

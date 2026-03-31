@@ -12,6 +12,7 @@ import {
   MOCK_FORMATIONS_BY_SLUG,
   getBoutiqueCategoriesFromFormations,
 } from "@/lib/data/formations.mock";
+import { parseJourneeSlotsFromJson } from "@/lib/creneau-display";
 
 export function toBoutiqueCard(f: Formation): FormationBoutiqueCard {
   return {
@@ -40,6 +41,7 @@ export function toFormationCartInput(
     prix: Number(f.prix),
     prixPromo: f.prixPromo !== undefined ? Number(f.prixPromo) : undefined,
     imageUrl: f.imageUrl,
+    schedulingMode: f.schedulingMode,
   };
 }
 
@@ -51,14 +53,17 @@ export type FeaturedSessionHome = {
   prixPromo: number;
   slug: string;
   expiresAt: Date;
+  schedulingMode?: import("@/types/domain.types").FormationSchedulingMode;
 };
 
 function mapCreneau(c: PrismaCreneau): Creneau {
+  const journeeSlots = parseJourneeSlotsFromJson(c.journeeSlots);
   return {
     id: c.id,
     formationId: c.formationId,
     nom: c.nom,
     jours: c.jours,
+    journeeSlots,
     heureDebut: c.heureDebut,
     dureeMinutes: c.dureeMinutes,
     placesMax: c.placesMax,
@@ -166,10 +171,11 @@ export async function getFeaturedSessionHome(): Promise<FeaturedSessionHome> {
       tajwid?.featuredContent ??
       "Formation Tajwid structurée : règles de récitation, supports et accompagnement. Détails et inscription sur la fiche formation.",
     badge: tajwid?.featuredBadge ?? "Offre limitée",
-    prix: tajwid ? Number(tajwid.prix) : 75,
-    prixPromo: tajwid?.prixPromo != null ? Number(tajwid.prixPromo) : 49,
+    prix: tajwid ? Number(tajwid.prix) : 0,
+    prixPromo: tajwid?.prixPromo != null ? Number(tajwid.prixPromo) : 0,
     slug: tajwid?.slug ?? "formation-tajwid",
     expiresAt: fallbackExpires,
+    schedulingMode: tajwid?.schedulingMode ?? "HOURLY_PURCHASE",
   };
 
   if (!isDatabaseConfigured()) {
@@ -193,6 +199,7 @@ export async function getFeaturedSessionHome(): Promise<FeaturedSessionHome> {
       prixPromo: row.prixPromo ? Number(row.prixPromo) : Number(row.prix),
       slug: row.slug,
       expiresAt,
+      schedulingMode: row.schedulingMode,
     };
   } catch (e) {
     console.error("[getFeaturedSessionHome]", e);

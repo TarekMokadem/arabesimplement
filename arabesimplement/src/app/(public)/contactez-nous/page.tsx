@@ -10,6 +10,7 @@ import {
   MapPin,
   CheckCircle,
   MessageCircle,
+  Instagram,
 } from "lucide-react";
 import { SITE_CONTACT } from "@/lib/site-contact";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { FinancialAidCta } from "@/components/shared/FinancialAidCta";
 import { contactSchema, type ContactInput } from "@/lib/validations/contact.schema";
 import { toast } from "sonner";
 
@@ -123,6 +125,22 @@ export default function ContactezNousPage() {
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Instagram className="h-5 w-5 text-secondary" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-primary">Instagram</p>
+                      <a
+                        href={SITE_CONTACT.instagram.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-600 hover:text-secondary"
+                      >
+                        {SITE_CONTACT.instagram.display}
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <span className="text-secondary font-bold text-sm">S</span>
                     </div>
                     <div>
@@ -146,6 +164,8 @@ export default function ContactezNousPage() {
                   </div>
                 </div>
               </div>
+
+              <FinancialAidCta className="bg-white" />
 
               {/* FAQ Quick Links */}
               <div className="bg-white rounded-xl p-6">

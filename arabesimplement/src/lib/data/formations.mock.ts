@@ -43,6 +43,10 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
         formationId: "1",
         nom: "Session Matin",
         jours: ["Lundi", "Mercredi"],
+        journeeSlots: [
+          { jour: "Lundi", heureDebut: "10:00", dureeMinutes: 60 },
+          { jour: "Mercredi", heureDebut: "10:00", dureeMinutes: 60 },
+        ],
         heureDebut: "10:00",
         dureeMinutes: 60,
         placesMax: 12,
@@ -54,6 +58,10 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
         formationId: "1",
         nom: "Session Soir",
         jours: ["Mardi", "Jeudi"],
+        journeeSlots: [
+          { jour: "Mardi", heureDebut: "20:00", dureeMinutes: 60 },
+          { jour: "Jeudi", heureDebut: "20:00", dureeMinutes: 45 },
+        ],
         heureDebut: "20:00",
         dureeMinutes: 60,
         placesMax: 12,
@@ -124,8 +132,8 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
         <li>Application pratique sur des sourates</li>
       </ul>
     `,
-    prix: 75,
-    prixPromo: 49,
+    prix: 0,
+    prixPromo: undefined,
     imageUrl:
       "https://images.unsplash.com/photo-1769428197773-e4adbe22aa8e?w=600&q=80",
     placesMax: 12,

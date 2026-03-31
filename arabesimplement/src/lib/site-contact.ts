@@ -23,4 +23,24 @@ export const SITE_CONTACT = {
     /** Lien d'ajout public Snapchat */
     href: "https://www.snapchat.com/add/arabesimplement",
   },
+  instagram: {
+    label: "Instagram",
+    display: "@arabesimplement",
+    href: "https://www.instagram.com/arabesimplement/",
+  },
+  financialAid: {
+    title: "Difficulté financière ou besoin d’un accompagnement particulier ?",
+    description:
+      "Écrivez aux responsables sur WhatsApp : nous étudions chaque situation pour trouver un arrangement adapté à vos cours.",
+    whatsappHommesHref:
+      "https://wa.me/33613204552?text=" +
+      encodeURIComponent(
+        "Bonjour, je souhaite échanger sur une aide pour les cours (difficulté financière ou besoin particulier)."
+      ),
+    whatsappFemmesHref:
+      "https://wa.me/33629847042?text=" +
+      encodeURIComponent(
+        "Bonjour, je souhaite échanger sur une aide pour les cours (difficulté financière ou besoin particulier)."
+      ),
+  },
 } as const;

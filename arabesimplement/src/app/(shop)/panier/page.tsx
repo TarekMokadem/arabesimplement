@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
 import { useCart } from "@/hooks/useCart";
+import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
 import { formatPrice } from "@/lib/utils/format";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
@@ -64,9 +65,9 @@ export default function PanierPage() {
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
               <Card
-                key={item.id}
+                key={item.lineId}
                 className="bg-white"
-                data-testid={`cart-item-${item.id}`}
+                data-testid={`cart-item-${item.lineId}`}
               >
                 <CardContent className="p-4">
                   <div className="flex gap-4">
@@ -79,10 +80,14 @@ export default function PanierPage() {
                           className="object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
-                          <span className="font-arabic text-2xl text-white/80">
-                            ع
-                          </span>
+                        <div className="w-full h-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center p-2">
+                          <Image
+                            src="/brand/logo-arabe-simplement.png"
+                            alt=""
+                            width={80}
+                            height={80}
+                            className="object-contain w-4/5 opacity-95"
+                          />
                         </div>
                       )}
                     </div>
@@ -94,6 +99,8 @@ export default function PanierPage() {
                       >
                         {item.titre}
                       </Link>
+
+                      <CartItemDetailList item={item} className="max-w-xl" />
 
                       <div className="flex items-center gap-2 mt-2">
                         {item.prixPromo ? (
@@ -116,9 +123,9 @@ export default function PanierPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item.lineId)}
                       className="text-gray-400 hover:text-red-500"
-                      data-testid={`remove-${item.id}`}
+                      data-testid={`remove-${item.lineId}`}
                     >
                       <Trash2 className="h-5 w-5" />
                     </Button>

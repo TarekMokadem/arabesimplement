@@ -1,3 +1,5 @@
+import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
+
 export default function ShopLayout({
   children,
 }: {
@@ -10,9 +12,7 @@ export default function ShopLayout({
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-center h-16">
             <a href="/" className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-secondary to-secondary-light rounded-lg flex items-center justify-center">
-                <span className="font-serif text-secondary-foreground text-sm font-bold">ع</span>
-              </div>
+              <BrandLogoMark size={32} />
               <span className="font-serif font-bold text-lg text-primary">
                 ArabeSimplement
               </span>

@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Mail, MapPin, MessageCircle, Send } from "lucide-react";
+import { Instagram, Mail, MapPin, MessageCircle, Send } from "lucide-react";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
+import { FinancialAidCta } from "@/components/shared/FinancialAidCta";
 import { SITE_CONTACT } from "@/lib/site-contact";
 
 const footerLinks = {
@@ -130,6 +131,17 @@ export function Footer() {
                 </a>
               </li>
               <li className="flex items-center gap-3 text-gray-400 text-sm">
+                <Instagram className="h-4 w-4 text-secondary shrink-0" />
+                <a
+                  href={SITE_CONTACT.instagram.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  {SITE_CONTACT.instagram.display}
+                </a>
+              </li>
+              <li className="flex items-center gap-3 text-gray-400 text-sm">
                 <span className="h-4 w-4 text-secondary shrink-0 text-center text-xs font-bold">
                   S
                 </span>
@@ -145,6 +157,10 @@ export function Footer() {
                 <span>Partenaire — Égypte</span>
               </li>
             </ul>
+
+            <div className="mt-8">
+              <FinancialAidCta tone="dark" />
+            </div>
 
             <div className="mt-8">
               <h4 className="text-sm font-medium mb-4">Légal</h4>

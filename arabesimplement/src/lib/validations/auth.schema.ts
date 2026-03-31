@@ -5,11 +5,20 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
 });
 
+const whatsappDigitsMin = 8;
+
 export const signupSchema = z
   .object({
     prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
     nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
     email: z.string().email("Adresse email invalide"),
+    whatsapp: z
+      .string()
+      .min(1, "Indiquez votre numéro WhatsApp")
+      .refine(
+        (s) => s.replace(/\D/g, "").length >= whatsappDigitsMin,
+        "Numéro invalide : au moins 8 chiffres (indicatif inclus si besoin)"
+      ),
     password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
     confirmPassword: z.string(),
   })

@@ -6,13 +6,14 @@ import { CreditCard, Lock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
+import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
 import { StripePaymentSection } from "@/components/shop/StripePaymentSection";
 import { PaymentExperiencePreface } from "@/components/shop/PaymentExperiencePreface";
 import { useCartStore } from "@/store/cart.store";
 import { formatPrice } from "@/lib/utils/format";
 import { toast } from "sonner";
 import type { StoredCheckoutOrder } from "@/types/checkout.types";
-import type { CartItem } from "@/store/cart.store";
+import { migrateRawCartItem, type CartItem } from "@/store/cart.store";
 import { finalizeMockPayment } from "@/app/(shop)/actions/order.actions";
 
 function parseOrderInfo(raw: string | null): StoredCheckoutOrder | null {
@@ -45,8 +46,8 @@ export default function PaiementPage() {
   }, [items.length, router]);
 
   const displayItems: CartItem[] = useMemo(() => {
-    if (items.length > 0) return items;
-    return orderInfo?.items ?? [];
+    const raw = items.length > 0 ? items : orderInfo?.items ?? [];
+    return raw.map((row) => migrateRawCartItem(row));
   }, [items, orderInfo]);
 
   const total = useMemo(() => {
@@ -198,11 +199,17 @@ export default function PaiementPage() {
 
                 <div className="space-y-3 mb-6">
                   {displayItems.map((item) => (
-                    <div key={item.id} className="flex justify-between text-sm">
-                      <span className="text-gray-600 truncate max-w-[60%]">
-                        {item.titre}
-                      </span>
-                      <span className="font-medium text-primary">
+                    <div
+                      key={item.lineId}
+                      className="flex justify-between gap-3 text-sm"
+                    >
+                      <div className="text-gray-600 min-w-0 flex-1">
+                        <span className="block font-medium text-primary">
+                          {item.titre}
+                        </span>
+                        <CartItemDetailList item={item} size="sm" />
+                      </div>
+                      <span className="font-medium text-primary shrink-0">
                         {formatPrice(item.prixPromo ?? item.prix)}
                       </span>
                     </div>

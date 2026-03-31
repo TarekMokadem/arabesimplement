@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { getFormationAdminDetail } from "@/lib/data/admin-formations.service";
 import { FormationEditorForm } from "../FormationEditorForm";
 import { formationVersFormInput } from "../formation-vers-form";
-import { CreneauManager, type CreneauListeItem } from "../CreneauManager";
+import type { CreneauListeItem } from "../CreneauManager";
+import { parseJourneeSlotsFromJson } from "@/lib/creneau-display";
 
 export default async function ModifierFormationPage({
   params,
@@ -19,6 +20,7 @@ export default async function ModifierFormationPage({
     jours: c.jours,
     heureDebut: c.heureDebut,
     dureeMinutes: c.dureeMinutes,
+    journeeSlots: parseJourneeSlotsFromJson(c.journeeSlots),
     placesMax: c.placesMax,
     whatsappLink: c.whatsappLink,
     statut: c.statut,
@@ -30,13 +32,8 @@ export default async function ModifierFormationPage({
         mode="edit"
         formationId={f.id}
         slugAvant={f.slug}
-        defaultValues={formationVersFormInput(f)}
-      />
-      <hr className="border-gray-200" />
-      <CreneauManager
-        formationId={f.id}
         creneaux={creneaux}
-        schedulingMode={f.schedulingMode}
+        defaultValues={formationVersFormInput(f)}
       />
     </div>
   );

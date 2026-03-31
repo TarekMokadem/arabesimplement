@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useTransition, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
@@ -23,6 +23,10 @@ import {
   updateFormation,
   deleteFormation,
 } from "./actions";
+import {
+  CreneauManager,
+  type CreneauListeItem,
+} from "./CreneauManager";
 
 type Props =
   | { mode: "create" }
@@ -30,16 +34,18 @@ type Props =
       mode: "edit";
       formationId: string;
       slugAvant: string;
+      creneaux: CreneauListeItem[];
     };
 
 const selectClass =
-  "flex h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+  "flex h-8 w-full rounded-lg border border-input bg-white px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export function FormationEditorForm(
   props: Props & { defaultValues: FormationEditorDefaults }
 ) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const form = useForm<
     FormationEditorDefaults,
@@ -51,6 +57,44 @@ export function FormationEditorForm(
   });
 
   const { register, control, handleSubmit, watch, setValue, getValues } = form;
+  const schedulingMode = watch("schedulingMode");
+  const imageUrlWatch = watch("imageUrl");
+
+  const onImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const body = new FormData();
+      body.set("file", file);
+      const res = await fetch("/api/admin/formations/upload-image", {
+        method: "POST",
+        body,
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok) {
+        toast.error(data.error ?? "Échec du téléversement");
+        return;
+      }
+      if (data.url) {
+        setValue("imageUrl", data.url, { shouldValidate: true });
+        toast.success("Image enregistrée");
+      }
+    } catch {
+      toast.error("Échec du téléversement");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  useEffect(() => {
+    if (schedulingMode === "HOURLY_PURCHASE") {
+      setValue("prix", 0, { shouldValidate: true });
+      setValue("prixPromo", undefined);
+    }
+  }, [schedulingMode, setValue]);
+
   const slugBoutique =
     watch("slug")?.trim() ||
     (props.mode === "edit" ? props.slugAvant : "");
@@ -179,46 +223,63 @@ export function FormationEditorForm(
                 {...register("schedulingMode")}
               >
                 <option value="FIXED_SLOTS">
-                  Créneaux proposés — l’élève choisit un horaire parmi la liste
+                  Créneaux proposés — forfait unique, calendrier / créneaux à respecter
                 </option>
                 <option value="FLEXIBLE_FORMATION">
-                  Paiement forfaitaire — l’élève s’organise avec le prof jusqu’à la fin
+                  Paiement forfaitaire — forfait unique, organisation libre avec le prof
                 </option>
                 <option value="HOURLY_PURCHASE">
-                  Cours à la carte — tarifs par durée (10 €/h, 8 €/40 min, 5 €/30 min)
+                  Cours à la carte — paiement à chaque cours, durée par séance (grille tarifs)
                 </option>
               </select>
-              <p className="text-xs text-gray-500">
-                Affiché sur la fiche produit. La section « créneaux » ci-dessous est
-                surtout utile pour le mode « créneaux proposés ».
+              <p className="text-xs text-gray-500 leading-relaxed">
+                <strong className="font-medium text-gray-700">Créneaux proposés</strong> et{" "}
+                <strong className="font-medium text-gray-700">forfaitaire</strong> : un seul
+                paiement à l’achat — la différence est que les créneaux imposent un
+                calendrier.{" "}
+                <strong className="font-medium text-gray-700">À la carte</strong> : même
+                logique d’organisation qu’avec le prof, mais chaque séance se paie et a une
+                durée définie. La section « Créneaux » plus bas s’adapte au mode choisi.
               </p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="prix">Prix (€)</Label>
-              <Input
-                id="prix"
-                type="number"
-                step="0.01"
-                min="0"
-                {...register("prix", { valueAsNumber: true })}
-              />
-              {form.formState.errors.prix && (
-                <p className="text-sm text-red-600">
-                  {form.formState.errors.prix.message}
+            {schedulingMode === "HOURLY_PURCHASE" ? (
+              <div className="space-y-2 sm:col-span-2 rounded-lg border border-secondary/25 bg-secondary/5 px-3 py-3 text-sm text-gray-700">
+                <p className="font-medium text-primary">Tarification à la séance</p>
+                <p>
+                  Pas de prix forfaitaire : sur la boutique, l’élève choisit la durée
+                  (1 h / 40 min / 30 min) et éventuellement un créneau. Grille 10 € / 8 € / 5 €.
                 </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="prixPromo">Prix promo (€, optionnel)</Label>
-              <Input
-                id="prixPromo"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="—"
-                {...register("prixPromo", { valueAsNumber: true })}
-              />
-            </div>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="prix">Prix forfaitaire (€)</Label>
+                  <Input
+                    id="prix"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    {...register("prix", { valueAsNumber: true })}
+                  />
+                  {form.formState.errors.prix && (
+                    <p className="text-sm text-red-600">
+                      {form.formState.errors.prix.message}
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="prixPromo">Prix promo (€, optionnel)</Label>
+                  <Input
+                    id="prixPromo"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="—"
+                    {...register("prixPromo", { valueAsNumber: true })}
+                  />
+                </div>
+              </>
+            )}
             <div className="space-y-2">
               <Label htmlFor="placesMax">Places max. (optionnel)</Label>
               <Input
@@ -230,13 +291,44 @@ export function FormationEditorForm(
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="imageUrl">URL de l’image</Label>
-              <Input id="imageUrl" type="url" placeholder="https://…" {...register("imageUrl")} />
+              <Label htmlFor="imageFile">Image (fichier sur cet ordinateur)</Label>
+              <Input
+                id="imageFile"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                disabled={uploadingImage || pending}
+                className="cursor-pointer bg-white file:cursor-pointer file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-sm"
+                onChange={onImageFile}
+              />
+              <p className="text-muted-foreground text-xs">
+                JPEG, PNG, WebP ou GIF — max. 5 Mo. Vous pouvez aussi coller une URL ci‑dessous.
+              </p>
+              <Label htmlFor="imageUrl" className="pt-1">
+                Ou URL de l’image
+              </Label>
+              <Input
+                id="imageUrl"
+                type="text"
+                placeholder="https://… ou laisser vide"
+                className="bg-white"
+                {...register("imageUrl")}
+              />
               {form.formState.errors.imageUrl && (
                 <p className="text-sm text-red-600">
                   {form.formState.errors.imageUrl.message}
                 </p>
               )}
+              {imageUrlWatch?.trim() ? (
+                <div className="pt-1">
+                  <p className="text-muted-foreground mb-1 text-xs">Aperçu</p>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- URLs externes ou /uploads locales */}
+                  <img
+                    src={imageUrlWatch}
+                    alt=""
+                    className="max-h-40 max-w-full rounded-md border object-contain"
+                  />
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
@@ -297,6 +389,17 @@ export function FormationEditorForm(
           </div>
         </div>
       </div>
+
+      {props.mode === "edit" && schedulingMode === "FIXED_SLOTS" && (
+        <>
+          <hr className="border-gray-200 my-10" />
+          <CreneauManager
+            formationId={props.formationId}
+            creneaux={props.creneaux}
+            schedulingMode={schedulingMode}
+          />
+        </>
+      )}
 
       <div className="flex flex-wrap gap-3">
         <Button

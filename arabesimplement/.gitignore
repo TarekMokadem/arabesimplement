@@ -40,4 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Images formations uploadées en local (gardez .gitkeep)
+/public/uploads/formations/*
+!/public/uploads/formations/.gitkeep
+
 /src/generated/prisma
