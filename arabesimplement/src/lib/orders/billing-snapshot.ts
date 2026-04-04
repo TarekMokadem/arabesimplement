@@ -1,3 +1,4 @@
+import type { StudentSex } from "@prisma/client";
 import type { OrderFormInput } from "@/lib/validations/order.schema";
 
 export type OrderBillingSnapshot = {
@@ -6,6 +7,7 @@ export type OrderBillingSnapshot = {
   email: string;
   telephone: string;
   pays: string;
+  sexe: StudentSex | null;
 };
 
 export function orderFormToBillingSnapshot(
@@ -17,6 +19,7 @@ export function orderFormToBillingSnapshot(
     email: data.email.trim().toLowerCase(),
     telephone: data.telephone.trim(),
     pays: data.pays.trim(),
+    sexe: data.sexe,
   };
 }
 
@@ -31,6 +34,9 @@ export function parseBillingSnapshot(
   const telephone =
     typeof o.telephone === "string" ? o.telephone.trim() : "";
   const pays = typeof o.pays === "string" ? o.pays.trim() : "";
+  const sexeRaw = o.sexe;
+  const sexe: StudentSex | null =
+    sexeRaw === "FEMME" || sexeRaw === "HOMME" ? sexeRaw : null;
   if (!prenom || !nom || !email || !telephone || !pays) return null;
-  return { prenom, nom, email, telephone, pays };
+  return { prenom, nom, email, telephone, pays, sexe };
 }

@@ -24,9 +24,14 @@ function getStripe(publishableKey: string) {
 type PaymentFormProps = {
   amountLabel: string;
   onPaid: () => void;
+  confirmationSearchParams: string;
 };
 
-function PaymentForm({ amountLabel, onPaid }: PaymentFormProps) {
+function PaymentForm({
+  amountLabel,
+  onPaid,
+  confirmationSearchParams,
+}: PaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -37,10 +42,11 @@ function PaymentForm({ amountLabel, onPaid }: PaymentFormProps) {
 
     setLoading(true);
     try {
+      const returnUrl = `${window.location.origin}/commande/confirmation?${confirmationSearchParams}`;
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/commande/confirmation`,
+          return_url: returnUrl,
         },
         redirect: "if_required",
       });
@@ -86,6 +92,8 @@ export type StripePaymentSectionProps = {
   clientSecret: string;
   amountLabel: string;
   onPaid: () => void;
+  /** Query string (sans « ? ») : orderId et email pour afficher le récap après retour Stripe. */
+  confirmationSearchParams: string;
 };
 
 export function StripePaymentSection({
@@ -93,6 +101,7 @@ export function StripePaymentSection({
   clientSecret,
   amountLabel,
   onPaid,
+  confirmationSearchParams,
 }: StripePaymentSectionProps) {
   const stripePromise = useMemo(
     () => getStripe(publishableKey),
@@ -114,7 +123,11 @@ export function StripePaymentSection({
 
   return (
     <Elements stripe={stripePromise} options={options}>
-      <PaymentForm amountLabel={amountLabel} onPaid={onPaid} />
+      <PaymentForm
+        amountLabel={amountLabel}
+        onPaid={onPaid}
+        confirmationSearchParams={confirmationSearchParams}
+      />
     </Elements>
   );
 }

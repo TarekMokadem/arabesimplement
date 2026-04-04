@@ -1,11 +1,21 @@
 "use server";
 
 import { headers } from "next/headers";
+import type Stripe from "stripe";
 import type { OrderFormInput } from "@/lib/validations/order.schema";
 import type { CartItem } from "@/store/cart.store";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { isStripeConfigured } from "@/lib/stripe/config";
 import { getServerStripe } from "@/lib/stripe/server";
+import { ensureStripeCustomerForCheckout } from "@/lib/stripe/checkout-customer";
+import {
+  weeklyStripePriceIdForMinutes,
+  weeklyStripePriceIdsConfigured,
+} from "@/lib/stripe/weekly-prices";
+import {
+  classifyCheckoutCart,
+  MIXED_CART_CHECKOUT_ERROR,
+} from "@/lib/orders/cart-hourly";
 import {
   attachPaymentIntentToOrder,
   createPendingOrderWithItems,
@@ -23,6 +33,8 @@ export type CreateOrderResult =
       clientSecret: string | null;
       stripePublishableKey: string | null;
       paymentMode: "stripe" | "mock";
+      checkoutKind: "hourly_only" | "standard";
+      totalEuros: number;
     }
   | { success: false; error: string };
 
@@ -43,12 +55,24 @@ export async function createOrder(
   }
 
   if (!isDatabaseConfigured()) {
+    const classified = classifyCheckoutCart(items);
+    if (classified === "mixed") {
+      return { success: false, error: MIXED_CART_CHECKOUT_ERROR };
+    }
+    const checkoutKind =
+      classified === "hourly_only" ? "hourly_only" : "standard";
+    const totalEuros = items.reduce(
+      (s, i) => s + (i.prixPromo ?? i.prix),
+      0
+    );
     return {
       success: true,
       orderId: `ORD-MOCK-${Date.now()}`,
       clientSecret: null,
       stripePublishableKey: null,
       paymentMode: "mock",
+      checkoutKind,
+      totalEuros,
     };
   }
 
@@ -69,7 +93,7 @@ export async function createOrder(
     return { success: false, error: pending.error };
   }
 
-  const { orderId, totalEuros } = pending;
+  const { orderId, totalEuros, checkoutKind } = pending;
   const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? null;
 
   if (!isStripeConfigured()) {
@@ -79,6 +103,8 @@ export async function createOrder(
       clientSecret: null,
       stripePublishableKey: publishableKey,
       paymentMode: "mock",
+      checkoutKind,
+      totalEuros,
     };
   }
 
@@ -91,8 +117,125 @@ export async function createOrder(
     };
   }
 
+  const stripe = getServerStripe();
+
+  if (checkoutKind === "hourly_only") {
+    if (!weeklyStripePriceIdsConfigured()) {
+      await deletePendingOrder(orderId).catch(() => {});
+      return {
+        success: false,
+        error:
+          "Configuration Stripe : créez trois prix récurrents hebdomadaires (60 / 40 / 30 min) " +
+          "puis renseignez STRIPE_PRICE_WEEKLY_60, STRIPE_PRICE_WEEKLY_40 et STRIPE_PRICE_WEEKLY_30 dans .env.",
+      };
+    }
+
+    let createdSubscriptionId: string | null = null;
+    try {
+      const customerId = await ensureStripeCustomerForCheckout({
+        stripe,
+        actor,
+        billing: {
+          email: data.email,
+          prenom: data.prenom,
+          nom: data.nom,
+        },
+        orderId,
+      });
+
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { stripeCustomerId: customerId },
+      });
+
+      const orderWithItems = await prisma.order.findUniqueOrThrow({
+        where: { id: orderId },
+        include: { orderItems: true },
+      });
+
+      const subItems: Stripe.SubscriptionCreateParams.Item[] = [];
+      for (const oi of orderWithItems.orderItems) {
+        if (oi.hourlyMinutes == null) continue;
+        const priceId = weeklyStripePriceIdForMinutes(oi.hourlyMinutes);
+        if (!priceId) {
+          throw new Error("Prix Stripe hebdo introuvable pour cette durée");
+        }
+        subItems.push({
+          price: priceId,
+          quantity: Math.max(1, oi.hourlyQuantity ?? 1),
+          metadata: {
+            cartLineId: oi.cartLineId ?? "",
+            formationId: oi.formationId,
+            orderId,
+          },
+        });
+      }
+
+      const subscription = await stripe.subscriptions.create({
+        customer: customerId,
+        items: subItems,
+        metadata: { orderId },
+        payment_behavior: "default_incomplete",
+        payment_settings: { save_default_payment_method: "on_subscription" },
+        expand: ["latest_invoice.payment_intent"],
+      });
+      createdSubscriptionId = subscription.id;
+
+      const inv = subscription.latest_invoice;
+      let paymentIntent: Stripe.PaymentIntent | null = null;
+      if (inv && typeof inv === "object" && "payment_intent" in inv) {
+        const pit = inv.payment_intent;
+        if (typeof pit === "string") {
+          paymentIntent = await stripe.paymentIntents.retrieve(pit);
+        } else if (
+          pit &&
+          typeof pit === "object" &&
+          (pit as Stripe.PaymentIntent).object === "payment_intent"
+        ) {
+          paymentIntent = pit as Stripe.PaymentIntent;
+        }
+      }
+
+      if (!paymentIntent?.client_secret) {
+        throw new Error("Stripe : client_secret manquant (abonnement)");
+      }
+
+      await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          stripeSubscriptionId: subscription.id,
+          stripePaymentIntentId: paymentIntent.id,
+        },
+      });
+
+      return {
+        success: true,
+        orderId,
+        clientSecret: paymentIntent.client_secret,
+        stripePublishableKey: publishableKey,
+        paymentMode: "stripe",
+        checkoutKind,
+        totalEuros,
+      };
+    } catch (e) {
+      console.error("[createOrder] Stripe abonnement", e);
+      if (createdSubscriptionId) {
+        try {
+          await stripe.subscriptions.cancel(createdSubscriptionId);
+        } catch (ce) {
+          console.error("[createOrder] Annulation abonnement orphelin", ce);
+        }
+      }
+      await deletePendingOrder(orderId).catch(() => {});
+      return {
+        success: false,
+        error:
+          "Paiement indisponible pour le moment. Réessayez plus tard ou contactez le support.",
+      };
+    }
+  }
+
   try {
-    const stripe = getServerStripe();
     const amountCents = Math.max(50, Math.round(totalEuros * 100));
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
@@ -113,6 +256,8 @@ export async function createOrder(
       clientSecret: paymentIntent.client_secret,
       stripePublishableKey: publishableKey,
       paymentMode: "stripe",
+      checkoutKind,
+      totalEuros,
     };
   } catch (e) {
     console.error("[createOrder] Stripe", e);
@@ -149,9 +294,23 @@ export async function finalizeMockPayment(
   }
 
   try {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { orderItems: true },
+    });
+    if (!order) {
+      return { success: false, error: "Commande introuvable." };
+    }
+    const allHourly =
+      order.orderItems.length > 0 &&
+      order.orderItems.every((i) => i.hourlyMinutes != null);
+
     await prisma.order.updateMany({
       where: { id: orderId, statut: "PENDING" },
-      data: { statut: "PAID" },
+      data: {
+        statut: "PAID",
+        ...(allHourly ? { stripeSubscriptionId: `mock_sub_${orderId}` } : {}),
+      },
     });
     await ensureEnrollmentsForPaidOrder(orderId);
     return { success: true };
@@ -166,6 +325,7 @@ export type CheckoutPrefill = {
   nom: string;
   email: string;
   telephone: string;
+  sexe: "FEMME" | "HOMME" | "";
 };
 
 export async function getCheckoutPrefill(): Promise<CheckoutPrefill> {
@@ -177,6 +337,7 @@ export async function getCheckoutPrefill(): Promise<CheckoutPrefill> {
       nom: "",
       email: "",
       telephone: "",
+      sexe: "",
     };
   }
 
@@ -187,13 +348,17 @@ export async function getCheckoutPrefill(): Promise<CheckoutPrefill> {
       nom: session.nom,
       email: session.email,
       telephone: "",
+      sexe: "",
     };
   }
 
   const user = await prisma.user.findUnique({
     where: { id: session.id },
-    select: { prenom: true, nom: true, email: true, telephone: true },
+    select: { prenom: true, nom: true, email: true, telephone: true, sexe: true },
   });
+
+  const sexe =
+    user?.sexe === "FEMME" || user?.sexe === "HOMME" ? user.sexe : "";
 
   return {
     isLoggedIn: true,
@@ -201,5 +366,6 @@ export async function getCheckoutPrefill(): Promise<CheckoutPrefill> {
     nom: user?.nom ?? session.nom,
     email: user?.email ?? session.email,
     telephone: user?.telephone ?? "",
+    sexe,
   };
 }

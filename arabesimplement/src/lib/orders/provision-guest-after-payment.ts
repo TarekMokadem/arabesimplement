@@ -26,6 +26,7 @@ export async function attachUserToPaidGuestOrder(
       userId: true,
       statut: true,
       billingSnapshot: true,
+      stripeCustomerId: true,
     },
   });
 
@@ -55,6 +56,13 @@ export async function attachUserToPaidGuestOrder(
     await sendWelcomeCredentialsEmail(credsEmail);
   }
 
+  if (userId && order.stripeCustomerId) {
+    await prisma.user.updateMany({
+      where: { id: userId, stripeCustomerId: null },
+      data: { stripeCustomerId: order.stripeCustomerId },
+    });
+  }
+
   return userId;
 }
 
@@ -76,6 +84,12 @@ async function resolveOrCreateStudent(
         where: { id: orderId },
         data: { userId: existing.id },
       });
+      if (snap.sexe) {
+        await tx.user.update({
+          where: { id: existing.id },
+          data: { sexe: snap.sexe },
+        });
+      }
       return { userId: existing.id, credsEmail: null };
     }
 
@@ -87,6 +101,7 @@ async function resolveOrCreateStudent(
         prenom: snap.prenom,
         nom: snap.nom,
         telephone: snap.telephone || null,
+        ...(snap.sexe ? { sexe: snap.sexe } : {}),
       },
     });
     await tx.order.update({
@@ -106,6 +121,7 @@ async function resolveOrCreateStudent(
       prenom: snap.prenom,
       nom: snap.nom,
       telephone: snap.telephone || null,
+      sexe: snap.sexe ?? undefined,
       passwordHash: await hashPassword(plain),
       role: "STUDENT",
     },

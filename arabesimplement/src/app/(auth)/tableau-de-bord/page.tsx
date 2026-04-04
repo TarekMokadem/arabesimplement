@@ -1,12 +1,29 @@
 import Link from "next/link";
-import { BookOpen, Calendar, Settings } from "lucide-react";
+import type { StudentSex } from "@prisma/client";
+import { BookOpen, Calendar, MessageCircle, Settings } from "lucide-react";
+import { prisma } from "@/lib/prisma";
+import { isDatabaseConfigured } from "@/lib/utils/database";
+import {
+  learnerFormationWhatsAppUrl,
+  learnerWhatsAppCoachLabel,
+} from "@/lib/contact/learner-whatsapp";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { cn } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getSession } from "../actions";
 import { LogoutButton } from "./LogoutButton";
 import { getEnrollmentsForLearner } from "@/lib/data/enrollments.service";
+import { getWeeklySubscriptionsForLearner } from "@/lib/data/weekly-subscriptions.service";
+import { WeeklySubscriptionsSection } from "@/components/auth/WeeklySubscriptionsSection";
 import {
   formatCreneauSlotLine,
   normalizeJourneeSlots,
@@ -27,6 +44,28 @@ export default async function TableauDeBordPage() {
   const enrollments = session
     ? await getEnrollmentsForLearner(session.id)
     : [];
+
+  let learnerSexe: StudentSex | null = null;
+  if (session && isDatabaseConfigured()) {
+    const row = await prisma.user.findUnique({
+      where: { id: session.id },
+      select: { sexe: true },
+    });
+    learnerSexe = row?.sexe ?? null;
+  }
+
+  const weeklyDb = session
+    ? await getWeeklySubscriptionsForLearner(session.id)
+    : [];
+  const weeklyPanel = weeklyDb.map((r) => ({
+    id: r.id,
+    stripeSubscriptionId: r.stripeSubscriptionId,
+    status: r.status,
+    hourlyMinutes: r.hourlyMinutes,
+    bundleQuantity: r.bundleQuantity,
+    currentPeriodEnd: r.currentPeriodEnd?.toISOString() ?? null,
+    formation: { titre: r.formation.titre },
+  }));
 
   return (
     <div className="min-h-screen bg-surface">
@@ -61,6 +100,50 @@ export default async function TableauDeBordPage() {
           </p>
         </div>
 
+        <section
+          id="abonnements-hebdo"
+          className="mb-8 scroll-mt-24"
+          aria-labelledby="titre-abonnements-hebdo"
+        >
+          <h2 id="titre-abonnements-hebdo" className="sr-only">
+            Abonnements cours à la carte
+          </h2>
+          {weeklyPanel.length > 0 ? (
+            <WeeklySubscriptionsSection
+              rows={weeklyPanel}
+              learnerSexe={learnerSexe}
+            />
+          ) : (
+            <Card className="bg-white border-dashed border-2 border-gray-200">
+              <CardHeader>
+                <CardTitle className="font-serif text-lg">
+                  Cours à la carte — abonnements
+                </CardTitle>
+                <CardDescription>
+                  Lorsque vous souscrivez un cours à la carte avec prélèvement
+                  chaque semaine, vous le retrouvez ici. Vous pourrez mettre en
+                  pause, reprendre ou arrêter sans contacter le support.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600 mb-4">
+                  Vous n&apos;avez pas encore d&apos;abonnement actif de ce
+                  type.
+                </p>
+                <Link
+                  href="/boutique"
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "border-primary text-primary inline-flex w-fit"
+                  )}
+                >
+                  Voir la boutique
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+        </section>
+
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Formations */}
           <div className="lg:col-span-2">
@@ -72,16 +155,20 @@ export default async function TableauDeBordPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {enrollments.map((enrollment) => (
+                {enrollments.map((enrollment) => {
+                  const titre = enrollment.formation.titre;
+                  const waUrl = learnerFormationWhatsAppUrl(learnerSexe, titre);
+                  const waLabel = learnerWhatsAppCoachLabel(learnerSexe);
+                  return (
                   <div
                     key={enrollment.id}
                     className="p-4 border rounded-lg hover:border-secondary/30 transition-colors"
                     data-testid={`enrollment-${enrollment.id}`}
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <div>
+                      <div className="min-w-0">
                         <h3 className="font-medium text-primary">
-                          {enrollment.formation.titre}
+                          {titre}
                         </h3>
                         {enrollment.creneau ? (
                           <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
@@ -104,7 +191,7 @@ export default async function TableauDeBordPage() {
                           </div>
                         ) : (
                           <div className="mt-2">
-                            <Link href={creneauContactHref(enrollment.formation.titre)}>
+                            <Link href={creneauContactHref(titre)}>
                               <Button
                                 size="sm"
                                 className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
@@ -114,6 +201,50 @@ export default async function TableauDeBordPage() {
                             </Link>
                           </div>
                         )}
+                        <div className="mt-3">
+                          {waUrl ? (
+                            <Link
+                              href={waUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={cn(
+                                buttonVariants({
+                                  size: "sm",
+                                  variant: "outline",
+                                }),
+                                "border-emerald-600 text-emerald-700 hover:bg-emerald-50 inline-flex items-center gap-2"
+                              )}
+                            >
+                              <MessageCircle className="h-4 w-4 shrink-0" />
+                              WhatsApp — {waLabel}
+                            </Link>
+                          ) : learnerSexe ? (
+                            <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                              Le lien WhatsApp de votre équipe n’est pas encore
+                              configuré. Utilisez{" "}
+                              <Link
+                                href="/contactez-nous"
+                                className="underline font-medium"
+                              >
+                                la page contact
+                              </Link>
+                              .
+                            </p>
+                          ) : (
+                            <p className="text-xs text-gray-600">
+                              Pour afficher le bon numéro WhatsApp (équipe
+                              féminine ou masculine), indiquez votre sexe lors
+                              d’un prochain achat ou{" "}
+                              <Link
+                                href="/contactez-nous"
+                                className="text-secondary underline font-medium"
+                              >
+                                contactez-nous
+                              </Link>
+                              .
+                            </p>
+                          )}
+                        </div>
                       </div>
                       <Badge
                         className={
@@ -130,7 +261,8 @@ export default async function TableauDeBordPage() {
                       </Badge>
                     </div>
                   </div>
-                ))}
+                );
+                })}
 
                 {enrollments.length === 0 && (
                   <div className="text-center py-8">

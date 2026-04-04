@@ -12,4 +12,6 @@ export type StoredCheckoutOrder = {
   paymentMode?: "stripe" | "mock";
   clientSecret?: string | null;
   stripePublishableKey?: string | null;
+  /** Panier 100 % cours à la carte (abonnement Stripe hebdomadaire). */
+  checkoutKind?: "hourly_only" | "standard";
 };

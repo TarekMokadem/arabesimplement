@@ -160,36 +160,40 @@ export function getBoutiqueCategoryFilters(formations: Formation[]): string[] {
   return getBoutiqueCategoriesFromFormations(formations);
 }
 
-export async function getFeaturedSessionHome(): Promise<FeaturedSessionHome> {
+function formationListItemToFeaturedHome(f: Formation): FeaturedSessionHome {
   const fallbackExpires = new Date();
   fallbackExpires.setDate(fallbackExpires.getDate() + 7);
-
-  const tajwid = MOCK_FORMATIONS_BY_SLUG["formation-tajwid"];
-  const fallback: FeaturedSessionHome = {
-    titre: tajwid?.featuredTitre ?? "Formation Tajwid — Offre spéciale",
-    description:
-      tajwid?.featuredContent ??
-      "Formation Tajwid structurée : règles de récitation, supports et accompagnement. Détails et inscription sur la fiche formation.",
-    badge: tajwid?.featuredBadge ?? "Offre limitée",
-    prix: tajwid ? Number(tajwid.prix) : 0,
-    prixPromo: tajwid?.prixPromo != null ? Number(tajwid.prixPromo) : 0,
-    slug: tajwid?.slug ?? "formation-tajwid",
-    expiresAt: fallbackExpires,
-    schedulingMode: tajwid?.schedulingMode ?? "HOURLY_PURCHASE",
+  const expiresAt = f.featuredExpiresAt ?? fallbackExpires;
+  return {
+    titre: f.featuredTitre ?? f.titre,
+    description: f.featuredContent ?? f.descriptionCourte,
+    badge: f.featuredBadge ?? "Offre",
+    prix: Number(f.prix),
+    prixPromo:
+      f.prixPromo != null ? Number(f.prixPromo) : Number(f.prix),
+    slug: f.slug,
+    expiresAt,
+    schedulingMode: f.schedulingMode,
   };
+}
 
+/** Aucune section « mise en avant » si aucune formation eligible (featured + ACTIVE). */
+export async function getFeaturedSessionHome(): Promise<FeaturedSessionHome | null> {
   if (!isDatabaseConfigured()) {
-    return { ...fallback, expiresAt: fallbackExpires };
+    const featured = MOCK_FORMATIONS.find(
+      (x) => x.featured && x.statut === "ACTIVE"
+    );
+    return featured ? formationListItemToFeaturedHome(featured) : null;
   }
 
   try {
     const row = await prisma.formation.findFirst({
       where: { featured: true, statut: "ACTIVE" },
     });
-    if (!row) {
-      return { ...fallback, expiresAt: fallbackExpires };
-    }
+    if (!row) return null;
 
+    const fallbackExpires = new Date();
+    fallbackExpires.setDate(fallbackExpires.getDate() + 7);
     const expiresAt = row.featuredExpiresAt ?? fallbackExpires;
     return {
       titre: row.featuredTitre ?? row.titre,
@@ -203,6 +207,6 @@ export async function getFeaturedSessionHome(): Promise<FeaturedSessionHome> {
     };
   } catch (e) {
     console.error("[getFeaturedSessionHome]", e);
-    return { ...fallback, expiresAt: fallbackExpires };
+    return null;
   }
 }

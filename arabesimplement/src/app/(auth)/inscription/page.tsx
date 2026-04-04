@@ -3,13 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { signupSchema, type SignupInput } from "@/lib/validations/auth.schema";
 import { toast } from "sonner";
@@ -22,6 +29,7 @@ export default function InscriptionPage() {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<SignupInput>({
@@ -37,6 +45,7 @@ export default function InscriptionPage() {
         data.password,
         data.prenom,
         data.nom,
+        data.sexe,
         data.whatsapp
       );
       if (!result.success) {
@@ -115,6 +124,34 @@ export default function InscriptionPage() {
                     <p className="text-red-500 text-xs">{errors.nom.message}</p>
                   )}
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="sexe">Vous êtes</Label>
+                <Controller
+                  name="sexe"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value ?? ""}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger
+                        className={errors.sexe ? "border-red-500 w-full" : "w-full"}
+                        data-testid="signup-sexe"
+                      >
+                        <SelectValue placeholder="Femme ou homme (suivi WhatsApp)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="FEMME">Femme</SelectItem>
+                        <SelectItem value="HOMME">Homme</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.sexe && (
+                  <p className="text-red-500 text-xs">{errors.sexe.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">

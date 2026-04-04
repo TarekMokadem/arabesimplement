@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ShoppingCart } from "lucide-react";
+import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/hooks/useCart";
@@ -10,7 +10,13 @@ import { formatPrice } from "@/lib/utils/format";
 import { toast } from "sonner";
 import type { FormationCartInput } from "@/types/domain.types";
 import type { Creneau } from "@/types/domain.types";
-import { HOURLY_SLOTS_PRICING } from "@/lib/scheduling-mode";
+import {
+  HOURLY_SLOTS_PRICING,
+  emptyHourlyBundle,
+  formatHourlyBundleForDisplay,
+  sumHourlyBundleEuros,
+  type HourlyDurationBundle,
+} from "@/lib/scheduling-mode";
 import { cn } from "@/lib/utils";
 import {
   formatCreneauSlotLine,
@@ -29,6 +35,8 @@ type CreneauLite = Pick<
   | "placesMax"
 >;
 
+type HourlyQtyState = Record<60 | 40 | 30, number>;
+
 type Props = {
   formation: FormationCartInput;
   creneaux: CreneauLite[];
@@ -42,7 +50,9 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
   );
 
   const [creneauId, setCreneauId] = useState<string | null>(null);
-  const [hourlyMinutes, setHourlyMinutes] = useState<number | null>(null);
+  const [hourlyQty, setHourlyQty] = useState<HourlyQtyState>(() =>
+    emptyHourlyBundle()
+  );
 
   const mode = formation.schedulingMode;
 
@@ -52,17 +62,30 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
 
   const needsHourly = mode === "HOURLY_PURCHASE";
 
+  const hourlyBundleForTotal: HourlyDurationBundle = useMemo(
+    () => ({
+      60: hourlyQty[60],
+      40: hourlyQty[40],
+      30: hourlyQty[30],
+    }),
+    [hourlyQty]
+  );
+
+  const weeklyHourlyEuros = useMemo(
+    () => sumHourlyBundleEuros(hourlyBundleForTotal),
+    [hourlyBundleForTotal]
+  );
+
   const unitPrice = useMemo(() => {
     if (mode === "HOURLY_PURCHASE") {
-      const row = HOURLY_SLOTS_PRICING.find((r) => r.minutes === hourlyMinutes);
-      return row?.priceEuros ?? 0;
+      return weeklyHourlyEuros;
     }
     const p = Number(formation.prix);
     const promo =
       formation.prixPromo != null ? Number(formation.prixPromo) : undefined;
     if (promo != null && promo > 0 && (!p || promo <= p)) return promo;
     return p;
-  }, [mode, hourlyMinutes, formation.prix, formation.prixPromo]);
+  }, [mode, weeklyHourlyEuros, formation.prix, formation.prixPromo]);
 
   const catalogOk =
     mode === "HOURLY_PURCHASE" ||
@@ -82,18 +105,21 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
   const canAdd =
     !disabledReason &&
     unitPrice > 0 &&
-    (needsHourly ? hourlyMinutes != null : true) &&
+    (needsHourly ? weeklyHourlyEuros > 0 : true) &&
     (needsCreneau ? !!creneauId : true);
+
+  const setTier = (minutes: 60 | 40 | 30, delta: number) => {
+    setHourlyQty((prev) => {
+      const next = Math.max(0, prev[minutes] + delta);
+      return { ...prev, [minutes]: next };
+    });
+  };
 
   const buildChoiceSummary = (): string => {
     const parts: string[] = [];
-    if (needsHourly && hourlyMinutes != null) {
-      const row = HOURLY_SLOTS_PRICING.find((r) => r.minutes === hourlyMinutes);
-      if (row) {
-        parts.push(
-          `Durée : ${row.durationLabel} — ${row.priceEuros} € / semaine`
-        );
-      }
+    if (needsHourly && weeklyHourlyEuros > 0) {
+      const line = formatHourlyBundleForDisplay(hourlyBundleForTotal);
+      if (line) parts.push(line);
     }
     if (creneauId) {
       const c = creneaux.find((x) => x.id === creneauId);
@@ -122,6 +148,12 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
 
   const handleAdd = () => {
     if (!canAdd) return;
+    const bundle: HourlyDurationBundle = {};
+    if (needsHourly) {
+      if (hourlyQty[60] > 0) bundle[60] = hourlyQty[60];
+      if (hourlyQty[40] > 0) bundle[40] = hourlyQty[40];
+      if (hourlyQty[30] > 0) bundle[30] = hourlyQty[30];
+    }
     const item = buildCartItemFromSelection({
       formationId: formation.id,
       titre: formation.titre,
@@ -131,7 +163,7 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
       unitEuros: unitPrice,
       creneauId: creneauId ?? undefined,
       choiceSummary: buildChoiceSummary(),
-      hourlyMinutes: needsHourly ? hourlyMinutes ?? undefined : undefined,
+      hourlyBundle: needsHourly ? bundle : undefined,
     });
     addItem(item);
     toast.success("Ajouté au panier !");
@@ -150,28 +182,62 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
         )}
 
         {needsHourly && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <p className="font-medium text-primary text-sm">
-              Durée de la séance hebdomadaire (montant par semaine)
+              Durées par semaine (additionnez les séances : ex. 2×1 h + 1×30 min)
+            </p>
+            <p className="text-xs text-gray-600">
+              Chaque ligne correspond au tarif hebdomadaire Stripe pour cette
+              durée ; les quantités deviennent des{" "}
+              <span className="font-medium">quantités d’abonnement</span> sur le
+              même prix récurrent (même facture, prélèvement total = somme).
             </p>
             <div className="grid gap-2">
               {HOURLY_SLOTS_PRICING.map((row) => (
-                <button
+                <div
                   key={row.minutes}
-                  type="button"
-                  onClick={() => setHourlyMinutes(row.minutes)}
-                  className={cn(
-                    "flex justify-between items-center rounded-lg border px-3 py-2.5 text-left text-sm transition-colors",
-                    hourlyMinutes === row.minutes
-                      ? "border-secondary bg-secondary/10 ring-1 ring-secondary/30"
-                      : "border-gray-200 hover:border-gray-300"
-                  )}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 px-3 py-2.5"
                 >
-                  <span>{row.durationLabel}</span>
-                  <span className="font-semibold text-primary">
-                    {row.priceEuros} €
-                  </span>
-                </button>
+                  <div className="text-sm min-w-0">
+                    <span className="font-medium text-primary">
+                      {row.durationLabel}
+                    </span>
+                    <span className="text-gray-600">
+                      {" "}
+                      — {row.priceEuros} € / semaine · unité
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      aria-label={`Moins ${row.durationLabel}`}
+                      onClick={() =>
+                        setTier(row.minutes as 60 | 40 | 30, -1)
+                      }
+                      disabled={hourlyQty[row.minutes as 60 | 40 | 30] <= 0}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="w-8 text-center text-sm font-semibold tabular-nums">
+                      {hourlyQty[row.minutes as 60 | 40 | 30]}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      aria-label={`Plus ${row.durationLabel}`}
+                      onClick={() =>
+                        setTier(row.minutes as 60 | 40 | 30, 1)
+                      }
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -227,6 +293,18 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
             {unitPrice > 0 ? formatPrice(unitPrice) : "—"}
           </span>
         </div>
+
+        {needsHourly && weeklyHourlyEuros > 0 ? (
+          <p className="text-xs text-gray-500 -mt-2">
+            Soit{" "}
+            <span className="font-medium text-primary">
+              {formatHourlyBundleForDisplay(hourlyBundleForTotal, {
+                omitPrice: true,
+              })}
+            </span>{" "}
+            facturé chaque semaine (abonnement).
+          </p>
+        ) : null}
 
         <Button
           onClick={handleAdd}

@@ -1,8 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import type { CartItem } from "@/store/cart.store";
 import {
+  HOURLY_BUNDLE_MINUTES,
   hourlyPriceForMinutes,
   isValidHourlyMinutes,
+  sumHourlyBundleEuros,
+  formatHourlyBundleForDisplay,
+  type HourlyDurationBundle,
 } from "@/lib/scheduling-mode";
 import type { FormationSchedulingMode } from "@/types/domain.types";
 import {
@@ -26,6 +30,21 @@ function formatCreneauLineFromDb(c: {
       dureeMinutes: c.dureeMinutes,
     }
   );
+}
+
+function resolveHourlyBundleFromLine(line: CartItem): HourlyDurationBundle | null {
+  if (line.hourlyBundle && Object.keys(line.hourlyBundle).length > 0) {
+    const cleaned: HourlyDurationBundle = {};
+    for (const m of HOURLY_BUNDLE_MINUTES) {
+      const q = Math.floor(Number(line.hourlyBundle[m] ?? 0));
+      if (q > 0) cleaned[m] = q;
+    }
+    return Object.keys(cleaned).length > 0 ? cleaned : null;
+  }
+  if (line.hourlyMinutes != null && isValidHourlyMinutes(line.hourlyMinutes)) {
+    return { [line.hourlyMinutes]: 1 } as HourlyDurationBundle;
+  }
+  return null;
 }
 
 export type NormalizeCartResult =
@@ -96,21 +115,24 @@ export async function normalizeCartItemsForCheckout(
     }
 
     if (mode === "HOURLY_PURCHASE") {
-      if (line.hourlyMinutes == null || !isValidHourlyMinutes(line.hourlyMinutes)) {
+      const bundle = resolveHourlyBundleFromLine(line);
+      if (!bundle) {
         return {
           success: false,
-          error: "Durée de cours invalide dans le panier.",
+          error:
+            "Indiquez au moins une durée (nombre de séances par semaine) pour chaque cours à la carte.",
         };
       }
-      const euros = hourlyPriceForMinutes(line.hourlyMinutes);
-      if (euros == null || euros <= 0) {
-        return { success: false, error: "Tarif horaire introuvable." };
+      const weeklyTotal = sumHourlyBundleEuros(bundle);
+      if (weeklyTotal <= 0) {
+        return { success: false, error: "Montant hebdomadaire invalide." };
       }
       const creneau = effectiveCreneauId
         ? f.creneaux.find((x) => x.id === effectiveCreneauId)
         : undefined;
+      const bundleLine = formatHourlyBundleForDisplay(bundle);
       const summaryParts = [
-        `${line.hourlyMinutes} min — ${euros} €`,
+        bundleLine,
         creneau ? formatCreneauLineFromDb(creneau) : undefined,
       ].filter(Boolean);
       const normalized: CartItem = {
@@ -120,14 +142,14 @@ export async function normalizeCartItemsForCheckout(
         slug: f.slug,
         imageUrl: f.imageUrl ?? undefined,
         schedulingMode: mode,
-        prix: euros,
+        prix: weeklyTotal,
         prixPromo: undefined,
         creneauId: effectiveCreneauId,
-        hourlyMinutes: line.hourlyMinutes,
+        hourlyBundle: bundle,
         choiceSummary: summaryParts.join(" · "),
       };
       out.push(normalized);
-      totalEuros += euros;
+      totalEuros += weeklyTotal;
       continue;
     }
 

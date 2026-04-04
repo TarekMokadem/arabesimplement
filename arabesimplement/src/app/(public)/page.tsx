@@ -276,7 +276,9 @@ export default async function HomePage() {
   return (
     <div className="pt-20">
       <HeroSection trust={heroTrust} />
-      <SessionDuMomentSection {...featuredSession} />
+      {featuredSession ? (
+        <SessionDuMomentSection {...featuredSession} />
+      ) : null}
       <FeaturesSection />
       <SEOContentSection />
     </div>

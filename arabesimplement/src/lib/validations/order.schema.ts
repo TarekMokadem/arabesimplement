@@ -1,8 +1,14 @@
 import { z } from "zod";
 
+export const studentSexSchema = z.enum(["FEMME", "HOMME"], {
+  message:
+    "Indiquez votre sexe pour être mis en relation avec la bonne équipe.",
+});
+
 export const orderFormSchema = z.object({
   prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
   nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+  sexe: studentSexSchema,
   email: z.string().email("Adresse email invalide"),
   telephone: z
     .string()

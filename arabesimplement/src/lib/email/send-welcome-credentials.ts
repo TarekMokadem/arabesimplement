@@ -32,8 +32,13 @@ export async function sendWelcomeCredentialsEmail(
   }
 
   const resend = new Resend(key);
-  const { error } = await resend.emails.send({
-    from,
+  const fromHeader =
+    from.includes("<") && from.includes(">")
+      ? from
+      : `ArabeSimplement <${from}>`;
+
+  const { data, error } = await resend.emails.send({
+    from: fromHeader,
     to: params.to,
     subject: "Votre compte ArabeSimplement — identifiants",
     html: `
@@ -47,7 +52,18 @@ export async function sendWelcomeCredentialsEmail(
   });
 
   if (error) {
-    console.error("[sendWelcomeCredentialsEmail] Resend", error);
+    console.error(
+      "[sendWelcomeCredentialsEmail] Resend refusé — vérifiez RESEND_FROM (domaine vérifié chez Resend, pas une adresse Gmail seule).",
+      JSON.stringify(error)
+    );
+    return;
+  }
+
+  if (data?.id) {
+    console.info(
+      "[sendWelcomeCredentialsEmail] envoyé, id Resend:",
+      data.id
+    );
   }
 }
 

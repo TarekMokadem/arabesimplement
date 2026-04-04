@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { studentSexSchema } from "@/lib/validations/order.schema";
 
 export const loginSchema = z.object({
   email: z.string().email("Adresse email invalide"),
@@ -11,6 +12,7 @@ export const signupSchema = z
   .object({
     prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
     nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+    sexe: studentSexSchema,
     email: z.string().email("Adresse email invalide"),
     whatsapp: z
       .string()

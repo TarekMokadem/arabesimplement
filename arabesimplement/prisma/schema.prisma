@@ -11,6 +11,12 @@ enum UserRole {
   ADMIN
 }
 
+/** Pour orienter l’élève vers le bon interlocuteur WhatsApp (équipe féminine / masculine). */
+enum StudentSex {
+  FEMME
+  HOMME
+}
+
 enum FormationStatus {
   ACTIVE
   INACTIVE
@@ -38,19 +44,31 @@ enum OrderStatus {
   REFUNDED
 }
 
+/** Abonnement hebdo cours à la carte (Stripe). */
+enum WeeklySubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELED
+  PAST_DUE
+}
+
 model User {
   id           String    @id @default(uuid())
   email        String    @unique
   prenom       String
   nom          String
   telephone    String?
+  sexe         StudentSex? @map("sexe")
   passwordHash String?   @map("password_hash")
+  /** Client Stripe (abonnements cours à la carte). */
+  stripeCustomerId String? @unique @map("stripe_customer_id")
   role         UserRole  @default(STUDENT)
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
-  orders       Order[]
-  enrollments  Enrollment[]
+  orders                 Order[]
+  enrollments            Enrollment[]
+  courseWeeklySubscriptions CourseWeeklySubscription[]
 
   @@map("users")
 }
@@ -76,9 +94,10 @@ model Formation {
   createdAt         DateTime        @default(now()) @map("created_at")
   updatedAt         DateTime        @updatedAt @map("updated_at")
 
-  creneaux    Creneau[]
-  orderItems  OrderItem[]
-  enrollments Enrollment[]
+  creneaux                   Creneau[]
+  orderItems                 OrderItem[]
+  enrollments                Enrollment[]
+  courseWeeklySubscriptions CourseWeeklySubscription[]
 
   @@map("formations")
 }
@@ -97,9 +116,10 @@ model Creneau {
   statut        CreneauStatus @default(OPEN)
   createdAt     DateTime      @default(now()) @map("created_at")
 
-  formation   Formation    @relation(fields: [formationId], references: [id], onDelete: Cascade)
-  enrollments Enrollment[]
-  orderItems  OrderItem[]
+  formation                  Formation                  @relation(fields: [formationId], references: [id], onDelete: Cascade)
+  enrollments                Enrollment[]
+  orderItems                 OrderItem[]
+  courseWeeklySubscriptions CourseWeeklySubscription[]
 
   @@map("creneaux")
 }
@@ -113,13 +133,18 @@ model Order {
   total                 Decimal     @db.Decimal(10, 2)
   statut                OrderStatus @default(PENDING)
   stripePaymentIntentId String?     @unique @map("stripe_payment_intent_id")
+  /** Client Stripe créé pour le tunnel (invité inclus, recopié sur User après paiement). */
+  stripeCustomerId      String?     @map("stripe_customer_id")
+  /** Abonnement hebdo (cours à la carte — plusieurs lignes = un seul Subscription Stripe). */
+  stripeSubscriptionId  String?     @unique @map("stripe_subscription_id")
   reglementSigneAt      DateTime?   @map("reglement_signe_at")
   reglementIp           String?     @map("reglement_ip")
   reglementVersion      String?     @map("reglement_version")
   createdAt             DateTime    @default(now()) @map("created_at")
 
-  user       User?       @relation(fields: [userId], references: [id])
-  orderItems OrderItem[]
+  user                     User?                     @relation(fields: [userId], references: [id])
+  orderItems               OrderItem[]
+  courseWeeklySubscriptions CourseWeeklySubscription[]
 
   @@map("orders")
 }
@@ -130,6 +155,10 @@ model OrderItem {
   formationId   String  @map("formation_id")
   creneauId     String? @map("creneau_id")
   hourlyMinutes Int?    @map("hourly_minutes")
+  /** Pour cours à la carte : nombre de « unités » de cette durée facturées chaque semaine (ex. 2 × 1 h). */
+  hourlyQuantity Int    @default(1) @map("hourly_quantity")
+  /** Identifiant stable de ligne panier (abonnement Stripe / rattachement des metadata). */
+  cartLineId    String? @map("cart_line_id")
   prixUnitaire  Decimal @map("prix_unitaire") @db.Decimal(10, 2)
 
   order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -154,6 +183,31 @@ model Enrollment {
   creneau   Creneau?   @relation(fields: [creneauId], references: [id])
 
   @@map("enrollments")
+}
+
+/** Une ligne d’abonnement hebdomadaire (cours à la carte) liée à Stripe SubscriptionItem. */
+model CourseWeeklySubscription {
+  id                       String                   @id @default(uuid())
+  userId                   String                   @map("user_id")
+  orderId                  String?                  @map("order_id")
+  formationId              String                   @map("formation_id")
+  creneauId                String?                  @map("creneau_id")
+  hourlyMinutes            Int                      @map("hourly_minutes")
+  /** Aligné sur la quantity du SubscriptionItem Stripe (unités / semaine pour cette durée). */
+  bundleQuantity           Int                      @default(1) @map("bundle_quantity")
+  stripeSubscriptionId     String                   @map("stripe_subscription_id")
+  stripeSubscriptionItemId String?                  @unique @map("stripe_subscription_item_id")
+  status                   WeeklySubscriptionStatus @default(ACTIVE)
+  currentPeriodEnd         DateTime?                @map("current_period_end")
+  createdAt                DateTime                 @default(now()) @map("created_at")
+  updatedAt                DateTime                 @updatedAt @map("updated_at")
+
+  user      User      @relation(fields: [userId], references: [id])
+  formation Formation @relation(fields: [formationId], references: [id])
+  creneau   Creneau?  @relation(fields: [creneauId], references: [id])
+  order     Order?    @relation(fields: [orderId], references: [id])
+
+  @@map("course_weekly_subscriptions")
 }
 
 model ReglementInterieur {

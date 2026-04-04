@@ -28,6 +28,70 @@ export function hourlyMinPriceEuros(): number {
   return Math.min(...HOURLY_SLOTS_PRICING.map((r) => r.priceEuros));
 }
 
+/** Durées facturables pour un pack hebdomadaire (plusieurs unités par durée). */
+export const HOURLY_BUNDLE_MINUTES = [60, 40, 30] as const;
+export type HourlyBundleMinutes = (typeof HOURLY_BUNDLE_MINUTES)[number];
+export type HourlyDurationBundle = Partial<Record<HourlyBundleMinutes, number>>;
+
+export function sumHourlyBundleEuros(bundle: HourlyDurationBundle): number {
+  let s = 0;
+  for (const m of HOURLY_BUNDLE_MINUTES) {
+    const q = Math.max(0, Math.floor(bundle[m] ?? 0));
+    if (q <= 0) continue;
+    const p = hourlyPriceForMinutes(m);
+    if (p == null) continue;
+    s += p * q;
+  }
+  return s;
+}
+
+export function totalMinutesInHourlyBundle(bundle: HourlyDurationBundle): number {
+  let t = 0;
+  for (const m of HOURLY_BUNDLE_MINUTES) {
+    const q = Math.max(0, Math.floor(bundle[m] ?? 0));
+    t += q * m;
+  }
+  return t;
+}
+
+/** Texte court : « 2×1 h + 1×30 min (25 € / semaine) » — sans montant si omitPrice. */
+export function formatHourlyBundleForDisplay(
+  bundle: HourlyDurationBundle,
+  options?: { omitPrice?: boolean }
+): string {
+  const parts: string[] = [];
+  for (const m of HOURLY_BUNDLE_MINUTES) {
+    const q = Math.max(0, Math.floor(bundle[m] ?? 0));
+    if (q <= 0) continue;
+    const row = HOURLY_SLOTS_PRICING.find((r) => r.minutes === m);
+    if (!row) continue;
+    parts.push(`${q}×${row.durationLabel}`);
+  }
+  if (parts.length === 0) return "";
+  const core = parts.join(" + ");
+  if (options?.omitPrice) return core;
+  const euros = sumHourlyBundleEuros(bundle);
+  return `${core} (${euros} € / semaine)`;
+}
+
+export function mergeHourlyBundles(
+  a: HourlyDurationBundle | undefined,
+  b: HourlyDurationBundle | undefined
+): HourlyDurationBundle {
+  const out: HourlyDurationBundle = {};
+  for (const m of HOURLY_BUNDLE_MINUTES) {
+    const sum =
+      Math.max(0, Math.floor(a?.[m] ?? 0)) +
+      Math.max(0, Math.floor(b?.[m] ?? 0));
+    if (sum > 0) out[m] = sum;
+  }
+  return out;
+}
+
+export function emptyHourlyBundle(): Record<HourlyBundleMinutes, number> {
+  return { 60: 0, 40: 0, 30: 0 };
+}
+
 export function schedulingModeTitle(mode: FormationSchedulingMode): string {
   switch (mode) {
     case "HOURLY_PURCHASE":

@@ -112,6 +112,8 @@ export interface OrderItem {
   formationId: string;
   creneauId?: string;
   hourlyMinutes?: number;
+  hourlyQuantity?: number;
+  cartLineId?: string;
   prixUnitaire: number;
   formation?: Formation;
 }

@@ -66,6 +66,7 @@ export default function InformationsPage() {
     defaultValues: {
       prenom: "",
       nom: "",
+      sexe: undefined,
       email: "",
       telephone: "",
       pays: "",
@@ -122,11 +123,12 @@ export default function InformationsPage() {
           nom: data.nom,
           email: data.email,
           items,
-          total: getTotal(),
+          total: result.totalEuros ?? getTotal(),
           orderId: result.orderId,
           paymentMode: result.paymentMode,
           clientSecret: result.clientSecret,
           stripePublishableKey: result.stripePublishableKey,
+          checkoutKind: result.checkoutKind,
           createdAt: new Date().toISOString(),
         })
       );
@@ -196,6 +198,40 @@ export default function InformationsPage() {
                         </p>
                       )}
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="sexe">Vous êtes *</Label>
+                    <p className="text-muted-foreground text-xs">
+                      Pour vous orienter vers l’interlocuteur WhatsApp adapté
+                      (équipe féminine ou masculine).
+                    </p>
+                    <Select
+                      value={watch("sexe") ?? ""}
+                      onValueChange={(value) => {
+                        setValue("sexe", value as OrderFormInput["sexe"], {
+                          shouldValidate: true,
+                        });
+                      }}
+                    >
+                      <SelectTrigger
+                        className={
+                          errors.sexe ? "border-red-500 w-full" : "w-full"
+                        }
+                        data-testid="select-sexe"
+                      >
+                        <SelectValue placeholder="Choisissez une option" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="FEMME">Femme</SelectItem>
+                        <SelectItem value="HOMME">Homme</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.sexe && (
+                      <p className="text-red-500 text-sm">
+                        {errors.sexe.message}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">

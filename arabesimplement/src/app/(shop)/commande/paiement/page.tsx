@@ -62,6 +62,14 @@ export default function PaiementPage() {
     !!orderInfo.clientSecret &&
     !!orderInfo.stripePublishableKey;
 
+  const confirmationQuery = useMemo(() => {
+    if (!orderInfo?.orderId || !orderInfo?.email) return "";
+    return new URLSearchParams({
+      orderId: orderInfo.orderId,
+      email: orderInfo.email,
+    }).toString();
+  }, [orderInfo]);
+
   const handleMockPayment = async () => {
     setIsLoading(true);
     try {
@@ -75,7 +83,11 @@ export default function PaiementPage() {
       clearCart();
       sessionStorage.removeItem("orderInfo");
       toast.success("Paiement enregistré !");
-      router.push("/commande/confirmation");
+      router.push(
+        confirmationQuery
+          ? `/commande/confirmation?${confirmationQuery}`
+          : "/commande/confirmation"
+      );
     } catch (e) {
       console.error(e);
       toast.error("Erreur lors du paiement. Veuillez réessayer.");
@@ -88,7 +100,11 @@ export default function PaiementPage() {
     clearCart();
     sessionStorage.removeItem("orderInfo");
     toast.success("Paiement réussi !");
-    router.push("/commande/confirmation");
+    router.push(
+      confirmationQuery
+        ? `/commande/confirmation?${confirmationQuery}`
+        : "/commande/confirmation"
+    );
   };
 
   if (!orderInfo && items.length === 0) {
@@ -108,6 +124,20 @@ export default function PaiementPage() {
           selon ce qui est proposé dans le formulaire.
         </p>
 
+        {orderInfo?.checkoutKind === "hourly_only" ? (
+          <div className="mb-6 p-4 rounded-lg border border-secondary/40 bg-secondary/5 text-sm text-gray-700">
+            <p className="font-medium text-primary mb-1">
+              Abonnement hebdomadaire (cours à la carte)
+            </p>
+            <p>
+              Le montant affiché correspond à votre première semaine. Le même
+              prélèvement est renouvelé automatiquement chaque semaine pour
+              chaque ligne du panier, jusqu’à ce que vous mettiez en pause ou
+              arrêtiez depuis votre tableau de bord après la création du compte.
+            </p>
+          </div>
+        ) : null}
+
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <Card className="bg-white">
@@ -121,7 +151,8 @@ export default function PaiementPage() {
 
                 {useStripeCheckout &&
                 orderInfo.stripePublishableKey &&
-                orderInfo.clientSecret ? (
+                orderInfo.clientSecret &&
+                confirmationQuery ? (
                   <>
                     <PaymentExperiencePreface />
                     <StripePaymentSection
@@ -129,6 +160,7 @@ export default function PaiementPage() {
                       clientSecret={orderInfo.clientSecret}
                       amountLabel={amountLabel}
                       onPaid={handleStripePaid}
+                      confirmationSearchParams={confirmationQuery}
                     />
                   </>
                 ) : (

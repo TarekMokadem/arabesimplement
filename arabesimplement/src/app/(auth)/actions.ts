@@ -7,6 +7,7 @@ import { SESSION_COOKIE_NAME, SESSION_MAX_AGE } from "@/lib/auth/session";
 import { signAuthSession, verifyAuthSessionToken } from "@/lib/auth/session-token";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import type { AuthSession } from "@/lib/auth/types";
+import type { StudentSex } from "@prisma/client";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 
 function normalizeEmail(email: string): string {
@@ -119,6 +120,7 @@ export async function signUp(
   password: string,
   prenom: string,
   nom: string,
+  sexe: StudentSex,
   whatsapp: string
 ): Promise<
   | { success: true; redirectTo: string }
@@ -141,6 +143,7 @@ export async function signUp(
         email: normalizedEmail,
         prenom: prenom.trim(),
         nom: nom.trim(),
+        sexe,
         telephone: whatsapp.trim() || null,
         passwordHash,
         role: "STUDENT",
