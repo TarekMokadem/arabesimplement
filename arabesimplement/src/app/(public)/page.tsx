@@ -14,6 +14,7 @@ import {
 } from "@/lib/data/home.service";
 import { cn } from "@/lib/utils";
 import { AfterPurchaseJourneySection } from "@/components/home/AfterPurchaseJourneySection";
+import { HomeFaqTeaser } from "@/components/home/HomeFaqTeaser";
 
 function SessionDuMomentSection(props: FeaturedSessionHome) {
   return <SessionDuMoment {...props} />;
@@ -281,6 +282,7 @@ export default async function HomePage() {
         <SessionDuMomentSection {...featuredSession} />
       ) : null}
       <FeaturesSection />
+      <HomeFaqTeaser />
       <AfterPurchaseJourneySection />
       <SEOContentSection />
     </div>

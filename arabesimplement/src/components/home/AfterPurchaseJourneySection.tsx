@@ -94,6 +94,15 @@ export function AfterPurchaseJourneySection() {
             Par où commencer selon mon objectif ?
           </Link>
           <Link
+            href="/comment-ca-marche"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "lg" }),
+              "border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            )}
+          >
+            Comment ça marche (page dédiée)
+          </Link>
+          <Link
             href="/boutique"
             className={cn(
               buttonVariants({ variant: "outline", size: "lg" }),

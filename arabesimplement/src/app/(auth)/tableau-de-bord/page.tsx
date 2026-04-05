@@ -21,6 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { getSession } from "../actions";
 import { LogoutButton } from "./LogoutButton";
+import { LearnerSexeForm } from "./LearnerSexeForm";
 import { getEnrollmentsForLearner } from "@/lib/data/enrollments.service";
 import { getWeeklySubscriptionsForLearner } from "@/lib/data/weekly-subscriptions.service";
 import { WeeklySubscriptionsSection } from "@/components/auth/WeeklySubscriptionsSection";
@@ -302,13 +303,19 @@ export default async function TableauDeBordPage() {
                   <span className="text-gray-500">Email</span>
                   <p className="font-medium text-primary">{user.email}</p>
                 </div>
+                {session ? (
+                  <LearnerSexeForm
+                    initialSexe={learnerSexe}
+                    disabled={!isDatabaseConfigured()}
+                  />
+                ) : null}
                 <Button
                   variant="outline"
                   size="sm"
                   className="w-full mt-4 border-primary text-primary"
                   disabled
                 >
-                  Modifier mes informations
+                  Modifier nom et e-mail (bientôt)
                 </Button>
               </CardContent>
             </Card>

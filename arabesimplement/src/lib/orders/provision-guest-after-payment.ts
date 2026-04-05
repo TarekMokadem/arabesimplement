@@ -53,7 +53,13 @@ export async function attachUserToPaidGuestOrder(
   });
 
   if (credsEmail) {
-    await sendWelcomeCredentialsEmail(credsEmail);
+    const ok = await sendWelcomeCredentialsEmail(credsEmail);
+    if (ok) {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { purchaseFollowupEmailSentAt: new Date() },
+      });
+    }
   }
 
   if (userId && order.stripeCustomerId) {

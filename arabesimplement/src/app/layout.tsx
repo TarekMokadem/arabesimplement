@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Libre_Baskerville, Inter, Amiri } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { getSiteUrl, toAbsoluteUrl } from "@/lib/site-url";
 
 const libreBaskerville = Libre_Baskerville({
   variable: "--font-serif",
@@ -24,7 +25,11 @@ const amiri = Amiri({
   display: "swap",
 });
 
+const siteUrl = getSiteUrl();
+const defaultOgImage = toAbsoluteUrl("/brand/logo-arabe-simplement.png");
+
 export const metadata: Metadata = {
+  metadataBase: siteUrl ? new URL(siteUrl) : undefined,
   title: {
     default: "ArabeSimplement - Apprendre l'arabe facilement",
     template: "%s | ArabeSimplement",
@@ -44,6 +49,18 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     siteName: "ArabeSimplement",
+    url: siteUrl || undefined,
+    images:
+      defaultOgImage && defaultOgImage.startsWith("http")
+        ? [
+            {
+              url: defaultOgImage,
+              width: 512,
+              height: 512,
+              alt: "ArabeSimplement",
+            },
+          ]
+        : undefined,
   },
 };
 

@@ -147,6 +147,8 @@ model Order {
   reglementSigneAt      DateTime?   @map("reglement_signe_at")
   reglementIp           String?     @map("reglement_ip")
   reglementVersion      String?     @map("reglement_version")
+  /** Évite l’envoi en double de l’e-mail de bienvenue ou du guide « prochaines étapes ». */
+  purchaseFollowupEmailSentAt DateTime? @map("purchase_followup_email_sent_at")
   createdAt             DateTime    @default(now()) @map("created_at")
 
   user                     User?                     @relation(fields: [userId], references: [id])

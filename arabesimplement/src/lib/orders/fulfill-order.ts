@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { attachUserToPaidGuestOrder } from "@/lib/orders/provision-guest-after-payment";
+import { sendPurchaseFollowupIfNeeded } from "@/lib/orders/send-purchase-followup";
 import { ensureCourseWeeklySubscriptionsForPaidOrder } from "@/lib/orders/sync-course-weekly-subscriptions";
 
 const ENROLLMENT_DAYS_AFTER_PAYMENT = 30;
@@ -73,4 +74,5 @@ export async function ensureEnrollmentsForPaidOrder(
   }
 
   await ensureCourseWeeklySubscriptionsForPaidOrder(orderId);
+  await sendPurchaseFollowupIfNeeded(orderId);
 }

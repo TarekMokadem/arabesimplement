@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Clock, Users, Calendar } from "lucide-react";
+import { ArrowLeft, Clock, Users, Calendar, HelpCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PurchaseFormationPanel } from "@/components/shop/PurchaseFormationPanel";
 import { SchedulingModeExplainer } from "@/components/shop/SchedulingModeExplainer";
@@ -18,7 +19,10 @@ import {
   getFormationSlugsForStaticParams,
   toFormationCartInput,
 } from "@/lib/data/formations.service";
+import { getApprovedTestimonialsPreview } from "@/lib/data/testimonials.service";
 import { formationThemeLabel } from "@/lib/content/formation-theme";
+import { FormationTestimonialsPreview } from "@/components/shop/FormationTestimonialsPreview";
+import { getSiteUrl, toAbsoluteUrl } from "@/lib/site-url";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -29,9 +33,48 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug }));
 }
 
-export default async function FormationPage({ params }: PageProps) {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const formation = await getFormationBySlug(slug);
+  if (!formation) {
+    return { title: "Formation" };
+  }
+  const base = getSiteUrl();
+  const url = base ? `${base}/boutique/${slug}` : `/boutique/${slug}`;
+  const ogImage = formation.imageUrl
+    ? toAbsoluteUrl(formation.imageUrl)
+    : toAbsoluteUrl("/brand/logo-arabe-simplement.png");
+  const images =
+    ogImage.startsWith("http") && ogImage.length > 0
+      ? [{ url: ogImage, alt: formation.titre }]
+      : undefined;
+  return {
+    title: formation.titre,
+    description: formation.descriptionCourte,
+    openGraph: {
+      title: formation.titre,
+      description: formation.descriptionCourte,
+      url,
+      type: "website",
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: formation.titre,
+      description: formation.descriptionCourte,
+      images: images?.map((i) => i.url),
+    },
+  };
+}
+
+export default async function FormationPage({ params }: PageProps) {
+  const { slug } = await params;
+  const [formation, testimonials] = await Promise.all([
+    getFormationBySlug(slug),
+    getApprovedTestimonialsPreview(3),
+  ]);
 
   if (!formation) {
     notFound();
@@ -41,13 +84,20 @@ export default async function FormationPage({ params }: PageProps) {
 
   return (
     <div className="pt-20 bg-surface min-h-screen">
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-6 space-y-4">
         <Link
           href="/boutique"
           className="inline-flex items-center text-primary hover:text-secondary transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Retour à la boutique
+        </Link>
+        <Link
+          href="/par-ou-commencer"
+          className="inline-flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
+        >
+          <HelpCircle className="h-4 w-4 shrink-0 text-secondary" aria-hidden />
+          Pas sûr(e) que ce cours vous convient ? Guide « Par où commencer »
         </Link>
       </div>
 
@@ -185,6 +235,8 @@ export default async function FormationPage({ params }: PageProps) {
             />
           </div>
         )}
+
+        <FormationTestimonialsPreview rows={testimonials} />
       </div>
     </div>
   );

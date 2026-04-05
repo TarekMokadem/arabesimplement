@@ -20,6 +20,27 @@ export async function getApprovedTestimonials(): Promise<
   }
 }
 
+/** Avis approuvés les plus récents (aperçu boutique / fiches). */
+export async function getApprovedTestimonialsPreview(
+  limit: number
+): Promise<Pick<Testimonial, "id" | "nom" | "texte" | "note">[]> {
+  const cap = Math.min(Math.max(1, limit), 10);
+  if (!isDatabaseConfigured()) {
+    return [];
+  }
+  try {
+    return await prisma.testimonial.findMany({
+      where: { approuve: true },
+      orderBy: { createdAt: "desc" },
+      take: cap,
+      select: { id: true, nom: true, texte: true, note: true },
+    });
+  } catch (e) {
+    console.error("[getApprovedTestimonialsPreview]", e);
+    return [];
+  }
+}
+
 export async function getTestimonialsForAdmin(): Promise<Testimonial[]> {
   if (!isDatabaseConfigured()) {
     return [];

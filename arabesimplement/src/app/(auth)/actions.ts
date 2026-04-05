@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -9,6 +10,7 @@ import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import type { AuthSession } from "@/lib/auth/types";
 import type { StudentSex } from "@prisma/client";
 import { isDatabaseConfigured } from "@/lib/utils/database";
+import { LEARNER_SEXE_UNSET } from "@/lib/auth/learner-sexe";
 
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
@@ -192,6 +194,54 @@ export async function signOut() {
   const cookieStore = await cookies();
   cookieStore.delete(SESSION_COOKIE_NAME);
   redirect("/connexion");
+}
+
+/**
+ * Met à jour le sexe élève (orientation WhatsApp). Chaînes acceptées : FEMME, HOMME,
+ * valeur vide / null / sentinelle {@link LEARNER_SEXE_UNSET} pour effacer.
+ */
+export async function updateLearnerSexe(
+  raw: string | null
+): Promise<{ ok: boolean; error?: string }> {
+  const session = await getSession();
+  if (!session || session.role !== "STUDENT") {
+    return { ok: false, error: "Accès réservé aux élèves." };
+  }
+  if (!isDatabaseConfigured()) {
+    return {
+      ok: false,
+      error:
+        "Mise à jour impossible : configurez une base de données (DATABASE_URL).",
+    };
+  }
+
+  const normalized =
+    raw === null || raw === "" || raw === LEARNER_SEXE_UNSET
+      ? null
+      : raw;
+
+  if (
+    normalized !== null &&
+    normalized !== "FEMME" &&
+    normalized !== "HOMME"
+  ) {
+    return { ok: false, error: "Valeur invalide." };
+  }
+
+  try {
+    await prisma.user.update({
+      where: { id: session.id },
+      data: {
+        sexe:
+          normalized === null ? null : (normalized as StudentSex),
+      },
+    });
+    revalidatePath("/tableau-de-bord");
+    return { ok: true };
+  } catch (e) {
+    console.error("[updateLearnerSexe]", e);
+    return { ok: false, error: dbUnavailableMessage(e) };
+  }
 }
 
 export async function getSession(): Promise<AuthSession | null> {
