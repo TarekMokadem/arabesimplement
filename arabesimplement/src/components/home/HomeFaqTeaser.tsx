@@ -3,27 +3,7 @@ import { HelpCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
-
-const items = [
-  {
-    q: "Par où commencer si je ne sais pas quelle formation choisir ?",
-    a: "La page « Par où commencer » vous oriente selon votre objectif (lire le Coran, débuter, renforcer la lecture, etc.).",
-    href: "/par-ou-commencer",
-    cta: "Voir le guide",
-  },
-  {
-    q: "Que se passe-t-il après le paiement ?",
-    a: "Vous accédez à votre espace apprenant, aux créneaux ou contacts prévus par la formation, et à WhatsApp selon votre profil — le tout est détaillé étape par étape.",
-    href: "/comment-ca-marche",
-    cta: "Comment ça marche",
-  },
-  {
-    q: "Les cours sont-ils en ligne uniquement ?",
-    a: "Oui : inscription et organisation via le site ; les séances se font en visio avec nos enseignants, selon le mode indiqué sur chaque fiche formation.",
-    href: "/boutique",
-    cta: "Voir la boutique",
-  },
-] as const;
+import { HOME_FAQ_TEASER_ITEMS } from "@/lib/content/public-faq";
 
 export function HomeFaqTeaser() {
   return (
@@ -47,13 +27,16 @@ export function HomeFaqTeaser() {
             Une question avant de vous lancer ?
           </h2>
           <p className="text-gray-600 leading-relaxed">
-            Trois réponses courtes ; la page dédiée « Par où commencer » va
-            plus loin si besoin.
+            Trois réponses courtes — la{" "}
+            <Link href="/faq" className="text-secondary font-medium underline-offset-2 hover:underline">
+              FAQ complète
+            </Link>{" "}
+            regroupe d&apos;autres questions fréquentes.
           </p>
         </div>
 
         <ul className="grid gap-6 md:grid-cols-3">
-          {items.map((item) => (
+          {HOME_FAQ_TEASER_ITEMS.map((item) => (
             <li
               key={item.q}
               className="rounded-xl border border-gray-100 bg-surface/80 p-6 shadow-sm flex flex-col"
@@ -64,15 +47,17 @@ export function HomeFaqTeaser() {
               <p className="text-sm text-gray-600 leading-relaxed flex-1 mb-4">
                 {item.a}
               </p>
-              <Link
-                href={item.href}
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "sm" }),
-                  "border-primary text-primary w-fit"
-                )}
-              >
-                {item.cta}
-              </Link>
+              {item.href != null && item.cta != null ? (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "border-primary text-primary w-fit"
+                  )}
+                >
+                  {item.cta}
+                </Link>
+              ) : null}
             </li>
           ))}
         </ul>

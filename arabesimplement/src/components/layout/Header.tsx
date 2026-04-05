@@ -8,17 +8,19 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/hooks/useCart";
 import { cn } from "@/lib/utils";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
+import {
+  HEADER_AIDE_LINKS,
+  HeaderAideMenu,
+} from "@/components/layout/HeaderAideMenu";
 
-const navLinks = [
+const mainNavLinks = [
   { href: "/", label: "Accueil" },
   { href: "/cours-darabe", label: "Cours d'arabe" },
-  { href: "/par-ou-commencer", label: "Par où commencer" },
-  { href: "/comment-ca-marche", label: "Comment ça marche" },
   { href: "/boutique", label: "Boutique" },
   { href: "/temoignages", label: "Témoignages" },
   { href: "/notre-parcours", label: "Notre Parcours" },
   { href: "/contactez-nous", label: "Contact" },
-];
+] as const;
 
 interface HeaderProps {
   isLoggedIn?: boolean;
@@ -65,8 +67,21 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
+          <nav
+            className="hidden lg:flex items-center gap-6 xl:gap-8"
+            aria-label="Navigation principale"
+          >
+            {mainNavLinks.slice(0, 2).map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium transition-colors duration-200 text-primary hover:text-secondary"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <HeaderAideMenu />
+            {mainNavLinks.slice(2).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -125,17 +140,37 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
                     </span>
                   </div>
 
-                  <nav className="flex flex-col gap-4">
-                    {navLinks.map((link) => (
+                  <nav className="flex flex-col gap-1" aria-label="Menu mobile">
+                    {mainNavLinks.map((link) => (
                       <Link
                         key={link.href}
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-primary font-medium py-2 hover:text-secondary transition-colors"
+                        className="text-primary font-medium py-2.5 hover:text-secondary transition-colors rounded-md px-1 -mx-1"
                       >
                         {link.label}
                       </Link>
                     ))}
+                    <div className="pt-3 mt-2 border-t border-gray-100">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 px-1 mb-2">
+                        Aide
+                      </p>
+                      <div className="flex flex-col gap-0.5">
+                        {HEADER_AIDE_LINKS.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="py-2.5 px-1 rounded-md text-primary hover:bg-surface transition-colors"
+                          >
+                            <span className="font-medium block">{link.label}</span>
+                            <span className="text-xs text-gray-500 block mt-0.5">
+                              {link.description}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   </nav>
 
                   <div className="pt-6 border-t mt-auto space-y-2">

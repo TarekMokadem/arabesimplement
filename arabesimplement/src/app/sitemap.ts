@@ -7,6 +7,7 @@ const STATIC_PATHS = [
   "/boutique",
   "/par-ou-commencer",
   "/comment-ca-marche",
+  "/faq",
   "/cours-darabe",
   "/temoignages",
   "/notre-parcours",

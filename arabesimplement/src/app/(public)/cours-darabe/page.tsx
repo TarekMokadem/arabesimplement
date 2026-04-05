@@ -18,7 +18,9 @@ const sessionHighlights = [
       "Couverture du module 1 « J'apprends à lire l'arabe », ArabeSimplement",
     href: "/boutique/lire-en-10-lecons",
     cta: "Voir la formation",
-    imageBgClass: "bg-gradient-to-b from-sky-50 to-rose-50/80",
+    imageBgClass:
+      "bg-[radial-gradient(ellipse_95%_85%_at_50%_35%,#e8f6fc_0%,#d5f0f0_42%,#fceeeb_88%)] ring-1 ring-teal-900/10",
+    imagePadClass: "p-5 md:p-7",
   },
   {
     title: "Session invocations — groupe femmes",
@@ -29,7 +31,9 @@ const sessionHighlights = [
       "Visuel « Session invocations du matin et du soir », groupe femmes, ArabeSimplement",
     href: "/boutique/sessions-invocations",
     cta: "Découvrir la session",
-    imageBgClass: "bg-black",
+    imageBgClass:
+      "bg-[radial-gradient(ellipse_90%_75%_at_50%_45%,#5c4478_0%,#3d2a52_38%,#1a0f24_100%)] shadow-[inset_0_1px_0_0_rgba(212,175,55,0.12)]",
+    imagePadClass: "p-3 md:p-4",
   },
   {
     title: "Session invocations — groupe hommes",
@@ -40,7 +44,9 @@ const sessionHighlights = [
       "Visuel « Session invocations du matin et du soir », groupe hommes, ArabeSimplement",
     href: "/boutique/sessions-invocations",
     cta: "Découvrir la session",
-    imageBgClass: "bg-black",
+    imageBgClass:
+      "bg-[radial-gradient(ellipse_90%_75%_at_50%_45%,#2a8a7e_0%,#1a5c54_40%,#0c2522_100%)] shadow-[inset_0_1px_0_0_rgba(212,175,55,0.1)]",
+    imagePadClass: "p-3 md:p-4",
   },
 ] as const;
 
@@ -121,7 +127,10 @@ export default function CoursDarabePage() {
                     src={session.imageSrc}
                     alt={session.imageAlt}
                     fill
-                    className="object-contain p-4 md:p-5"
+                    className={cn(
+                      "object-contain drop-shadow-md",
+                      session.imagePadClass
+                    )}
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 </div>

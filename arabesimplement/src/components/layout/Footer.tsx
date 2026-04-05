@@ -8,11 +8,14 @@ const footerLinks = {
   navigation: [
     { href: "/", label: "Accueil" },
     { href: "/cours-darabe", label: "Cours d'arabe" },
-    { href: "/par-ou-commencer", label: "Par où commencer" },
-    { href: "/comment-ca-marche", label: "Comment ça marche" },
     { href: "/boutique", label: "Boutique" },
     { href: "/temoignages", label: "Témoignages" },
     { href: "/notre-parcours", label: "Notre Parcours" },
+  ],
+  aide: [
+    { href: "/par-ou-commencer", label: "Par où commencer" },
+    { href: "/comment-ca-marche", label: "Comment ça marche" },
+    { href: "/faq", label: "FAQ" },
   ],
   formations: [
     { href: "/boutique/lire-en-10-lecons", label: "Lire en 10 leçons" },
@@ -58,6 +61,21 @@ export function Footer() {
             </h3>
             <ul className="space-y-3">
               {footerLinks.navigation.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-400 hover:text-white transition-colors duration-200 text-sm"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <h4 className="font-serif font-semibold text-base mt-8 mb-4 text-secondary/90">
+              Aide
+            </h4>
+            <ul className="space-y-3">
+              {footerLinks.aide.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
