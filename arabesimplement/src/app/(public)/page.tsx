@@ -13,6 +13,7 @@ import {
   type HomeHeroTrust,
 } from "@/lib/data/home.service";
 import { cn } from "@/lib/utils";
+import { AfterPurchaseJourneySection } from "@/components/home/AfterPurchaseJourneySection";
 
 function SessionDuMomentSection(props: FeaturedSessionHome) {
   return <SessionDuMoment {...props} />;
@@ -280,6 +281,7 @@ export default async function HomePage() {
         <SessionDuMomentSection {...featuredSession} />
       ) : null}
       <FeaturesSection />
+      <AfterPurchaseJourneySection />
       <SEOContentSection />
     </div>
   );

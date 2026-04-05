@@ -12,6 +12,7 @@ import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 const navLinks = [
   { href: "/", label: "Accueil" },
   { href: "/cours-darabe", label: "Cours d'arabe" },
+  { href: "/par-ou-commencer", label: "Par où commencer" },
   { href: "/boutique", label: "Boutique" },
   { href: "/temoignages", label: "Témoignages" },
   { href: "/notre-parcours", label: "Notre Parcours" },
