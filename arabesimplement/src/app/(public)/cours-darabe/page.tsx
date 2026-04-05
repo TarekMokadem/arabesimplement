@@ -20,7 +20,9 @@ const sessionHighlights = [
     cta: "Voir la formation",
     imageBgClass:
       "bg-[radial-gradient(ellipse_95%_85%_at_50%_35%,#e8f6fc_0%,#d5f0f0_42%,#fceeeb_88%)] ring-1 ring-teal-900/10",
-    imagePadClass: "p-5 md:p-7",
+    /** Remplit la zone (recadrage type bannière, léger zoom pour éviter les bords). */
+    imageClassName:
+      "object-cover object-center scale-105 drop-shadow-sm",
   },
   {
     title: "Session invocations — groupe femmes",
@@ -33,7 +35,9 @@ const sessionHighlights = [
     cta: "Découvrir la session",
     imageBgClass:
       "bg-[radial-gradient(ellipse_90%_75%_at_50%_45%,#5c4478_0%,#3d2a52_38%,#1a0f24_100%)] shadow-[inset_0_1px_0_0_rgba(212,175,55,0.12)]",
-    imagePadClass: "p-3 md:p-4",
+    /** Fond noir des visuels : mode fusion pour laisser passer le dégradé. */
+    imageClassName:
+      "object-contain object-center mix-blend-screen p-3 md:p-4 contrast-[1.02]",
   },
   {
     title: "Session invocations — groupe hommes",
@@ -46,7 +50,8 @@ const sessionHighlights = [
     cta: "Découvrir la session",
     imageBgClass:
       "bg-[radial-gradient(ellipse_90%_75%_at_50%_45%,#2a8a7e_0%,#1a5c54_40%,#0c2522_100%)] shadow-[inset_0_1px_0_0_rgba(212,175,55,0.1)]",
-    imagePadClass: "p-3 md:p-4",
+    imageClassName:
+      "object-contain object-center mix-blend-screen p-3 md:p-4 contrast-[1.02]",
   },
 ] as const;
 
@@ -119,7 +124,7 @@ export default function CoursDarabePage() {
               >
                 <div
                   className={cn(
-                    "relative aspect-[4/3] w-full",
+                    "relative aspect-[4/3] w-full overflow-hidden isolation-isolate",
                     session.imageBgClass
                   )}
                 >
@@ -127,10 +132,7 @@ export default function CoursDarabePage() {
                     src={session.imageSrc}
                     alt={session.imageAlt}
                     fill
-                    className={cn(
-                      "object-contain drop-shadow-md",
-                      session.imagePadClass
-                    )}
+                    className={session.imageClassName}
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 </div>
