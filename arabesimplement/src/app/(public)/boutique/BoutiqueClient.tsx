@@ -3,9 +3,11 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { FormationCard } from "@/components/shop/FormationCard";
+import { BoutiqueArchFilters } from "@/components/shop/BoutiqueArchFilters";
 import { PageHeader } from "@/components/shared/PageHeader";
 import type { FormationBoutiqueCard } from "@/types/domain.types";
 import type { BoutiqueThemeFilterTab } from "@/lib/content/formation-theme";
+import { boutiqueSectionDividerLabel } from "@/lib/content/boutique-category-visual";
 
 interface BoutiqueClientProps {
   formations: FormationBoutiqueCard[];
@@ -27,9 +29,21 @@ export function BoutiqueClient({
   return (
     <div className="pt-20">
       <PageHeader
-        title="Nos Formations"
-        subtitle="Parcours en langue arabe et en sciences religieuses. Filtrez par domaine ou ouvrez une fiche pour voir comment les cours sont organisés."
+        title="Boutique des formations"
+        subtitle="Parcours en langue arabe et en sciences religieuses. Choisissez un domaine ci-dessous, puis ouvrez une fiche pour le détail et l’achat."
       >
+        <p
+          className="mt-5 text-sm text-gray-400 font-arabic leading-relaxed"
+          dir="rtl"
+        >
+          بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
+        </p>
+        <p className="mt-2 text-gray-300 text-sm md:text-base max-w-2xl">
+          Choisissez votre parcours ·{" "}
+          <span className="font-arabic text-[1.05em]" dir="rtl">
+            اختر مسارك
+          </span>
+        </p>
         <p className="mt-6 text-gray-200 text-sm md:text-base max-w-2xl leading-relaxed">
           Pas sûr(e) de votre choix ?{" "}
           <Link
@@ -44,26 +58,47 @@ export function BoutiqueClient({
 
       <section className="py-16 bg-surface">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-wrap gap-4 mb-12">
-            {themeFilters.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setSelectedFilterId(tab.id)}
-                className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedFilterId === tab.id
-                    ? "bg-primary text-white"
-                    : "bg-white text-primary hover:bg-primary hover:text-white"
-                }`}
-                data-testid={`filter-${tab.id.toLowerCase()}`}
+          <BoutiqueArchFilters
+            tabs={themeFilters}
+            selectedId={selectedFilterId}
+            onSelect={setSelectedFilterId}
+          />
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3" aria-hidden>
+              <div className="flex-1 h-px bg-gray-200" />
+              <svg
+                width="48"
+                height="16"
+                viewBox="0 0 48 16"
+                className="shrink-0 text-primary/35"
               >
-                {tab.label}
-              </button>
-            ))}
+                <circle cx="8" cy="8" r="2" fill="currentColor" opacity="0.35" />
+                <path
+                  d="M24 2 L26.5 8.5 L24 15 L21.5 8.5 Z"
+                  fill="currentColor"
+                  opacity="0.28"
+                />
+                <path
+                  d="M19 8 L25.5 5.5 L32 8 L25.5 10.5 Z"
+                  fill="currentColor"
+                  opacity="0.28"
+                />
+                <circle cx="40" cy="8" r="2" fill="currentColor" opacity="0.35" />
+              </svg>
+              <div className="flex-1 h-px bg-gray-200" />
+            </div>
+            <p className="text-center text-xs text-gray-500 mt-3 tabular-nums">
+              {boutiqueSectionDividerLabel(
+                themeFilters,
+                selectedFilterId,
+                filteredFormations.length
+              )}
+            </p>
           </div>
 
           <div
-            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
             data-testid="formations-grid"
           >
             {filteredFormations.map((formation) => (

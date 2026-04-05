@@ -13,13 +13,15 @@ import {
   schedulingModeBoutiquePriceShort,
   schedulingModeShortLabel,
 } from "@/lib/scheduling-mode";
-import { formationThemeLabel } from "@/lib/content/formation-theme";
+import { formationCardCategoryVisual } from "@/lib/content/boutique-category-visual";
+import { cn } from "@/lib/utils";
 
 interface FormationCardProps {
   formation: FormationBoutiqueCard;
 }
 
 export function FormationCard({ formation }: FormationCardProps) {
+  const categoryVis = formationCardCategoryVisual(formation.theme);
 
   const getStatusBadge = () => {
     switch (formation.statut) {
@@ -96,19 +98,38 @@ export function FormationCard({ formation }: FormationCardProps) {
         </Link>
       </div>
 
-      <CardContent className="p-6">
+      <CardContent className="p-6 flex flex-col flex-1 relative overflow-hidden">
+        <svg
+          className="pointer-events-none absolute -right-4 -bottom-4 w-24 h-24 text-primary opacity-[0.04]"
+          viewBox="0 0 100 100"
+          aria-hidden
+        >
+          <path d={categoryVis.watermarkPath} fill="currentColor" />
+        </svg>
         <Link href={`/boutique/${formation.slug}`}>
-          <h3 className="font-serif font-bold text-lg text-primary mb-2 group-hover:text-secondary transition-colors line-clamp-2">
+          <h3 className="font-serif font-bold text-lg text-primary mb-2 group-hover:text-secondary transition-colors line-clamp-2 relative">
             {formation.titre}
           </h3>
         </Link>
-        <div className="flex flex-wrap gap-1.5 mb-2">
-          <Badge
-            variant="outline"
-            className="text-[10px] font-normal border-secondary/30 text-secondary-foreground bg-secondary/10"
+        <div className="flex flex-wrap gap-1.5 mb-2 relative">
+          <span
+            className={cn(
+              "inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wide px-2.5 py-1 rounded-full border",
+              categoryVis.tagContainerClass
+            )}
           >
-            {formationThemeLabel(formation.theme)}
-          </Badge>
+            <span
+              className={cn(
+                "w-1.5 h-1.5 rounded-full shrink-0",
+                categoryVis.tagDotClass
+              )}
+            />
+            <span>{categoryVis.tagFr}</span>
+            <span className="opacity-80">·</span>
+            <span className="font-arabic font-semibold" dir="rtl">
+              {categoryVis.tagAr}
+            </span>
+          </span>
           <Badge
             variant="outline"
             className="text-[10px] font-normal border-primary/25 text-primary bg-primary/5"
@@ -120,12 +141,12 @@ export function FormationCard({ formation }: FormationCardProps) {
           {schedulingModeBoutiquePriceShort(formation.schedulingMode)}
         </p>
 
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2 relative">
           {formation.descriptionCourte}
         </p>
 
         {/* Meta info */}
-        <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
+        <div className="flex items-center gap-4 text-xs text-gray-500 mb-4 relative">
           {formation.placesMax && (
             <div className="flex items-center gap-1">
               <Users className="h-3 w-3" />
@@ -139,7 +160,7 @@ export function FormationCard({ formation }: FormationCardProps) {
         </div>
 
         {/* Price & Action */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100 gap-3">
+        <div className="flex items-center justify-between pt-4 mt-auto border-t border-gray-100 gap-3 relative">
           <div className="flex items-center gap-2 min-w-0">
             {formation.schedulingMode === "HOURLY_PURCHASE" ? (
               <span className="text-lg font-bold text-primary truncate">
