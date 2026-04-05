@@ -50,15 +50,17 @@ export function FormationCard({ formation }: FormationCardProps) {
 
   return (
     <Card
-      className="group bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-lg hover:border-gray-200/90 transition-all duration-300 overflow-hidden flex flex-col"
+      className="group flex flex-col bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-lg hover:border-gray-200/90 transition-all duration-300 overflow-hidden"
       data-testid={`formation-card-${formation.slug}`}
     >
-      {/** Bandeau catégorie : ~ +60 % vs h-1 (4px) → 6,4px */}
       <div
-        className={cn("w-full shrink-0 h-[0.4rem]", categoryVis.accentClass)}
+        className={cn(
+          "h-[5.2px] min-h-[5.2px] w-full shrink-0 rounded-t-xl",
+          categoryVis.accentClass
+        )}
         aria-hidden
       />
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden w-full">
         {formation.imageUrl ? (
           <Image
             src={formation.imageUrl}

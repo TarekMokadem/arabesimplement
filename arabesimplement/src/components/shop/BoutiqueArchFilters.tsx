@@ -17,7 +17,7 @@ export function BoutiqueArchFilters({
 }: BoutiqueArchFiltersProps) {
   return (
     <div
-      className="flex flex-wrap gap-3 sm:gap-4 justify-center items-end mb-10"
+      className="flex flex-wrap gap-4 sm:gap-6 justify-center items-end mb-10"
       role="tablist"
       aria-label="Filtrer les formations par domaine"
     >
@@ -41,7 +41,7 @@ export function BoutiqueArchFilters({
           >
             <div
               className={cn(
-                "w-[70px] sm:w-[84px] h-[92px] sm:h-[110px] rounded-t-[35px] sm:rounded-t-[42px] border flex flex-col items-center justify-center gap-0.5 transition-all duration-200 overflow-hidden",
+                "w-[112px] sm:w-[134px] h-[147px] sm:h-[176px] rounded-t-[56px] sm:rounded-t-[67px] border flex flex-col items-center justify-center gap-1 transition-all duration-200 overflow-hidden",
                 meta.shapeBgClass,
                 selected
                   ? "border-current shadow-sm -translate-y-1"
@@ -49,14 +49,14 @@ export function BoutiqueArchFilters({
               )}
             >
               <span
-                className="font-arabic text-2xl sm:text-[28px] leading-none"
+                className="font-arabic text-[38px] sm:text-[45px] leading-none"
                 dir="rtl"
               >
                 {meta.archAr}
               </span>
               <span
                 className={cn(
-                  "text-[9px] uppercase tracking-[0.05em] font-medium",
+                  "text-[11px] sm:text-xs uppercase tracking-[0.05em] font-medium",
                   selected ? "opacity-90" : "opacity-70"
                 )}
               >
@@ -65,18 +65,18 @@ export function BoutiqueArchFilters({
             </div>
             <div
               className={cn(
-                "w-[70px] sm:w-[84px] h-2.5 border-l border-r border-b transition-colors duration-200",
+                "w-[112px] sm:w-[134px] h-4 border-l border-r border-b transition-colors duration-200",
                 selected ? "border-current" : meta.shapeBorderIdleClass
               )}
             />
             <div
               className={cn(
-                "w-1.5 h-1.5 rounded-full mt-1.5 transition-opacity duration-200",
+                "w-2.5 h-2.5 rounded-full mt-2 transition-opacity duration-200",
                 meta.dotClass,
                 selected ? "opacity-100" : "opacity-0"
               )}
             />
-            <span className="text-[11px] text-gray-500 text-center max-w-[84px] mt-1.5 leading-snug px-0.5">
+            <span className="text-xs sm:text-sm text-gray-500 text-center max-w-[134px] mt-2 leading-snug px-0.5">
               {meta.captionFr}
             </span>
           </button>
