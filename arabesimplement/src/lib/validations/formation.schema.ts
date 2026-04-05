@@ -12,7 +12,7 @@ export const formationSchema = z.object({
   prixPromo: z.coerce.number().min(0).optional().nullable(),
   imageUrl: z.string().url().optional().nullable(),
   placesMax: z.coerce.number().min(1).optional().nullable(),
-  categorie: z.string().min(2, "La catégorie est requise"),
+  theme: z.enum(["ARABE", "RELIGION", "MIX"]),
   statut: z.enum(["ACTIVE", "INACTIVE", "COMING_SOON", "ARCHIVED"]),
   featured: z.boolean().default(false),
   featuredContent: z.string().optional().nullable(),

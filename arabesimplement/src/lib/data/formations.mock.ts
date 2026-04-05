@@ -32,7 +32,7 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
     imageUrl:
       "https://images.unsplash.com/photo-1622228862102-d691d3e2a334?w=600&q=80",
     placesMax: 50,
-    categorie: "Lecture",
+    theme: "ARABE",
     statut: "ACTIVE",
     featured: false,
     createdAt: new Date(),
@@ -93,7 +93,7 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
     imageUrl:
       "https://images.unsplash.com/photo-1756808862471-46ad2f6c6fc0?w=600&q=80",
     placesMax: 20,
-    categorie: "Invocations",
+    theme: "RELIGION",
     schedulingMode: "FLEXIBLE_FORMATION",
     statut: "ACTIVE",
     featured: false,
@@ -137,7 +137,7 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
     imageUrl:
       "https://images.unsplash.com/photo-1769428197773-e4adbe22aa8e?w=600&q=80",
     placesMax: 12,
-    categorie: "Tajwid",
+    theme: "RELIGION",
     schedulingMode: "HOURLY_PURCHASE",
     statut: "ACTIVE",
     featured: true,
@@ -170,20 +170,3 @@ export const MOCK_FORMATIONS: Formation[] = Object.values(
   ...rest,
   description: undefined,
 }));
-
-export function getBoutiqueCategoriesFromFormations(
-  formations: Formation[]
-): string[] {
-  const uniq = [...new Set(formations.map((f) => f.categorie))].sort(
-    (a, b) => a.localeCompare(b, "fr")
-  );
-  return ["Toutes", ...uniq];
-}
-
-/** Filtre catégories historique (ordre fixe) si besoin de compat visuelle. */
-export const FORMATION_CATEGORIES_FALLBACK = [
-  "Toutes",
-  "Lecture",
-  "Tajwid",
-  "Invocations",
-] as const;

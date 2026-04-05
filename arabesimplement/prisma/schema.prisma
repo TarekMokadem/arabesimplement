@@ -24,6 +24,13 @@ enum FormationStatus {
   ARCHIVED
 }
 
+/** Domaine principal affiché en boutique (pack mixte = les deux). */
+enum FormationTheme {
+  ARABE
+  RELIGION
+  MIX
+}
+
 /** Mode d'organisation : heures à la carte, formation flexible, ou créneaux fixes. */
 enum FormationSchedulingMode {
   HOURLY_PURCHASE
@@ -83,7 +90,7 @@ model Formation {
   prixPromo         Decimal?        @map("prix_promo") @db.Decimal(10, 2)
   imageUrl          String?         @map("image_url")
   placesMax         Int?            @map("places_max")
-  categorie         String
+  theme             FormationTheme  @default(ARABE) @map("theme")
   schedulingMode    FormationSchedulingMode @default(FIXED_SLOTS) @map("scheduling_mode")
   statut            FormationStatus @default(ACTIVE)
   featured          Boolean         @default(false)

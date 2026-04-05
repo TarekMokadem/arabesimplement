@@ -198,11 +198,25 @@ export function FormationEditorForm(
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="categorie">Catégorie</Label>
-              <Input id="categorie" {...register("categorie")} />
-              {form.formState.errors.categorie && (
+              <Label htmlFor="theme">Domaine</Label>
+              <select
+                id="theme"
+                className={selectClass}
+                {...register("theme")}
+              >
+                <option value="ARABE">Arabe (langue, lecture…)</option>
+                <option value="RELIGION">
+                  Religion (Coran, invocations, sciences…)
+                </option>
+                <option value="MIX">Pack mixte (arabe + religion)</option>
+              </select>
+              <p className="text-xs text-gray-500">
+                Utilisé pour les filtres de la boutique. Un futur pack combinant
+                les deux domaines pourra utiliser « Pack mixte ».
+              </p>
+              {form.formState.errors.theme && (
                 <p className="text-sm text-red-600">
-                  {form.formState.errors.categorie.message}
+                  {form.formState.errors.theme.message}
                 </p>
               )}
             </div>

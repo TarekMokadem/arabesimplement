@@ -18,7 +18,7 @@ export function formationVersFormInput(f: {
   prixPromo: unknown;
   imageUrl: string | null;
   placesMax: number | null;
-  categorie: string;
+  theme: "ARABE" | "RELIGION" | "MIX";
   schedulingMode: FormationAdminInput["schedulingMode"];
   statut: FormationAdminInput["statut"];
   featured: boolean;
@@ -43,7 +43,7 @@ export function formationVersFormInput(f: {
     prixPromo: f.prixPromo != null ? Number(f.prixPromo) : undefined,
     imageUrl: f.imageUrl ?? undefined,
     placesMax: f.placesMax ?? undefined,
-    categorie: f.categorie,
+    theme: f.theme,
     schedulingMode: f.schedulingMode,
     statut: f.statut,
     featured: f.featured,

@@ -18,6 +18,7 @@ import {
   getFormationSlugsForStaticParams,
   toFormationCartInput,
 } from "@/lib/data/formations.service";
+import { formationThemeLabel } from "@/lib/content/formation-theme";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -86,7 +87,7 @@ export default async function FormationPage({ params }: PageProps) {
           <div className="space-y-8">
             <div>
               <Badge className="mb-4 bg-primary/10 text-primary">
-                {formation.categorie}
+                {formationThemeLabel(formation.theme)}
               </Badge>
               <h1 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-4">
                 {formation.titre}

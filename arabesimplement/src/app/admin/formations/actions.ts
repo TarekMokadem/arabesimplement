@@ -47,7 +47,7 @@ function formationToPrismaData(input: FormationAdminInput) {
         : null,
     imageUrl: input.imageUrl?.trim() || null,
     placesMax: input.placesMax ?? null,
-    categorie: input.categorie.trim(),
+    theme: input.theme,
     schedulingMode: input.schedulingMode,
     statut: input.statut,
     featured: input.featured,

@@ -13,6 +13,7 @@ import {
   schedulingModeBoutiquePriceShort,
   schedulingModeShortLabel,
 } from "@/lib/scheduling-mode";
+import { formationThemeLabel } from "@/lib/content/formation-theme";
 
 interface FormationCardProps {
   formation: FormationBoutiqueCard;
@@ -101,12 +102,20 @@ export function FormationCard({ formation }: FormationCardProps) {
             {formation.titre}
           </h3>
         </Link>
-        <Badge
-          variant="outline"
-          className="mb-2 text-[10px] font-normal border-primary/25 text-primary bg-primary/5"
-        >
-          {schedulingModeShortLabel(formation.schedulingMode)}
-        </Badge>
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          <Badge
+            variant="outline"
+            className="text-[10px] font-normal border-secondary/30 text-secondary-foreground bg-secondary/10"
+          >
+            {formationThemeLabel(formation.theme)}
+          </Badge>
+          <Badge
+            variant="outline"
+            className="text-[10px] font-normal border-primary/25 text-primary bg-primary/5"
+          >
+            {schedulingModeShortLabel(formation.schedulingMode)}
+          </Badge>
+        </div>
         <p className="text-[11px] text-gray-600 leading-snug mb-3">
           {schedulingModeBoutiquePriceShort(formation.schedulingMode)}
         </p>

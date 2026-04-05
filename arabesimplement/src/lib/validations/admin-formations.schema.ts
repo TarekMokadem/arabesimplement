@@ -13,6 +13,8 @@ const formationSchedulingMode = z.enum([
   "FIXED_SLOTS",
 ]);
 
+const formationTheme = z.enum(["ARABE", "RELIGION", "MIX"]);
+
 const emptyToUndef = <T extends z.ZodType>(
   schema: T
 ) =>
@@ -105,7 +107,7 @@ export const formationAdminSchema = z
     prixPromo: optionalPositiveNumber,
     imageUrl: optionalImageUrl,
     placesMax: optionalPositiveInt,
-    categorie: z.string().min(1, "Catégorie requise"),
+    theme: formationTheme,
     schedulingMode: formationSchedulingMode,
     statut: formationStatus,
     featured: z.boolean(),

@@ -4,22 +4,24 @@ import { useState, useMemo } from "react";
 import { FormationCard } from "@/components/shop/FormationCard";
 import { PageHeader } from "@/components/shared/PageHeader";
 import type { FormationBoutiqueCard } from "@/types/domain.types";
+import type { BoutiqueThemeFilterTab } from "@/lib/content/formation-theme";
 
 interface BoutiqueClientProps {
   formations: FormationBoutiqueCard[];
-  categoryFilters: string[];
+  themeFilters: BoutiqueThemeFilterTab[];
 }
 
 export function BoutiqueClient({
   formations,
-  categoryFilters,
+  themeFilters,
 }: BoutiqueClientProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("Toutes");
+  const [selectedFilterId, setSelectedFilterId] = useState<string>("ALL");
 
   const filteredFormations = useMemo(() => {
-    if (selectedCategory === "Toutes") return formations;
-    return formations.filter((f) => f.categorie === selectedCategory);
-  }, [selectedCategory, formations]);
+    const tab = themeFilters.find((t) => t.id === selectedFilterId);
+    if (!tab?.theme) return formations;
+    return formations.filter((f) => f.theme === tab.theme);
+  }, [selectedFilterId, formations, themeFilters]);
 
   return (
     <div className="pt-20">
@@ -31,18 +33,19 @@ export function BoutiqueClient({
       <section className="py-16 bg-surface">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-wrap gap-4 mb-12">
-            {categoryFilters.map((category) => (
+            {themeFilters.map((tab) => (
               <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
+                key={tab.id}
+                type="button"
+                onClick={() => setSelectedFilterId(tab.id)}
                 className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedCategory === category
+                  selectedFilterId === tab.id
                     ? "bg-primary text-white"
                     : "bg-white text-primary hover:bg-primary hover:text-white"
                 }`}
-                data-testid={`filter-${category.toLowerCase()}`}
+                data-testid={`filter-${tab.id.toLowerCase()}`}
               >
-                {category}
+                {tab.label}
               </button>
             ))}
           </div>

@@ -1,3 +1,7 @@
+import type { FormationTheme } from "@prisma/client";
+
+export type { FormationTheme };
+
 export interface User {
   id: string;
   email: string;
@@ -24,7 +28,7 @@ export interface Formation {
   prixPromo?: number;
   imageUrl?: string;
   placesMax?: number;
-  categorie: string;
+  theme: FormationTheme;
   schedulingMode: FormationSchedulingMode;
   statut: "ACTIVE" | "INACTIVE" | "COMING_SOON" | "ARCHIVED";
   featured: boolean;
@@ -51,7 +55,7 @@ export type FormationBoutiqueCard = Pick<
   | "prixPromo"
   | "imageUrl"
   | "placesMax"
-  | "categorie"
+  | "theme"
   | "schedulingMode"
   | "statut"
   | "featured"

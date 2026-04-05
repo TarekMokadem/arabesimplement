@@ -7,11 +7,11 @@ import type {
 import type { Formation as PrismaFormation, Creneau as PrismaCreneau } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/utils/database";
+import { MOCK_FORMATIONS, MOCK_FORMATIONS_BY_SLUG } from "@/lib/data/formations.mock";
 import {
-  MOCK_FORMATIONS,
-  MOCK_FORMATIONS_BY_SLUG,
-  getBoutiqueCategoriesFromFormations,
-} from "@/lib/data/formations.mock";
+  getBoutiqueThemeFilterTabs,
+  type BoutiqueThemeFilterTab,
+} from "@/lib/content/formation-theme";
 import { parseJourneeSlotsFromJson } from "@/lib/creneau-display";
 
 export function toBoutiqueCard(f: Formation): FormationBoutiqueCard {
@@ -24,7 +24,7 @@ export function toBoutiqueCard(f: Formation): FormationBoutiqueCard {
     prixPromo: f.prixPromo !== undefined ? Number(f.prixPromo) : undefined,
     imageUrl: f.imageUrl,
     placesMax: f.placesMax,
-    categorie: f.categorie,
+    theme: f.theme,
     schedulingMode: f.schedulingMode,
     statut: f.statut,
     featured: f.featured,
@@ -84,7 +84,7 @@ function toFormationListItem(f: PrismaFormation): Formation {
     prixPromo: f.prixPromo ? Number(f.prixPromo) : undefined,
     imageUrl: f.imageUrl ?? undefined,
     placesMax: f.placesMax ?? undefined,
-    categorie: f.categorie,
+    theme: f.theme,
     schedulingMode: f.schedulingMode,
     statut: f.statut,
     featured: f.featured,
@@ -156,8 +156,10 @@ export async function getFormationSlugsForStaticParams(): Promise<string[]> {
   }
 }
 
-export function getBoutiqueCategoryFilters(formations: Formation[]): string[] {
-  return getBoutiqueCategoriesFromFormations(formations);
+export function getBoutiqueThemeFilters(
+  formations: Formation[]
+): BoutiqueThemeFilterTab[] {
+  return getBoutiqueThemeFilterTabs(formations.map((f) => f.theme));
 }
 
 function formationListItemToFeaturedHome(f: Formation): FeaturedSessionHome {

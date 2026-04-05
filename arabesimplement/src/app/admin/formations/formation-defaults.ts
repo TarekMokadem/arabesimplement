@@ -10,7 +10,7 @@ export function getDefaultFormationValues(): FormationEditorDefaults {
     prixPromo: undefined,
     imageUrl: undefined,
     placesMax: undefined,
-    categorie: "Lecture",
+    theme: "ARABE",
     schedulingMode: "FIXED_SLOTS",
     statut: "ACTIVE",
     featured: false,
