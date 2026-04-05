@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   BookOpen,
+  ChevronDown,
   HelpCircle,
   Library,
   MoonStar,
@@ -56,6 +57,29 @@ const suggestions = [
       "Vous hésitez entre plusieurs parcours ou avez un cas particulier (niveau, disponibilités).",
     primary: { href: "/contactez-nous", label: "Nous contacter" },
     secondary: { href: "/boutique", label: "Parcourir toute la boutique" },
+  },
+] as const;
+
+const faqs = [
+  {
+    question: "Quelle est la différence entre les filtres Arabe et Religion ?",
+    answer:
+      "Arabe regroupe surtout l’apprentissage de la langue (lecture, méthode…). Religion regroupe les parcours orientés vers le Coran, le tajwid, les invocations ou les sciences religieuses. Un futur « pack mixte » réunira les deux sur une même offre.",
+  },
+  {
+    question: "Comment savoir comment les cours seront organisés après l’achat ?",
+    answer:
+      "Sur chaque fiche formation, le mode d’organisation est expliqué : créneaux proposés, forfait avec organisation libre avec le professeur, ou cours à la carte avec abonnement hebdomadaire possible. Après paiement, votre tableau de bord centralise les prochaines étapes (créneau, contact WhatsApp, etc.).",
+  },
+  {
+    question: "Je débute totalement en arabe, par où passer ?",
+    answer:
+      "En général par la lecture : consultez la page « Cours d’arabe » et la formation « Lire en 10 leçons ». Si vous hésitez encore, écrivez-nous via la page contact.",
+  },
+  {
+    question: "Puis-je combiner plusieurs formations ?",
+    answer:
+      "Oui : ajoutez plusieurs formations au panier si elles sont proposées à l’achat. Pour un parcours sur mesure ou des contraintes horaires, le contact direct reste le plus simple.",
   },
 ] as const;
 
@@ -121,6 +145,49 @@ export default function ParOuCommencerPage() {
             </Link>
             .
           </p>
+        </div>
+      </section>
+
+      <section
+        className="py-16 md:py-20 bg-white border-t border-gray-100"
+        aria-labelledby="faq-par-ou-commencer"
+      >
+        <div className="max-w-3xl mx-auto px-6">
+          <h2
+            id="faq-par-ou-commencer"
+            className="font-serif text-2xl md:text-3xl font-bold text-primary mb-2"
+          >
+            Questions fréquentes
+          </h2>
+          <p className="text-gray-600 text-sm mb-10">
+            Réponses courtes ; pour un cas personnel, la{" "}
+            <Link
+              href="/contactez-nous"
+              className="text-secondary font-medium underline"
+            >
+              page contact
+            </Link>{" "}
+            reste la plus adaptée.
+          </p>
+          <div className="divide-y divide-gray-100 border-t border-b border-gray-100">
+            {faqs.map((item) => (
+              <details
+                key={item.question}
+                className="group py-4 md:py-5 [&_summary::-webkit-details-marker]:hidden"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left font-medium text-primary">
+                  <span>{item.question}</span>
+                  <ChevronDown
+                    className="h-5 w-5 shrink-0 text-secondary transition-transform group-open:rotate-180"
+                    aria-hidden
+                  />
+                </summary>
+                <p className="mt-3 text-sm text-gray-600 leading-relaxed pr-8">
+                  {item.answer}
+                </p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
     </div>

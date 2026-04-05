@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { FormationCard } from "@/components/shop/FormationCard";
 import { PageHeader } from "@/components/shared/PageHeader";
 import type { FormationBoutiqueCard } from "@/types/domain.types";
@@ -27,8 +28,19 @@ export function BoutiqueClient({
     <div className="pt-20">
       <PageHeader
         title="Nos Formations"
-        subtitle="Découvrez nos programmes d'apprentissage de l'arabe, adaptés à tous les niveaux."
-      />
+        subtitle="Parcours en langue arabe et en sciences religieuses. Filtrez par domaine ou ouvrez une fiche pour voir comment les cours sont organisés."
+      >
+        <p className="mt-6 text-gray-200 text-sm md:text-base max-w-2xl leading-relaxed">
+          Pas sûr(e) de votre choix ?{" "}
+          <Link
+            href="/par-ou-commencer"
+            className="text-secondary font-semibold underline underline-offset-4 decoration-secondary/80 hover:text-white hover:decoration-white"
+          >
+            Par où commencer
+          </Link>{" "}
+          — repères selon votre objectif (lecture, tajwid, invocations…).
+        </p>
+      </PageHeader>
 
       <section className="py-16 bg-surface">
         <div className="max-w-7xl mx-auto px-6">
