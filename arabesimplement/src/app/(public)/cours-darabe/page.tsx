@@ -5,6 +5,44 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { cn } from "@/lib/utils";
+
+const sessionHighlights = [
+  {
+    title: "J'apprends à lire l'arabe — module 1",
+    description:
+      "Première brique de notre parcours lecture : alphabet, sons et premiers pas pour déchiffrer l'arabe avec une méthode progressive, pensée pour les francophones.",
+    imageSrc: "/images/sessions/module-lire-arabe-1.png",
+    imageAlt:
+      "Couverture du module 1 « J'apprends à lire l'arabe », ArabeSimplement",
+    href: "/boutique/lire-en-10-lecons",
+    cta: "Voir la formation",
+    imageBgClass: "bg-gradient-to-b from-sky-50 to-rose-50/80",
+  },
+  {
+    title: "Session invocations — groupe femmes",
+    description:
+      "Accompagnement structuré sur les invocations du matin et du soir : cadre bienveillant, rappels utiles et pratique régulière entre sœurs.",
+    imageSrc: "/images/sessions/session-invocations-femme.png",
+    imageAlt:
+      "Visuel « Session invocations du matin et du soir », groupe femmes, ArabeSimplement",
+    href: "/boutique/sessions-invocations",
+    cta: "Découvrir la session",
+    imageBgClass: "bg-black",
+  },
+  {
+    title: "Session invocations — groupe hommes",
+    description:
+      "Même parcours d'invocations du matin et du soir, dans un groupe réservé aux hommes, pour avancer sereinement avec un enseignant adapté.",
+    imageSrc: "/images/sessions/session-invocations-homme.png",
+    imageAlt:
+      "Visuel « Session invocations du matin et du soir », groupe hommes, ArabeSimplement",
+    href: "/boutique/sessions-invocations",
+    cta: "Découvrir la session",
+    imageBgClass: "bg-black",
+  },
+] as const;
 
 const methodSteps = [
   {
@@ -50,6 +88,65 @@ export default function CoursDarabePage() {
         title="Cours d'arabe"
         subtitle="Découvrez notre méthode unique pour apprendre à lire l'arabe en seulement 10 leçons."
       />
+
+      <section className="py-16 md:py-20 bg-surface border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-3xl mb-12">
+            <Badge className="mb-4 bg-primary/10 text-primary border-primary/15">
+              Nos offres
+            </Badge>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-4">
+              Sessions et modules à la une
+            </h2>
+            <p className="text-gray-600 leading-relaxed">
+              Trois entrées concrètes : la base lecture (module 1), puis deux
+              sessions d&apos;invocations matin et soir — chacune avec un
+              groupe hommes ou femmes pour un cadre adapté.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
+            {sessionHighlights.map((session) => (
+              <article
+                key={session.title}
+                className="flex flex-col rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden"
+              >
+                <div
+                  className={cn(
+                    "relative aspect-[4/3] w-full",
+                    session.imageBgClass
+                  )}
+                >
+                  <Image
+                    src={session.imageSrc}
+                    alt={session.imageAlt}
+                    fill
+                    className="object-contain p-4 md:p-5"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                </div>
+                <div className="flex flex-col flex-1 p-6 pt-5">
+                  <h3 className="font-serif text-lg font-bold text-primary mb-3 leading-snug">
+                    {session.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 leading-relaxed flex-1 mb-6">
+                    {session.description}
+                  </p>
+                  <Link
+                    href={session.href}
+                    className={cn(
+                      buttonVariants({ variant: "outline" }),
+                      "w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                    )}
+                  >
+                    {session.cta}
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Method Section */}
       <section className="py-20 bg-white">
