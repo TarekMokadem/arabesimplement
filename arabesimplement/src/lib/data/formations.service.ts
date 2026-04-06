@@ -23,6 +23,11 @@ export function toBoutiqueCard(
   creneaux: Creneau[],
   formationEnrollmentCount: number
 ): FormationBoutiqueCard {
+  const boutiquePurchasable = isFormationPurchasable(
+    f,
+    creneaux,
+    formationEnrollmentCount
+  );
   return {
     id: f.id,
     titre: f.titre,
@@ -36,15 +41,10 @@ export function toBoutiqueCard(
     schedulingMode: f.schedulingMode,
     statut: f.statut,
     featured: f.featured,
-    boutiquePurchasable: isFormationPurchasable(
-      f,
-      creneaux,
-      formationEnrollmentCount
-    ),
-    showLimitedBadge: shouldShowLimitedBadgeForFixedSlots(
-      f.schedulingMode,
-      creneaux
-    ),
+    boutiquePurchasable,
+    showLimitedBadge:
+      boutiquePurchasable &&
+      shouldShowLimitedBadgeForFixedSlots(f.schedulingMode, creneaux),
   };
 }
 
