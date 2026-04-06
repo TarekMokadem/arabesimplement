@@ -186,11 +186,11 @@ export function schedulingModePaymentExplanation(
 export function schedulingModePaymentBrief(mode: FormationSchedulingMode): string {
   switch (mode) {
     case "FIXED_SLOTS":
-      return "Forfait unique à l’achat. Créneau parmi ceux listés ci-dessous.";
+      return "Paiement unique à l’achat. Créneau parmi ceux listés ci-dessous.";
     case "FLEXIBLE_FORMATION":
-      return "Forfait unique. Les séances s’organisent avec le professeur après l’achat.";
+      return "Paiement unique. Les séances s’organisent avec le professeur après l’achat.";
     case "HOURLY_PURCHASE":
-      return "Abonnement hebdomadaire selon la durée choisie. Même créneau chaque semaine.";
+      return "Paiement chaque semaine selon le nombre d'heures choisies. Les séances s’organisent avec le professeur après l’achat.";
     default:
       return "";
   }
