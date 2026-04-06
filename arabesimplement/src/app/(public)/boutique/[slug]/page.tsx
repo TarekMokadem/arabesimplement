@@ -147,6 +147,18 @@ export default async function FormationPage({ params }: PageProps) {
               </p>
             </div>
 
+            {formation.description != null &&
+              formation.description.trim() !== "" && (
+                <div className="rounded-2xl border border-gray-100 bg-white p-6 md:p-8 shadow-sm">
+                  <div
+                    className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-primary prose-a:text-secondary"
+                    dangerouslySetInnerHTML={{
+                      __html: formation.description,
+                    }}
+                  />
+                </div>
+              )}
+
             <SchedulingModeExplainer mode={formation.schedulingMode} />
 
             <div className="flex flex-wrap gap-6 py-6 border-y border-gray-200">
@@ -223,18 +235,6 @@ export default async function FormationPage({ params }: PageProps) {
               )}
           </div>
         </div>
-
-        {formation.description != null && formation.description.trim() !== "" && (
-          <div className="mt-16 bg-white rounded-2xl p-8 md:p-12 shadow-sm">
-            <h2 className="font-serif text-2xl font-bold text-primary mb-6">
-              Description complète
-            </h2>
-            <div
-              className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-primary prose-a:text-secondary"
-              dangerouslySetInnerHTML={{ __html: formation.description }}
-            />
-          </div>
-        )}
 
         <FormationTestimonialsPreview rows={testimonials} />
       </div>

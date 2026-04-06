@@ -182,6 +182,20 @@ export function schedulingModePaymentExplanation(
   }
 }
 
+/** Fiche formation : 2–3 lignes max. sur le type de paiement (forfait, à la carte, etc.). */
+export function schedulingModePaymentBrief(mode: FormationSchedulingMode): string {
+  switch (mode) {
+    case "FIXED_SLOTS":
+      return "Forfait unique à l’achat. Créneau parmi ceux listés ci-dessous.";
+    case "FLEXIBLE_FORMATION":
+      return "Forfait unique. Les séances s’organisent avec le professeur après l’achat.";
+    case "HOURLY_PURCHASE":
+      return "Abonnement hebdomadaire selon la durée choisie. Même créneau chaque semaine.";
+    default:
+      return "";
+  }
+}
+
 /** Titre de la section liste des créneaux sur la fiche produit. */
 export function schedulingModeBoutiqueCreneauxHeading(
   mode: FormationSchedulingMode

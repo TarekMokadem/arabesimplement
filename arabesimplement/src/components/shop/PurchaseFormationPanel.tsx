@@ -184,13 +184,11 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
         {needsHourly && (
           <div className="space-y-3">
             <p className="font-medium text-primary text-sm">
-              Durées par semaine (additionnez les séances : ex. 2×1 h + 1×30 min)
+              Durées par semaine (ex. 2×1 h + 1×30 min)
             </p>
             <p className="text-xs text-gray-600">
-              Chaque ligne correspond au tarif hebdomadaire Stripe pour cette
-              durée ; les quantités deviennent des{" "}
-              <span className="font-medium">quantités d’abonnement</span> sur le
-              même prix récurrent (même facture, prélèvement total = somme).
+              Chaque durée = une ligne d’abonnement ; le total affiché est prélevé
+              chaque semaine.
             </p>
             <div className="grid gap-2">
               {HOURLY_SLOTS_PRICING.map((row) => (
@@ -296,13 +294,12 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
 
         {needsHourly && weeklyHourlyEuros > 0 ? (
           <p className="text-xs text-gray-500 -mt-2">
-            Soit{" "}
             <span className="font-medium text-primary">
               {formatHourlyBundleForDisplay(hourlyBundleForTotal, {
                 omitPrice: true,
               })}
             </span>{" "}
-            facturé chaque semaine (abonnement).
+            — prélevé chaque semaine.
           </p>
         ) : null}
 
