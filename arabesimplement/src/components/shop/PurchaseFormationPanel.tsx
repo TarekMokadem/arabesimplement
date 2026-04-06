@@ -22,6 +22,7 @@ import {
   formatCreneauSlotLine,
   normalizeJourneeSlots,
 } from "@/lib/creneau-display";
+import { creneauIsBookable } from "@/lib/availability";
 
 type CreneauLite = Pick<
   Creneau,
@@ -33,6 +34,7 @@ type CreneauLite = Pick<
   | "dureeMinutes"
   | "statut"
   | "placesMax"
+  | "_count"
 >;
 
 type HourlyQtyState = Record<60 | 40 | 30, number>;
@@ -40,12 +42,25 @@ type HourlyQtyState = Record<60 | 40 | 30, number>;
 type Props = {
   formation: FormationCartInput;
   creneaux: CreneauLite[];
+  /** false = formation en rupture (hors mode créneaux seuls). */
+  formationPurchasable?: boolean;
 };
 
-export function PurchaseFormationPanel({ formation, creneaux }: Props) {
+function placesRestantesLabel(c: CreneauLite): string {
+  const taken = c._count?.enrollments;
+  if (taken === undefined) return `${c.placesMax} places`;
+  const r = Math.max(0, c.placesMax - taken);
+  return r <= 1 ? `${r} place` : `${r} places`;
+}
+
+export function PurchaseFormationPanel({
+  formation,
+  creneaux,
+  formationPurchasable = true,
+}: Props) {
   const { addItem } = useCart();
-  const open = useMemo(
-    () => creneaux.filter((c) => c.statut === "OPEN"),
+  const bookableCreneaux = useMemo(
+    () => creneaux.filter(creneauIsBookable),
     [creneaux]
   );
 
@@ -58,7 +73,7 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
 
   const needsCreneau =
     mode === "FIXED_SLOTS" ||
-    (mode === "HOURLY_PURCHASE" && open.length > 0);
+    (mode === "HOURLY_PURCHASE" && bookableCreneaux.length > 0);
 
   const needsHourly = mode === "HOURLY_PURCHASE";
 
@@ -93,14 +108,17 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
     (formation.prixPromo != null && Number(formation.prixPromo) > 0);
 
   const disabledReason = useMemo(() => {
-    if (mode === "FIXED_SLOTS" && open.length === 0) {
-      return "Aucun créneau disponible pour le moment.";
+    if (formationPurchasable === false) {
+      return "Cette formation est en rupture de stock.";
+    }
+    if (mode === "FIXED_SLOTS" && bookableCreneaux.length === 0) {
+      return "Aucun créneau disponible pour le moment (rupture ou complet).";
     }
     if (!catalogOk) {
       return "Prix catalogue non configuré.";
     }
     return null;
-  }, [mode, open.length, catalogOk]);
+  }, [formationPurchasable, mode, bookableCreneaux.length, catalogOk]);
 
   const canAdd =
     !disabledReason &&
@@ -137,7 +155,7 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
     if (
       mode === "FLEXIBLE_FORMATION" &&
       !creneauId &&
-      open.length === 0
+      bookableCreneaux.length === 0
     ) {
       parts.push(
         "Organisation des horaires directement avec le professeur après paiement"
@@ -249,7 +267,7 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
                 : "Choisissez un créneau proposé"}
             </p>
             <div className="grid gap-2 max-h-56 overflow-y-auto pr-1">
-              {open.map((c) => (
+              {bookableCreneaux.map((c) => (
                 <button
                   key={c.id}
                   type="button"
@@ -270,7 +288,7 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
                     })
                       .map(formatCreneauSlotLine)
                       .join(" · ")}{" "}
-                    · {c.placesMax} places
+                    · {placesRestantesLabel(c)}
                   </span>
                 </button>
               ))}
@@ -278,7 +296,7 @@ export function PurchaseFormationPanel({ formation, creneaux }: Props) {
           </div>
         )}
 
-        {mode === "FLEXIBLE_FORMATION" && open.length === 0 && (
+        {mode === "FLEXIBLE_FORMATION" && bookableCreneaux.length === 0 && (
           <p className="text-sm text-gray-600">
             Forfait unique : après paiement, vos horaires se fixent directement
             avec le professeur (aucun créneau à choisir ici).

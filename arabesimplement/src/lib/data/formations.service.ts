@@ -9,12 +9,20 @@ import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { MOCK_FORMATIONS, MOCK_FORMATIONS_BY_SLUG } from "@/lib/data/formations.mock";
 import {
+  isFormationPurchasable,
+  shouldShowLimitedBadgeForFixedSlots,
+} from "@/lib/availability";
+import {
   getBoutiqueThemeFilterTabs,
   type BoutiqueThemeFilterTab,
 } from "@/lib/content/formation-theme";
 import { parseJourneeSlotsFromJson } from "@/lib/creneau-display";
 
-export function toBoutiqueCard(f: Formation): FormationBoutiqueCard {
+export function toBoutiqueCard(
+  f: Formation,
+  creneaux: Creneau[],
+  formationEnrollmentCount: number
+): FormationBoutiqueCard {
   return {
     id: f.id,
     titre: f.titre,
@@ -28,6 +36,15 @@ export function toBoutiqueCard(f: Formation): FormationBoutiqueCard {
     schedulingMode: f.schedulingMode,
     statut: f.statut,
     featured: f.featured,
+    boutiquePurchasable: isFormationPurchasable(
+      f,
+      creneaux,
+      formationEnrollmentCount
+    ),
+    showLimitedBadge: shouldShowLimitedBadgeForFixedSlots(
+      f.schedulingMode,
+      creneaux
+    ),
   };
 }
 
@@ -56,7 +73,9 @@ export type FeaturedSessionHome = {
   schedulingMode?: import("@/types/domain.types").FormationSchedulingMode;
 };
 
-function mapCreneau(c: PrismaCreneau): Creneau {
+function mapCreneau(
+  c: PrismaCreneau & { _count?: { enrollments: number } }
+): Creneau {
   const journeeSlots = parseJourneeSlotsFromJson(c.journeeSlots);
   return {
     id: c.id,
@@ -70,10 +89,13 @@ function mapCreneau(c: PrismaCreneau): Creneau {
     whatsappLink: c.whatsappLink ?? undefined,
     statut: c.statut,
     createdAt: c.createdAt,
+    _count: c._count ? { enrollments: c._count.enrollments } : undefined,
   };
 }
 
-function toFormationListItem(f: PrismaFormation): Formation {
+function toFormationListItem(
+  f: PrismaFormation & { _count?: { enrollments: number } }
+): Formation {
   return {
     id: f.id,
     titre: f.titre,
@@ -94,12 +116,13 @@ function toFormationListItem(f: PrismaFormation): Formation {
     featuredExpiresAt: f.featuredExpiresAt ?? undefined,
     createdAt: f.createdAt,
     updatedAt: f.updatedAt,
+    _count: f._count ? { enrollments: f._count.enrollments } : undefined,
   };
 }
 
 function toFormationDetail(
-  f: PrismaFormation,
-  creneaux: PrismaCreneau[]
+  f: PrismaFormation & { _count?: { enrollments: number } },
+  creneaux: (PrismaCreneau & { _count?: { enrollments: number } })[]
 ): Formation & { creneaux: Creneau[] } {
   return {
     ...toFormationListItem(f),
@@ -108,16 +131,31 @@ function toFormationDetail(
   };
 }
 
-export async function getFormationsForBoutique(): Promise<Formation[]> {
+export async function getFormationsForBoutique(): Promise<FormationBoutiqueCard[]> {
   if (!isDatabaseConfigured()) {
-    return MOCK_FORMATIONS;
+    return MOCK_FORMATIONS.map((f) => {
+      const detail = MOCK_FORMATIONS_BY_SLUG[f.slug];
+      const creneaux = detail?.creneaux ?? [];
+      return toBoutiqueCard(f, creneaux, 0);
+    });
   }
   try {
     const rows = await prisma.formation.findMany({
       where: { statut: { in: ["ACTIVE", "COMING_SOON"] } },
       orderBy: { createdAt: "asc" },
+      include: {
+        creneaux: {
+          orderBy: { createdAt: "asc" },
+          include: { _count: { select: { enrollments: true } } },
+        },
+        _count: { select: { enrollments: true } },
+      },
     });
-    return rows.map(toFormationListItem);
+    return rows.map((row) => {
+      const f = toFormationListItem(row);
+      const creneaux = row.creneaux.map(mapCreneau);
+      return toBoutiqueCard(f, creneaux, row._count.enrollments);
+    });
   } catch (e) {
     console.error("[getFormationsForBoutique]", e);
     return [];
@@ -133,7 +171,13 @@ export async function getFormationBySlug(
   try {
     const row = await prisma.formation.findFirst({
       where: { slug, statut: { in: ["ACTIVE", "COMING_SOON"] } },
-      include: { creneaux: { orderBy: { createdAt: "asc" } } },
+      include: {
+        creneaux: {
+          orderBy: { createdAt: "asc" },
+          include: { _count: { select: { enrollments: true } } },
+        },
+        _count: { select: { enrollments: true } },
+      },
     });
     if (!row) return null;
     return toFormationDetail(row, row.creneaux);
@@ -157,7 +201,7 @@ export async function getFormationSlugsForStaticParams(): Promise<string[]> {
 }
 
 export function getBoutiqueThemeFilters(
-  formations: Formation[]
+  formations: Pick<Formation, "theme">[]
 ): BoutiqueThemeFilterTab[] {
   return getBoutiqueThemeFilterTabs(formations.map((f) => f.theme));
 }

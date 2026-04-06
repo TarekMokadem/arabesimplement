@@ -9,6 +9,7 @@ import {
   type HourlyDurationBundle,
 } from "@/lib/scheduling-mode";
 import type { FormationSchedulingMode } from "@/types/domain.types";
+import { creneauBookableFromCounts } from "@/lib/availability";
 import {
   formatCreneauSummaryForCart,
   parseJourneeSlotsFromJson,
@@ -68,7 +69,12 @@ export async function normalizeCartItemsForCheckout(
       id: { in: formationIds },
       statut: { in: ["ACTIVE", "COMING_SOON"] },
     },
-    include: { creneaux: true },
+    include: {
+      creneaux: {
+        include: { _count: { select: { enrollments: true } } },
+      },
+      _count: { select: { enrollments: true } },
+    },
   });
   const byId = new Map(formations.map((f) => [f.id, f]));
 
@@ -106,7 +112,14 @@ export async function normalizeCartItemsForCheckout(
         return { success: false, error: "Créneau manquant pour une ligne du panier." };
       }
       const c = f.creneaux.find((x) => x.id === effectiveCreneauId);
-      if (!c || c.statut !== "OPEN") {
+      if (
+        !c ||
+        !creneauBookableFromCounts(
+          c.statut,
+          c.placesMax,
+          c._count.enrollments
+        )
+      ) {
         return {
           success: false,
           error: "Un créneau choisi n’est plus disponible. Actualisez la boutique.",

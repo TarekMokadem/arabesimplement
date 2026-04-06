@@ -59,7 +59,12 @@ export type FormationBoutiqueCard = Pick<
   | "schedulingMode"
   | "statut"
   | "featured"
->;
+> & {
+  /** Places / créneaux encore disponibles pour l’achat. */
+  boutiquePurchasable: boolean;
+  /** Capacité totale des créneaux &lt; 4 (mode créneaux fixes uniquement). */
+  showLimitedBadge: boolean;
+};
 
 /** Données panier / bouton d’ajout (composants client). */
 export type FormationCartInput = Pick<

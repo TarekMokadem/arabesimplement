@@ -23,6 +23,7 @@ import { getApprovedTestimonialsPreview } from "@/lib/data/testimonials.service"
 import { formationThemeLabel } from "@/lib/content/formation-theme";
 import { FormationTestimonialsPreview } from "@/components/shop/FormationTestimonialsPreview";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/site-url";
+import { isFormationPurchasable } from "@/lib/availability";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -81,6 +82,11 @@ export default async function FormationPage({ params }: PageProps) {
   }
 
   const cartFormation = toFormationCartInput(formation);
+  const purchasable = isFormationPurchasable(
+    formation,
+    formation.creneaux ?? [],
+    formation._count?.enrollments ?? 0
+  );
 
   return (
     <div className="pt-20 bg-surface min-h-screen">
@@ -126,8 +132,18 @@ export default async function FormationPage({ params }: PageProps) {
               )}
             </div>
 
-            <div className="absolute top-4 left-4 flex gap-2">
-              <Badge className="bg-accent text-white">Disponible</Badge>
+            <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+              {formation.statut === "COMING_SOON" && (
+                <Badge className="bg-primary-light text-white">Bientôt</Badge>
+              )}
+              {formation.statut === "ACTIVE" &&
+                (purchasable ? (
+                  <Badge className="bg-accent text-white">Disponible</Badge>
+                ) : (
+                  <Badge className="bg-red-600 text-white hover:bg-red-600">
+                    Rupture
+                  </Badge>
+                ))}
               {formation.prixPromo != null && (
                 <Badge className="bg-secondary text-secondary-foreground">Promo</Badge>
               )}
@@ -183,9 +199,10 @@ export default async function FormationPage({ params }: PageProps) {
             <PurchaseFormationPanel
               formation={cartFormation}
               creneaux={formation.creneaux ?? []}
+              formationPurchasable={purchasable}
             />
 
-            {formation.schedulingMode !== "FLEXIBLE_FORMATION" &&
+            {formation.schedulingMode === "FLEXIBLE_FORMATION" &&
               (formation.creneaux ?? []).length > 0 && (
                 <div>
                   <h3 className="font-serif text-xl font-bold text-primary mb-4">

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { CreneauStatus } from "@prisma/client";
 import { attachUserToPaidGuestOrder } from "@/lib/orders/provision-guest-after-payment";
 import { sendPurchaseFollowupIfNeeded } from "@/lib/orders/send-purchase-followup";
 import { ensureCourseWeeklySubscriptionsForPaidOrder } from "@/lib/orders/sync-course-weekly-subscriptions";
@@ -9,6 +10,26 @@ function initialEnrollmentExpiry(): Date {
   const tokenExpiresAt = new Date();
   tokenExpiresAt.setDate(tokenExpiresAt.getDate() + ENROLLMENT_DAYS_AFTER_PAYMENT);
   return tokenExpiresAt;
+}
+
+async function syncCreneauStatutFromEnrollments(creneauId: string): Promise<void> {
+  const c = await prisma.creneau.findUnique({
+    where: { id: creneauId },
+    select: {
+      placesMax: true,
+      statut: true,
+      _count: { select: { enrollments: true } },
+    },
+  });
+  if (!c || c.statut === "CLOSED") return;
+  const full = c._count.enrollments >= c.placesMax;
+  const next: CreneauStatus = full ? "FULL" : "OPEN";
+  if (c.statut !== next) {
+    await prisma.creneau.update({
+      where: { id: creneauId },
+      data: { statut: next },
+    });
+  }
 }
 
 /**
@@ -71,6 +92,15 @@ export async function ensureEnrollmentsForPaidOrder(
         },
       });
     }
+  }
+
+  const creneauIds = new Set(
+    order.orderItems
+      .map((i) => i.creneauId)
+      .filter((id): id is string => id != null && id.length > 0)
+  );
+  for (const cid of creneauIds) {
+    await syncCreneauStatutFromEnrollments(cid);
   }
 
   await ensureCourseWeeklySubscriptionsForPaidOrder(orderId);

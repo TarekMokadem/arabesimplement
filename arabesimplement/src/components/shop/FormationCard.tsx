@@ -26,6 +26,13 @@ export function FormationCard({ formation }: FormationCardProps) {
   const getStatusBadge = () => {
     switch (formation.statut) {
       case "ACTIVE":
+        if (!formation.boutiquePurchasable) {
+          return (
+            <Badge className="bg-red-600 text-white hover:bg-red-600">
+              Rupture
+            </Badge>
+          );
+        }
         return (
           <Badge className="bg-accent text-white hover:bg-accent">
             Disponible
@@ -81,8 +88,13 @@ export function FormationCard({ formation }: FormationCardProps) {
         )}
 
         {/* Status Badge */}
-        <div className="absolute top-4 left-4 flex gap-2">
+        <div className="absolute top-4 left-4 flex flex-wrap gap-2">
           {getStatusBadge()}
+          {formation.showLimitedBadge && (
+            <Badge className="border border-amber-600/50 text-amber-900 bg-amber-50 hover:bg-amber-50">
+              Limité
+            </Badge>
+          )}
           {formation.prixPromo && (
             <Badge className="bg-secondary text-secondary-foreground hover:bg-secondary">
               Promo
@@ -193,14 +205,23 @@ export function FormationCard({ formation }: FormationCardProps) {
           </div>
 
           {formation.statut === "ACTIVE" ? (
-            <Link
-              href={`/boutique/${formation.slug}#achat`}
-              data-testid={`add-to-cart-${formation.slug}`}
-              className="inline-flex items-center justify-center rounded-lg text-sm font-medium h-8 px-3 shrink-0 bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-            >
-              Choisir
-              <ArrowRight className="h-4 w-4 ml-1" />
-            </Link>
+            formation.boutiquePurchasable ? (
+              <Link
+                href={`/boutique/${formation.slug}#achat`}
+                data-testid={`add-to-cart-${formation.slug}`}
+                className="inline-flex items-center justify-center rounded-lg text-sm font-medium h-8 px-3 shrink-0 bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+              >
+                Choisir
+                <ArrowRight className="h-4 w-4 ml-1" />
+              </Link>
+            ) : (
+              <span
+                className="text-sm font-medium text-red-600 shrink-0"
+                aria-label="En rupture de stock"
+              >
+                Rupture
+              </span>
+            )
           ) : (
             <Button
               variant="outline"
