@@ -2,6 +2,10 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { nanoid } from "nanoid";
 import { requireAdminSession } from "@/lib/auth/require-admin";
+import {
+  isCloudinaryConfigured,
+  uploadFormationImageToCloudinary,
+} from "@/lib/cloudinary/server-upload";
 
 const MIME_TO_EXT: Record<string, string> = {
   "image/jpeg": ".jpg",
@@ -45,13 +49,25 @@ export async function POST(request: Request) {
     );
   }
 
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  if (isCloudinaryConfigured()) {
+    try {
+      const { url } = await uploadFormationImageToCloudinary(buffer, file.type);
+      return Response.json({ url });
+    } catch (e) {
+      console.error("[upload-image] Cloudinary", e);
+      return Response.json(
+        { error: "Échec de l’envoi vers Cloudinary. Vérifiez les clés API." },
+        { status: 502 }
+      );
+    }
+  }
+
   const name = `${nanoid()}${ext}`;
   const dir = path.join(process.cwd(), "public", "uploads", "formations");
   await mkdir(dir, { recursive: true });
-
-  const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(dir, name), buffer);
-
   const url = `/uploads/formations/${name}`;
   return Response.json({ url });
 }

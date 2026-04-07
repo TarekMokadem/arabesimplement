@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, Mail, Pencil } from "lucide-react";
+import { Search, Mail, Pencil, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -77,9 +77,12 @@ export default async function UtilisateursPage() {
                             {u.nom[0]}
                           </span>
                         </div>
-                        <span className="font-medium text-primary">
+                        <Link
+                          href={`/admin/utilisateurs/${u.id}`}
+                          className="font-medium text-primary hover:text-secondary hover:underline"
+                        >
                           {u.prenom} {u.nom}
-                        </span>
+                        </Link>
                       </div>
                     </td>
                     <td className="p-4 text-gray-600 max-w-[200px] truncate" title={u.email}>
@@ -106,6 +109,15 @@ export default async function UtilisateursPage() {
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-1">
+                        <Link
+                          href={`/admin/utilisateurs/${u.id}`}
+                          className={cn(
+                            buttonVariants({ variant: "ghost", size: "icon-sm" })
+                          )}
+                          aria-label={`Fiche ${u.prenom}`}
+                        >
+                          <UserCircle className="h-4 w-4" />
+                        </Link>
                         <Link
                           href={`/admin/utilisateurs/${u.id}/modifier`}
                           className={cn(

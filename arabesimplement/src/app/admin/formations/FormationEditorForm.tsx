@@ -315,7 +315,11 @@ export function FormationEditorForm(
                 onChange={onImageFile}
               />
               <p className="text-muted-foreground text-xs">
-                JPEG, PNG, WebP ou GIF — max. 5 Mo. Vous pouvez aussi coller une URL ci‑dessous.
+                JPEG, PNG, WebP ou GIF — max. 5 Mo. Avec les variables Cloudinary
+                renseignées sur le serveur, l’image est envoyée sur Cloudinary ;
+                sinon elle est stockée localement dans{" "}
+                <code className="text-[0.7rem]">public/uploads</code>. Vous
+                pouvez aussi coller une URL ci‑dessous.
               </p>
               <Label htmlFor="imageUrl" className="pt-1">
                 Ou URL de l’image

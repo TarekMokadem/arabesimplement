@@ -185,6 +185,10 @@ model Enrollment {
   token          String    @unique @default(uuid())
   tokenExpiresAt DateTime  @map("token_expires_at")
   tokenUsed      Boolean   @default(false) @map("token_used")
+  /** Renseigné par l’admin : professeur assigné (affiché dans l’espace élève). */
+  assignedProfessorName String? @map("assigned_professor_name")
+  /** Lien ou numéro WhatsApp du groupe de cours (wa.me/…, https://chat.whatsapp.com/…). */
+  assignedWhatsappUrl   String? @map("assigned_whatsapp_url") @db.Text
   createdAt      DateTime  @default(now()) @map("created_at")
 
   user      User       @relation(fields: [userId], references: [id])

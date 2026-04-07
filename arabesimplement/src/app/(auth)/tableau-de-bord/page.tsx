@@ -22,7 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import { getSession } from "../actions";
 import { LogoutButton } from "./LogoutButton";
 import { LearnerSexeForm } from "./LearnerSexeForm";
-import { getEnrollmentsForLearner } from "@/lib/data/enrollments.service";
+import { getGroupedLearnerCoursesForDashboard } from "@/lib/data/learner-courses.service";
+import { normalizeWhatsappHref } from "@/lib/utils/whatsapp-link";
 import { getWeeklySubscriptionsForLearner } from "@/lib/data/weekly-subscriptions.service";
 import { WeeklySubscriptionsSection } from "@/components/auth/WeeklySubscriptionsSection";
 import {
@@ -42,8 +43,8 @@ export default async function TableauDeBordPage() {
     ? { prenom: session.prenom, nom: session.nom, email: session.email }
     : { prenom: "Invité", nom: "", email: "" };
 
-  const enrollments = session
-    ? await getEnrollmentsForLearner(session.id)
+  const courseGroups = session
+    ? await getGroupedLearnerCoursesForDashboard(session.id)
     : [];
 
   let learnerSexe: StudentSex | null = null;
@@ -156,41 +157,53 @@ export default async function TableauDeBordPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {enrollments.map((enrollment) => {
-                  const titre = enrollment.formation.titre;
-                  const waUrl = learnerFormationWhatsAppUrl(learnerSexe, titre);
-                  const waLabel = learnerWhatsAppCoachLabel(learnerSexe);
+                {courseGroups.map((group) => {
+                  const titre = group.formationTitre;
+                  const coachWaUrl = learnerFormationWhatsAppUrl(
+                    learnerSexe,
+                    titre
+                  );
+                  const coachWaLabel = learnerWhatsAppCoachLabel(learnerSexe);
+                  const coursWaHref = group.assignedWhatsappUrl
+                    ? normalizeWhatsappHref(group.assignedWhatsappUrl)
+                    : null;
                   return (
                   <div
-                    key={enrollment.id}
+                    key={group.key}
                     className="p-4 border rounded-lg hover:border-secondary/30 transition-colors"
-                    data-testid={`enrollment-${enrollment.id}`}
+                    data-testid={`learner-course-${group.key}`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <h3 className="font-medium text-primary">
                           {titre}
                         </h3>
-                        {enrollment.creneau ? (
+                        {group.kind === "HOURLY" &&
+                          group.hourlyBundleSummary && (
+                            <p className="mt-1 text-sm text-gray-600">
+                              Abonnement : {group.hourlyBundleSummary} / semaine
+                            </p>
+                          )}
+                        {group.creneau ? (
                           <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
                             <Calendar className="h-4 w-4 shrink-0" />
                             <span>
-                              {enrollment.creneau.nom} —{" "}
+                              {group.creneau.nom} —{" "}
                               {normalizeJourneeSlots(
                                 parseJourneeSlotsFromJson(
-                                  enrollment.creneau.journeeSlots
+                                  group.creneau.journeeSlots
                                 ),
                                 {
-                                  jours: enrollment.creneau.jours,
-                                  heureDebut: enrollment.creneau.heureDebut,
-                                  dureeMinutes: enrollment.creneau.dureeMinutes,
+                                  jours: group.creneau.jours,
+                                  heureDebut: group.creneau.heureDebut,
+                                  dureeMinutes: group.creneau.dureeMinutes,
                                 }
                               )
                                 .map(formatCreneauSlotLine)
                                 .join(" · ")}
                             </span>
                           </div>
-                        ) : (
+                        ) : group.kind === "SLOT" ? (
                           <div className="mt-2">
                             <Link href={creneauContactHref(titre)}>
                               <Button
@@ -201,11 +214,33 @@ export default async function TableauDeBordPage() {
                               </Button>
                             </Link>
                           </div>
-                        )}
-                        <div className="mt-3">
-                          {waUrl ? (
+                        ) : null}
+                        {group.assignedProfessorName ? (
+                          <p className="mt-3 text-sm font-medium text-primary">
+                            Professeur : {group.assignedProfessorName}
+                          </p>
+                        ) : null}
+                        <div className="mt-3 flex flex-col sm:flex-row flex-wrap gap-2">
+                          {coursWaHref ? (
                             <Link
-                              href={waUrl}
+                              href={coursWaHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={cn(
+                                buttonVariants({
+                                  size: "sm",
+                                  variant: "default",
+                                }),
+                                "bg-emerald-600 text-white hover:bg-emerald-700 inline-flex items-center gap-2"
+                              )}
+                            >
+                              <MessageCircle className="h-4 w-4 shrink-0" />
+                              Groupe WhatsApp du cours
+                            </Link>
+                          ) : null}
+                          {coachWaUrl ? (
+                            <Link
+                              href={coachWaUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               className={cn(
@@ -217,9 +252,10 @@ export default async function TableauDeBordPage() {
                               )}
                             >
                               <MessageCircle className="h-4 w-4 shrink-0" />
-                              WhatsApp — {waLabel}
+                              WhatsApp — {coachWaLabel}
                             </Link>
-                          ) : learnerSexe ? (
+                          ) : null}
+                          {!coursWaHref && !coachWaUrl && learnerSexe ? (
                             <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
                               Le lien WhatsApp de votre équipe n’est pas encore
                               configuré. Utilisez{" "}
@@ -231,11 +267,12 @@ export default async function TableauDeBordPage() {
                               </Link>
                               .
                             </p>
-                          ) : (
+                          ) : null}
+                          {!coursWaHref && !coachWaUrl && !learnerSexe ? (
                             <p className="text-xs text-gray-600">
                               Pour afficher le bon numéro WhatsApp (équipe
-                              féminine ou masculine), indiquez votre sexe lors
-                              d’un prochain achat ou{" "}
+                              féminine ou masculine), indiquez votre sexe dans
+                              « Mes informations » ou{" "}
                               <Link
                                 href="/contactez-nous"
                                 className="text-secondary underline font-medium"
@@ -244,19 +281,19 @@ export default async function TableauDeBordPage() {
                               </Link>
                               .
                             </p>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                       <Badge
                         className={
-                          enrollment.tokenUsed
+                          group.tokenUsed
                             ? "bg-accent/10 text-accent"
                             : "bg-secondary/10 text-secondary"
                         }
                       >
-                        {enrollment.tokenUsed
+                        {group.tokenUsed
                           ? "Inscrit"
-                          : enrollment.creneau
+                          : group.creneau
                             ? "Créneau choisi"
                             : "En attente"}
                       </Badge>
@@ -265,7 +302,7 @@ export default async function TableauDeBordPage() {
                 );
                 })}
 
-                {enrollments.length === 0 && (
+                {courseGroups.length === 0 && (
                   <div className="text-center py-8">
                     <p className="text-gray-500 mb-4">
                       Vous n&apos;avez pas encore de formation. Les achats

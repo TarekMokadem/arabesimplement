@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getUserForAdminById } from "@/lib/data/admin.service";
 import { UserEditForm } from "../../UserEditForm";
@@ -13,6 +14,16 @@ export default async function ModifierUtilisateurPage({
 
   return (
     <div className="p-6 lg:p-8">
+      {user.role === "STUDENT" ? (
+        <p className="mb-4">
+          <Link
+            href={`/admin/utilisateurs/${user.id}`}
+            className="text-sm font-medium text-secondary hover:text-primary underline underline-offset-2"
+          >
+            Fiche élève — cours et groupe WhatsApp
+          </Link>
+        </p>
+      ) : null}
       <h1 className="font-serif text-3xl font-bold text-primary mb-8">
         Modifier l&apos;utilisateur
       </h1>

@@ -135,6 +135,8 @@ export interface Enrollment {
   token: string;
   tokenExpiresAt: Date;
   tokenUsed: boolean;
+  assignedProfessorName?: string;
+  assignedWhatsappUrl?: string;
   createdAt: Date;
   user?: User;
   formation?: Formation;
