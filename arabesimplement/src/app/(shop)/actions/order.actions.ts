@@ -7,6 +7,7 @@ import type { CartItem } from "@/store/cart.store";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { isStripeConfigured } from "@/lib/stripe/config";
 import { getServerStripe } from "@/lib/stripe/server";
+import { resolveIncompleteSubscriptionInvoicePayment } from "@/lib/stripe/incomplete-subscription-payment";
 import { ensureStripeCustomerForCheckout } from "@/lib/stripe/checkout-customer";
 import {
   weeklyStripePriceIdForMinutes,
@@ -177,41 +178,25 @@ export async function createOrder(
         metadata: { orderId },
         payment_behavior: "default_incomplete",
         payment_settings: { save_default_payment_method: "on_subscription" },
-        expand: ["latest_invoice.payment_intent"],
+        expand: ["latest_invoice"],
       });
       createdSubscriptionId = subscription.id;
 
-      const inv = subscription.latest_invoice;
-      let paymentIntent: Stripe.PaymentIntent | null = null;
-      if (inv && typeof inv === "object" && "payment_intent" in inv) {
-        const pit = inv.payment_intent;
-        if (typeof pit === "string") {
-          paymentIntent = await stripe.paymentIntents.retrieve(pit);
-        } else if (
-          pit &&
-          typeof pit === "object" &&
-          (pit as Stripe.PaymentIntent).object === "payment_intent"
-        ) {
-          paymentIntent = pit as Stripe.PaymentIntent;
-        }
-      }
-
-      if (!paymentIntent?.client_secret) {
-        throw new Error("Stripe : client_secret manquant (abonnement)");
-      }
+      const { clientSecret, paymentIntentId } =
+        await resolveIncompleteSubscriptionInvoicePayment(stripe, subscription);
 
       await prisma.order.update({
         where: { id: orderId },
         data: {
           stripeSubscriptionId: subscription.id,
-          stripePaymentIntentId: paymentIntent.id,
+          stripePaymentIntentId: paymentIntentId,
         },
       });
 
       return {
         success: true,
         orderId,
-        clientSecret: paymentIntent.client_secret,
+        clientSecret,
         stripePublishableKey: publishableKey,
         paymentMode: "stripe",
         checkoutKind,
