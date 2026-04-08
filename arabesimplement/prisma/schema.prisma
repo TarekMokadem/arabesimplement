@@ -51,6 +51,12 @@ enum OrderStatus {
   REFUNDED
 }
 
+/** Compte PayPal.me actif pour les virements directs (hors Stripe Checkout). */
+enum PaypalMeRecipient {
+  YACINE_BOU18
+  JANA_OKF
+}
+
 /** Abonnement hebdo cours à la carte (Stripe). */
 enum WeeklySubscriptionStatus {
   ACTIVE
@@ -268,4 +274,13 @@ model ContactMessage {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("contact_messages")
+}
+
+/** Configuration globale (singleton id = global). */
+model SiteConfig {
+  id                  String            @id
+  paypalMeRecipient   PaypalMeRecipient @default(YACINE_BOU18) @map("paypal_me_recipient")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+
+  @@map("site_config")
 }

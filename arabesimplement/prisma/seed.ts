@@ -216,6 +216,13 @@ async function main() {
       console.log("[seed] Compte admin OK :", adminEmail, "(password_hash renseigné)");
     }
   }
+
+  await prisma.siteConfig.upsert({
+    where: { id: "global" },
+    create: { id: "global", paypalMeRecipient: "YACINE_BOU18" },
+    update: {},
+  });
+  console.log("[seed] site_config (PayPal.me) OK");
 }
 
 async function disconnectPrisma() {

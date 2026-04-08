@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { getAdminOrdersList } from "@/lib/data/admin.service";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import type { OrderStatus } from "@prisma/client";
+import { MarkOrderPaidButton } from "@/app/admin/paiements/MarkOrderPaidButton";
 
 export const dynamic = "force-dynamic";
 
@@ -118,6 +119,22 @@ export default async function PaiementsPage() {
                     </td>
                     <td className="p-4 text-gray-500 whitespace-nowrap">
                       {p.date.toLocaleDateString("fr-FR")}
+                    </td>
+                    <td className="p-4 align-top">
+                      {p.statut === "PENDING" ? (
+                        <MarkOrderPaidButton
+                          orderId={p.id}
+                          montantEuros={p.montant}
+                          formationSummary={p.formationLabel}
+                          disabledReason={
+                            p.stripeSubscriptionId
+                              ? "Abonnement Stripe — valider via paiement / webhook."
+                              : undefined
+                          }
+                        />
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
                     </td>
                   </tr>
                 ))

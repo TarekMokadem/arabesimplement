@@ -63,6 +63,8 @@ export type AdminPaymentRow = {
   montant: number;
   statut: OrderStatus;
   date: Date;
+  /** Si renseigné, la commande est un abonnement Stripe — ne pas utiliser le marquage manuel. */
+  stripeSubscriptionId: string | null;
 };
 
 function startOfMonth(d: Date): Date {
@@ -342,5 +344,6 @@ export async function getAdminOrdersList(): Promise<AdminPaymentRow[]> {
     montant: Number(o.total),
     statut: o.statut,
     date: o.createdAt,
+    stripeSubscriptionId: o.stripeSubscriptionId,
   }));
 }

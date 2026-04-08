@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
 import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
 import { StripePaymentSection } from "@/components/shop/StripePaymentSection";
+import { PaypalMeCheckoutBlock } from "@/components/shop/PaypalMeCheckoutBlock";
 import { PaymentExperiencePreface } from "@/components/shop/PaymentExperiencePreface";
 import { useCart } from "@/hooks/useCart";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
@@ -131,8 +132,9 @@ export default function PaiementPage() {
           Paiement sécurisé
         </h1>
         <p className="text-sm text-gray-600 mb-8">
-          Règlement via notre prestataire Stripe — cartes bancaires et PayPal
-          selon ce qui est proposé dans le formulaire.
+          {orderInfo?.checkoutKind === "hourly_only"
+            ? "Abonnement : règlement via Stripe uniquement (carte ou PayPal intégré au formulaire Stripe si activé)."
+            : "Règlement par carte ou PayPal via Stripe, ou virement direct PayPal.me selon votre choix ci-dessous."}
         </p>
 
         {orderInfo?.checkoutKind === "hourly_only" ? (
@@ -212,6 +214,30 @@ export default function PaiementPage() {
                     </Button>
                   </div>
                 )}
+
+                {orderInfo &&
+                orderInfo.checkoutKind !== "hourly_only" &&
+                orderInfo.orderId ? (
+                  <>
+                    <div className="relative py-2">
+                      <div
+                        className="absolute inset-0 flex items-center"
+                        aria-hidden
+                      >
+                        <span className="w-full border-t border-gray-200" />
+                      </div>
+                      <div className="relative flex justify-center">
+                        <span className="bg-white px-3 text-xs text-gray-500 uppercase tracking-wide">
+                          ou
+                        </span>
+                      </div>
+                    </div>
+                    <PaypalMeCheckoutBlock
+                      amountEuros={total}
+                      orderId={orderInfo.orderId}
+                    />
+                  </>
+                ) : null}
 
                 <div className="flex items-center justify-center gap-4 pt-4 text-xs text-gray-400">
                   <span>Paiement sécurisé</span>
