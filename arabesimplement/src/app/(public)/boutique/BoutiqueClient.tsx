@@ -1,7 +1,13 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import {
+  motion,
+  LayoutGroup,
+  AnimatePresence,
+  useReducedMotion,
+} from "framer-motion";
 import { FormationCard } from "@/components/shop/FormationCard";
 import { BoutiqueArchFilters } from "@/components/shop/BoutiqueArchFilters";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -19,6 +25,13 @@ export function BoutiqueClient({
   themeFilters,
 }: BoutiqueClientProps) {
   const [selectedFilterId, setSelectedFilterId] = useState<string>("ALL");
+  /** Après le 1er rendu : les cartes qui apparaissent au changement de filtre jouent l’entrée (pop + léger wobble). */
+  const [filterEnterAnimationsReady, setFilterEnterAnimationsReady] =
+    useState(false);
+  useEffect(() => {
+    setFilterEnterAnimationsReady(true);
+  }, []);
+  const reduceMotion = useReducedMotion();
 
   const filteredFormations = useMemo(() => {
     const tab = themeFilters.find((t) => t.id === selectedFilterId);
@@ -97,14 +110,80 @@ export function BoutiqueClient({
             </p>
           </div>
 
-          <div
-            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
-            data-testid="formations-grid"
-          >
-            {filteredFormations.map((formation) => (
-              <FormationCard key={formation.id} formation={formation} />
-            ))}
-          </div>
+          <LayoutGroup id="boutique-formations-grid">
+            <div
+              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+              data-testid="formations-grid"
+            >
+              <AnimatePresence mode="popLayout" initial={false}>
+                {filteredFormations.map((formation) => (
+                  <motion.div
+                    key={formation.id}
+                    layout={!reduceMotion}
+                    initial={
+                      filterEnterAnimationsReady && !reduceMotion
+                        ? {
+                            opacity: 0,
+                            scale: 0.88,
+                            y: 28,
+                            rotate: -4,
+                          }
+                        : false
+                    }
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                      y: 0,
+                      rotate: 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      scale: 0.94,
+                      transition: {
+                        opacity: { duration: 0.15, ease: "easeIn" },
+                        scale: { duration: 0.15, ease: "easeIn" },
+                      },
+                    }}
+                    transition={{
+                      layout: reduceMotion
+                        ? { duration: 0 }
+                        : {
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 32,
+                            mass: 0.85,
+                          },
+                      opacity: { duration: reduceMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] },
+                      scale: reduceMotion
+                        ? { duration: 0 }
+                        : {
+                            type: "spring",
+                            stiffness: 460,
+                            damping: 22,
+                          },
+                      y: reduceMotion
+                        ? { duration: 0 }
+                        : {
+                            type: "spring",
+                            stiffness: 420,
+                            damping: 28,
+                          },
+                      rotate: reduceMotion
+                        ? { duration: 0 }
+                        : {
+                            type: "spring",
+                            stiffness: 220,
+                            damping: 9,
+                          },
+                    }}
+                    className="h-full min-w-0"
+                  >
+                    <FormationCard formation={formation} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </LayoutGroup>
 
           {filteredFormations.length === 0 && (
             <div className="text-center py-16">

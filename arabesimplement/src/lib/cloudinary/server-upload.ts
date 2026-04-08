@@ -1,10 +1,16 @@
 import { v2 as cloudinary } from "cloudinary";
 
+function envTrim(name: string): string | undefined {
+  const v = process.env[name];
+  const t = v?.trim();
+  return t && t.length > 0 ? t : undefined;
+}
+
 export function isCloudinaryConfigured(): boolean {
   return Boolean(
-    process.env.CLOUDINARY_CLOUD_NAME &&
-      process.env.CLOUDINARY_API_KEY &&
-      process.env.CLOUDINARY_API_SECRET
+    envTrim("CLOUDINARY_CLOUD_NAME") &&
+      envTrim("CLOUDINARY_API_KEY") &&
+      envTrim("CLOUDINARY_API_SECRET")
   );
 }
 
@@ -16,13 +22,16 @@ export async function uploadFormationImageToCloudinary(
   buffer: Buffer,
   mimeType: string
 ): Promise<{ url: string }> {
-  if (!isCloudinaryConfigured()) {
+  const cloudName = envTrim("CLOUDINARY_CLOUD_NAME");
+  const apiKey = envTrim("CLOUDINARY_API_KEY");
+  const apiSecret = envTrim("CLOUDINARY_API_SECRET");
+  if (!cloudName || !apiKey || !apiSecret) {
     throw new Error("Cloudinary non configuré");
   }
   cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
     secure: true,
   });
   const b64 = buffer.toString("base64");
