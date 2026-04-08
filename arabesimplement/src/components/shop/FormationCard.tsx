@@ -117,7 +117,7 @@ export function FormationCard({ formation }: FormationCardProps) {
         </Link>
       </div>
 
-      <CardContent className="p-6 flex flex-col flex-1 relative overflow-hidden">
+      <CardContent className="p-4 sm:p-6 flex flex-col flex-1 relative overflow-hidden">
         <svg
           className="pointer-events-none absolute -right-4 -bottom-4 w-24 h-24 text-primary opacity-[0.04]"
           viewBox="0 0 100 100"

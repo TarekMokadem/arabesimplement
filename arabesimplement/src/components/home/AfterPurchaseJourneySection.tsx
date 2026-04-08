@@ -44,8 +44,8 @@ export function AfterPurchaseJourneySection() {
       className="py-20 md:py-24 bg-white border-y border-gray-100 scroll-mt-24"
       aria-labelledby="titre-apres-achat"
     >
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="max-w-2xl mb-12 md:mb-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="max-w-2xl mb-10 md:mb-14">
           <Badge className="mb-4 bg-secondary/10 text-secondary border-secondary/25">
             Déroulé
           </Badge>

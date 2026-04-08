@@ -43,10 +43,10 @@ export default async function PaiementsPage() {
     .reduce((sum, p) => sum + p.montant, 0);
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-primary">
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-primary">
             Paiements
           </h1>
           <p className="text-gray-500 mt-1">

@@ -56,12 +56,12 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
           : "bg-transparent"
       )}
     >
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between h-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <BrandLogoMark size={40} />
-            <span className="font-serif font-bold text-xl transition-colors duration-300 text-primary">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3">
+            <BrandLogoMark size={32} />
+            <span className="font-serif font-bold text-base sm:text-xl transition-colors duration-300 text-primary">
               ArabeSimplement
             </span>
           </Link>
@@ -93,13 +93,13 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {/* Cart */}
             <Link href="/panier" className="relative">
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative hover:bg-secondary/10"
+                className="relative hover:bg-secondary/10 h-9 w-9 sm:h-10 sm:w-10"
                 data-testid="cart-button"
               >
                 <ShoppingCart className="h-5 w-5 text-primary" />
@@ -128,31 +128,31 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
 
             {/* Mobile Menu */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger className="lg:hidden p-2 hover:bg-gray-100 rounded-md">
-                <Menu className="h-6 w-6 text-primary" />
+              <SheetTrigger className="lg:hidden p-1.5 sm:p-2 hover:bg-gray-100 rounded-md">
+                <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </SheetTrigger>
-              <SheetContent side="right" className="w-80 bg-white">
-                <div className="flex flex-col gap-6 mt-8">
-                  <div className="flex items-center gap-3 pb-6 border-b">
-                    <BrandLogoMark size={40} />
-                    <span className="font-serif font-bold text-xl text-primary">
+              <SheetContent side="right" className="w-[85vw] max-w-80 bg-white p-0">
+                <div className="flex flex-col h-full px-5 pt-6 pb-4 overflow-y-auto">
+                  <div className="flex items-center gap-3 pb-5 border-b border-gray-100">
+                    <BrandLogoMark size={36} />
+                    <span className="font-serif font-bold text-lg text-primary">
                       ArabeSimplement
                     </span>
                   </div>
 
-                  <nav className="flex flex-col gap-1" aria-label="Menu mobile">
+                  <nav className="flex flex-col gap-0.5 mt-5" aria-label="Menu mobile">
                     {mainNavLinks.map((link) => (
                       <Link
                         key={link.href}
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-primary font-medium py-2.5 hover:text-secondary transition-colors rounded-md px-1 -mx-1"
+                        className="text-primary font-medium py-3 px-3 hover:text-secondary hover:bg-surface transition-colors rounded-lg text-[15px]"
                       >
                         {link.label}
                       </Link>
                     ))}
-                    <div className="pt-3 mt-2 border-t border-gray-100">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 px-1 mb-2">
+                    <div className="pt-3 mt-3 border-t border-gray-100">
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 px-3 mb-1">
                         Aide
                       </p>
                       <div className="flex flex-col gap-0.5">
@@ -161,10 +161,10 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
                             key={link.href}
                             href={link.href}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="py-2.5 px-1 rounded-md text-primary hover:bg-surface transition-colors"
+                            className="py-2.5 px-3 rounded-lg text-primary hover:bg-surface transition-colors"
                           >
-                            <span className="font-medium block">{link.label}</span>
-                            <span className="text-xs text-gray-500 block mt-0.5">
+                            <span className="font-medium text-sm block">{link.label}</span>
+                            <span className="text-xs text-gray-500 block mt-0.5 leading-snug">
                               {link.description}
                             </span>
                           </Link>
@@ -173,9 +173,9 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
                     </div>
                   </nav>
 
-                  <div className="pt-6 border-t mt-auto space-y-2">
+                  <div className="pt-5 border-t border-gray-100 mt-auto">
                     <Link href={accountHref} onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground">
+                      <Button className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground text-sm py-5">
                         <User className="h-4 w-4 mr-2" />
                         {isLoggedIn ? "Tableau de bord" : "Mon compte"}
                       </Button>

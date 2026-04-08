@@ -86,9 +86,9 @@ export default async function AdminDashboardPage() {
       : "0";
 
   return (
-    <div className="p-6 lg:p-8">
-      <div className="mb-8">
-        <h1 className="font-serif text-3xl font-bold text-primary">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-primary">
           Tableau de bord
         </h1>
         <p className="text-gray-500 mt-1">
@@ -102,7 +102,7 @@ export default async function AdminDashboardPage() {
         )}
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
         <StatCard
           title="Revenus ce mois"
           value={`${stats.revenusThisMois.toFixed(2)} €`}
@@ -139,7 +139,7 @@ export default async function AdminDashboardPage() {
         />
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
         <div className="lg:col-span-2">
           <Card className="bg-white">
             <CardHeader className="flex flex-row items-center justify-between">

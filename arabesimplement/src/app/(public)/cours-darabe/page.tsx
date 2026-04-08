@@ -100,8 +100,8 @@ export default function CoursDarabePage() {
         subtitle="Découvrez notre méthode unique pour apprendre à lire l'arabe en seulement 10 leçons."
       />
 
-      <section className="py-16 md:py-20 bg-surface border-y border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-10 sm:py-16 md:py-20 bg-surface border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-3xl mb-12">
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/15">
               Nos offres
@@ -160,9 +160,9 @@ export default function CoursDarabePage() {
       </section>
 
       {/* Method Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="py-12 sm:py-16 md:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
               <Badge className="mb-4 bg-secondary/10 text-secondary border-secondary/20">
                 Notre méthode
@@ -205,8 +205,8 @@ export default function CoursDarabePage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 bg-surface">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-12 sm:py-16 md:py-20 bg-surface">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="font-serif text-3xl font-bold text-primary mb-4">
               Ce qui est inclus

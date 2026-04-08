@@ -65,9 +65,9 @@ export default function ContactezNousPage() {
         subtitle="Une question ? Un projet ? N'hésitez pas à nous écrire."
       />
 
-      <section className="py-16 bg-surface">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid lg:grid-cols-3 gap-12">
+      <section className="py-10 sm:py-16 bg-surface">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
             {/* Contact Info */}
             <div className="space-y-8">
               <div>
@@ -204,7 +204,7 @@ export default function ContactezNousPage() {
             {/* Contact Form */}
             <div className="lg:col-span-2">
               <Card className="bg-white">
-                <CardContent className="p-8">
+                <CardContent className="p-5 sm:p-8">
                   {isSubmitted ? (
                     <div className="text-center py-12">
                       <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">

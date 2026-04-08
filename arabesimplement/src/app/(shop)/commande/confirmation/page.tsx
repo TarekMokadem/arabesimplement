@@ -40,13 +40,13 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
     "Nous n’avons pas pu afficher le détail de cette commande. Vérifiez le lien reçu après paiement ou connectez-vous avec le compte utilisé pour l’achat.";
 
   return (
-    <div className="pt-20 min-h-screen bg-surface">
+    <div className="pt-16 sm:pt-20 min-h-screen bg-surface">
       <ConfirmationCleanup />
-      <div className="max-w-2xl mx-auto px-6 py-8">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
         <CheckoutStepper currentStep={4} />
 
         <Card className="bg-white text-center">
-          <CardContent className="p-12">
+          <CardContent className="p-6 sm:p-10 md:p-12">
             <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="h-10 w-10 text-accent" />
             </div>

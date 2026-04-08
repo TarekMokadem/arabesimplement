@@ -33,13 +33,13 @@ const footerLinks = {
 export function Footer() {
   return (
     <footer className="bg-primary text-white">
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
           {/* Brand */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6 col-span-2 md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3">
-              <BrandLogoMark size={40} />
-              <span className="font-serif font-bold text-xl">ArabeSimplement</span>
+              <BrandLogoMark size={36} />
+              <span className="font-serif font-bold text-lg sm:text-xl">ArabeSimplement</span>
             </div>
             <p
               className="font-arabic text-2xl text-secondary leading-relaxed"
@@ -56,7 +56,7 @@ export function Footer() {
 
           {/* Navigation */}
           <div>
-            <h3 className="font-serif font-bold text-lg mb-6 text-secondary">
+            <h3 className="font-serif font-bold text-base sm:text-lg mb-4 sm:mb-6 text-secondary">
               Navigation
             </h3>
             <ul className="space-y-3">
@@ -90,7 +90,7 @@ export function Footer() {
 
           {/* Formations */}
           <div>
-            <h3 className="font-serif font-bold text-lg mb-6 text-secondary">
+            <h3 className="font-serif font-bold text-base sm:text-lg mb-4 sm:mb-6 text-secondary">
               Formations
             </h3>
             <ul className="space-y-3">
@@ -108,8 +108,8 @@ export function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="font-serif font-bold text-lg mb-6 text-secondary">
+          <div className="col-span-2 md:col-span-1">
+            <h3 className="font-serif font-bold text-base sm:text-lg mb-4 sm:mb-6 text-secondary">
               Contact
             </h3>
             <ul className="space-y-3">
@@ -201,8 +201,8 @@ export function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-white/15 mt-12 pt-8 text-center">
-          <p className="text-gray-500 text-sm">
+        <div className="border-t border-white/15 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center">
+          <p className="text-gray-500 text-xs sm:text-sm">
             © {new Date().getFullYear()} ArabeSimplement. Tous droits réservés.
           </p>
         </div>

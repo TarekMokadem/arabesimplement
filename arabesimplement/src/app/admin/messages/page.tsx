@@ -10,9 +10,9 @@ export default async function MessagesPage() {
   const unread = messages.filter((m) => !m.lu).length;
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-8">
-        <h1 className="font-serif text-3xl font-bold text-primary">
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-primary">
           Messages
         </h1>
         <p className="text-gray-500 mt-1">

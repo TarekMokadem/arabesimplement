@@ -16,7 +16,7 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "relative bg-primary text-white py-20 overflow-hidden",
+        "relative bg-primary text-white py-12 sm:py-16 md:py-20 overflow-hidden",
         className
       )}
     >
@@ -30,12 +30,12 @@ export function PageHeader({
         />
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4 animate-fade-in">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+        <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 animate-fade-in">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-gray-300 text-lg max-w-2xl animate-slide-up">
+          <p className="text-gray-300 text-sm sm:text-base md:text-lg max-w-2xl animate-slide-up leading-relaxed">
             {subtitle}
           </p>
         )}

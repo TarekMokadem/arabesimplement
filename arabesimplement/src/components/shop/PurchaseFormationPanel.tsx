@@ -192,7 +192,7 @@ export function PurchaseFormationPanel({
       id="achat"
       className="bg-white border-2 border-secondary/20 scroll-mt-28"
     >
-      <CardContent className="p-6 space-y-6">
+      <CardContent className="p-4 sm:p-6 space-y-5 sm:space-y-6">
         {disabledReason && (
           <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
             {disabledReason}

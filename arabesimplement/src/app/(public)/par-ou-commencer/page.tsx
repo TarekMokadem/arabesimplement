@@ -91,8 +91,8 @@ export default function ParOuCommencerPage() {
         subtitle="Quelques repères selon votre objectif. Chaque formation indique sur sa fiche comment les cours sont organisés (créneaux, flexible ou cours à la carte)."
       />
 
-      <section className="py-14 bg-surface">
-        <div className="max-w-5xl mx-auto px-6">
+      <section className="py-10 sm:py-14 bg-surface">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="grid gap-8">
             {suggestions.map((item) => (
               <Card
@@ -152,10 +152,10 @@ export default function ParOuCommencerPage() {
         className="py-16 md:py-20 bg-white border-t border-gray-100"
         aria-labelledby="faq-par-ou-commencer"
       >
-        <div className="max-w-3xl mx-auto px-6">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <h2
             id="faq-par-ou-commencer"
-            className="font-serif text-2xl md:text-3xl font-bold text-primary mb-2"
+            className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-primary mb-2"
           >
             Questions fréquentes
           </h2>

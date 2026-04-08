@@ -69,8 +69,8 @@ export function BoutiqueClient({
         </p>
       </PageHeader>
 
-      <section className="py-16 bg-surface">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-8 sm:py-12 md:py-16 bg-surface">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <BoutiqueArchFilters
             tabs={themeFilters}
             selectedId={selectedFilterId}

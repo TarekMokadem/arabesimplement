@@ -13,8 +13,8 @@ export default function NotreParcours() {
       />
 
       {/* Story Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-6">
+      <section className="py-12 sm:py-16 md:py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="prose prose-lg max-w-none">
             <h2 className="font-serif text-3xl font-bold text-primary mb-8">
               D&apos;où vient ArabeSimplement ?
@@ -53,8 +53,8 @@ export default function NotreParcours() {
       </section>
 
       {/* Values Section */}
-      <section className="py-20 bg-surface">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-12 sm:py-16 md:py-20 bg-surface">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="font-serif text-3xl font-bold text-primary mb-4">
               Nos valeurs
@@ -102,8 +102,8 @@ export default function NotreParcours() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary text-white text-center">
-        <div className="max-w-3xl mx-auto px-6">
+      <section className="py-12 sm:py-16 md:py-20 bg-primary text-white text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <p className="font-arabic text-3xl text-secondary mb-6" dir="rtl">
             وَعَلَّمَكَ مَا لَمْ تَكُن تَعْلَمُ
           </p>

@@ -24,8 +24,8 @@ export default function PanierPage() {
 
   if (items.length === 0) {
     return (
-      <div className="pt-20 min-h-screen bg-surface">
-        <div className="max-w-4xl mx-auto px-6 py-16">
+      <div className="pt-16 sm:pt-20 min-h-screen bg-surface">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-16">
           <CheckoutStepper currentStep={1} />
 
           <div className="text-center py-16">
@@ -52,15 +52,15 @@ export default function PanierPage() {
   }
 
   return (
-    <div className="pt-20 min-h-screen bg-surface">
-      <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="pt-16 sm:pt-20 min-h-screen bg-surface">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
         <CheckoutStepper currentStep={1} />
 
-        <h1 className="font-serif text-3xl font-bold text-primary mb-8">
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-primary mb-6 sm:mb-8">
           Votre panier
         </h1>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (

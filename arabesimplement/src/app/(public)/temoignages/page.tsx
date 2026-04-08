@@ -17,8 +17,8 @@ export default async function TemoignagesPage() {
         subtitle="Découvrez les retours de nos étudiants sur leur expérience d'apprentissage."
       />
 
-      <section className="py-16 bg-surface">
-        <div className="max-w-6xl mx-auto px-6">
+      <section className="py-10 sm:py-16 bg-surface">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {testimonials.length === 0 ? (
             <p className="text-center text-gray-600 max-w-lg mx-auto">
               Les avis approuvés par l&apos;équipe apparaîtront ici. Revenez

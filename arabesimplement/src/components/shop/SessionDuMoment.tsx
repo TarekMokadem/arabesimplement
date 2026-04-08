@@ -75,8 +75,8 @@ export function SessionDuMoment({
       className="py-16 bg-gradient-to-r from-brand-mint-100 to-brand-mint-50 border-y-4 border-secondary"
       data-testid="session-du-moment"
     >
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-16">
           {/* Left Content */}
           <div className="flex-1 text-center lg:text-left">
             <div className="flex items-center gap-2 justify-center lg:justify-start mb-4">
@@ -86,18 +86,18 @@ export function SessionDuMoment({
               </Badge>
             </div>
 
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-4">
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 sm:mb-4">
               {titre}
             </h2>
 
-            <p className="text-gray-600 mb-6 max-w-xl">
+            <p className="text-gray-600 mb-4 sm:mb-6 max-w-xl text-sm sm:text-base">
               {description}
             </p>
 
             <div className="flex flex-wrap items-center gap-4 justify-center lg:justify-start mb-6">
               {hourly ? (
                 <>
-                  <span className="text-4xl font-bold text-accent">
+                  <span className="text-2xl sm:text-4xl font-bold text-accent">
                     Dès {formatPrice(hourlyMinPriceEuros())}
                   </span>
                   <span className="text-sm text-gray-600">
@@ -106,7 +106,7 @@ export function SessionDuMoment({
                 </>
               ) : showPromo ? (
                 <>
-                  <span className="text-4xl font-bold text-accent">
+                  <span className="text-2xl sm:text-4xl font-bold text-accent">
                     {prixPromo}€
                   </span>
                   <span className="text-xl text-gray-400 line-through">
@@ -117,12 +117,12 @@ export function SessionDuMoment({
                   </Badge>
                 </>
               ) : (
-                <span className="text-4xl font-bold text-accent">{prix}€</span>
+                <span className="text-2xl sm:text-4xl font-bold text-accent">{prix}€</span>
               )}
             </div>
 
             <Link href={`/boutique/${slug}#achat`}>
-              <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all">
+              <Button className="w-full sm:w-auto bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all">
                 Rejoindre le programme
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -131,7 +131,7 @@ export function SessionDuMoment({
 
           {/* Countdown Timer */}
           <div className="flex-shrink-0">
-            <div className="bg-primary rounded-2xl p-6 text-white text-center">
+            <div className="bg-primary rounded-2xl p-4 sm:p-6 text-white text-center w-full lg:w-auto">
               <div className="flex items-center gap-2 justify-center mb-4">
                 <Clock className="h-5 w-5 text-secondary" />
                 <span className="text-sm text-gray-300">Offre expire dans</span>
@@ -153,8 +153,8 @@ export function SessionDuMoment({
 
 function TimeBlock({ value, label }: { value: number; label: string }) {
   return (
-    <div className="bg-primary-light rounded-lg p-3 min-w-[60px]">
-      <div className="text-3xl font-bold text-white font-mono">
+    <div className="bg-primary-light rounded-lg p-2 sm:p-3 min-w-[52px] sm:min-w-[60px]">
+      <div className="text-xl sm:text-3xl font-bold text-white font-mono">
         {value.toString().padStart(2, "0")}
       </div>
       <div className="text-xs text-gray-300 uppercase tracking-wide">{label}</div>

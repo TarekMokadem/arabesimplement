@@ -40,18 +40,18 @@ function HeroSection({ trust }: { trust: HomeHeroTrust }) {
         <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-transparent" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-32">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 md:py-32">
         <div className="max-w-2xl">
           <Badge className="mb-6 bg-secondary/20 text-secondary border-secondary/30 hover:bg-secondary/30">
             Pédagogie & partenariat Égypte
           </Badge>
 
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          <h1 className="font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
             Apprendre l&apos;arabe avec une équipe{" "}
             <span className="text-secondary">solide et ancrée</span>
           </h1>
 
-          <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+          <p className="text-sm sm:text-base md:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed">
             Méthodes inspirées de l&apos;enseignement en Égypte, supports
             (livre du niveau 1 au 11) et accompagnement pour progresser{" "}
             <span className="font-bold text-white">
@@ -61,11 +61,11 @@ function HeroSection({ trust }: { trust: HomeHeroTrust }) {
             clairs.
           </p>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
             <Link href={trust.primaryCtaHref}>
               <Button
                 size="lg"
-                className="bg-secondary text-secondary-foreground hover:bg-secondary-light hover:text-foreground px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full sm:w-auto bg-secondary text-secondary-foreground hover:bg-secondary-light hover:text-foreground px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
                 data-testid="hero-cta-primary"
               >
                 Apprends à lire l&apos;arabe
@@ -76,7 +76,7 @@ function HeroSection({ trust }: { trust: HomeHeroTrust }) {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-2 border-white bg-transparent text-white shadow-sm backdrop-blur-[2px] hover:bg-white hover:text-primary px-8 py-6 text-lg transition-all duration-300"
+                className="w-full sm:w-auto border-2 border-white bg-transparent text-white shadow-sm backdrop-blur-[2px] hover:bg-white hover:text-primary px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg transition-all duration-300"
                 data-testid="hero-cta-secondary"
               >
                 Voir les cours
@@ -85,7 +85,7 @@ function HeroSection({ trust }: { trust: HomeHeroTrust }) {
           </div>
 
           {/* Trust indicators */}
-          <div className="flex flex-wrap items-center gap-8 mt-12 pt-8 border-t border-white/20">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-8 mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-white/20">
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
                 {trust.avatarInitials.map((label, idx) => (
@@ -150,14 +150,14 @@ function FeaturesSection() {
   ];
 
   return (
-    <section className="py-24 bg-surface">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+    <section className="py-12 sm:py-16 md:py-24 bg-surface">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div>
             <Badge className="mb-4 bg-secondary/10 text-secondary border-secondary/20">
               Notre approche
             </Badge>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-6">
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4 sm:mb-6">
               Un parcours sérieux, sans effet d’annonce
             </h2>
             <p className="text-gray-600 mb-8 leading-relaxed">
@@ -216,8 +216,8 @@ function FeaturesSection() {
 // SEO Content Section
 function SEOContentSection() {
   return (
-    <section className="py-24 bg-white">
-      <div className="max-w-4xl mx-auto px-6">
+    <section className="py-12 sm:py-16 md:py-24 bg-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="prose prose-lg max-w-none">
           <h2 className="font-serif text-3xl font-bold text-primary mb-8">
             ArabeSimplement : pour qui, pourquoi

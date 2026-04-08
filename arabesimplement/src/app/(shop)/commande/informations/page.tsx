@@ -148,11 +148,11 @@ export default function InformationsPage() {
   }
 
   return (
-    <div className="pt-20 min-h-screen bg-surface">
-      <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="pt-16 sm:pt-20 min-h-screen bg-surface">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
         <CheckoutStepper currentStep={2} />
 
-        <h1 className="font-serif text-3xl font-bold text-primary mb-8">
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-primary mb-6 sm:mb-8">
           Vos informations
         </h1>
 

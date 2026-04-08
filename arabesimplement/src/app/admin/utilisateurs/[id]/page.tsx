@@ -72,7 +72,7 @@ export default async function AdminLearnerDetailPage({
   const { id } = await params;
   if (!isDatabaseConfigured()) {
     return (
-      <div className="p-6 lg:p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         <p className="text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm">
           Configurez DATABASE_URL pour afficher la fiche élève.
         </p>
@@ -89,7 +89,7 @@ export default async function AdminLearnerDetailPage({
       : [];
 
   return (
-    <div className="p-6 lg:p-8 max-w-3xl">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-3xl">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Link
@@ -102,7 +102,7 @@ export default async function AdminLearnerDetailPage({
             <ArrowLeft className="h-4 w-4 mr-1" />
             Utilisateurs
           </Link>
-          <h1 className="font-serif text-3xl font-bold text-primary">
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-primary">
             {user.prenom} {user.nom}
           </h1>
           <p className="text-gray-600 mt-1">{user.email}</p>

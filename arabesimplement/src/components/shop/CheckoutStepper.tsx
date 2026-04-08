@@ -21,7 +21,7 @@ interface CheckoutStepperProps {
 
 export function CheckoutStepper({ currentStep }: CheckoutStepperProps) {
   return (
-    <div className="w-full py-8" data-testid="checkout-stepper">
+    <div className="w-full py-4 sm:py-8" data-testid="checkout-stepper">
       <div className="flex items-center justify-center">
         {steps.map((step, index) => (
           <div key={step.id} className="flex items-center">
@@ -29,7 +29,7 @@ export function CheckoutStepper({ currentStep }: CheckoutStepperProps) {
             <div className="flex flex-col items-center">
               <div
                 className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm transition-all duration-300",
+                  "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-medium text-xs sm:text-sm transition-all duration-300",
                   currentStep > step.id
                     ? "bg-accent text-white"
                     : currentStep === step.id
@@ -58,7 +58,7 @@ export function CheckoutStepper({ currentStep }: CheckoutStepperProps) {
             {index < steps.length - 1 && (
               <div
                 className={cn(
-                  "w-12 sm:w-20 h-0.5 mx-2 transition-colors duration-300",
+                  "w-6 sm:w-12 md:w-20 h-0.5 mx-1 sm:mx-2 transition-colors duration-300",
                   currentStep > step.id ? "bg-accent" : "bg-gray-200"
                 )}
               />

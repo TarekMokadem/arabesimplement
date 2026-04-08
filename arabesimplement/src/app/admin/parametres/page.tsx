@@ -7,9 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 
 export default function ParametresPage() {
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-8">
-        <h1 className="font-serif text-3xl font-bold text-primary">Paramètres</h1>
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-primary">Paramètres</h1>
         <p className="text-gray-500 mt-1">Configuration du site</p>
       </div>
       <div className="grid lg:grid-cols-2 gap-8">

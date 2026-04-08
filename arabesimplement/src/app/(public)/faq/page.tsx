@@ -31,7 +31,7 @@ export default function FaqPage() {
         subtitle="Réponses courtes sur nos parcours, l’organisation des cours et la suite d’un achat."
       />
 
-      <section className="max-w-3xl mx-auto px-6 py-12">
+      <section className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="flex items-center gap-3 mb-10">
           <Badge className="bg-secondary/10 text-secondary border-secondary/25">
             Aide

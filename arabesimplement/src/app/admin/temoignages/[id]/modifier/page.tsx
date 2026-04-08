@@ -12,8 +12,8 @@ export default async function ModifierTemoignagePage({
   if (!t) notFound();
 
   return (
-    <div className="p-6 lg:p-8 max-w-3xl">
-      <h1 className="font-serif text-3xl font-bold text-primary mb-6">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-3xl">
+      <h1 className="font-serif text-2xl sm:text-3xl font-bold text-primary mb-6">
         Modifier le témoignage
       </h1>
       <TestimonialForm

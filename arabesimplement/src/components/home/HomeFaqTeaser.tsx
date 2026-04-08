@@ -11,7 +11,7 @@ export function HomeFaqTeaser() {
       className="py-20 md:py-24 bg-white border-y border-gray-100"
       aria-labelledby="titre-faq-accueil"
     >
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="max-w-2xl mb-10 md:mb-12">
           <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
             Questions fréquentes

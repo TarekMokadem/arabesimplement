@@ -89,8 +89,8 @@ export default async function FormationPage({ params }: PageProps) {
   );
 
   return (
-    <div className="pt-20 bg-surface min-h-screen">
-      <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="pt-16 sm:pt-20 bg-surface min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <Link
           href="/boutique"
           className="inline-flex items-center text-primary hover:text-secondary transition-colors text-sm font-medium"
@@ -100,8 +100,8 @@ export default async function FormationPage({ params }: PageProps) {
         </Link>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 pb-16">
-        <div className="grid lg:grid-cols-2 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
           <div className="relative">
             <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl">
               {formation.imageUrl ? (
@@ -143,24 +143,24 @@ export default async function FormationPage({ params }: PageProps) {
             </div>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             <div>
-              <Badge className="mb-4 bg-primary/10 text-primary">
+              <Badge className="mb-3 sm:mb-4 bg-primary/10 text-primary">
                 {formationThemeLabel(formation.theme)}
               </Badge>
-              <h1 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-4">
+              <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 sm:mb-4">
                 {formation.titre}
               </h1>
-              <p className="text-gray-600 text-lg leading-relaxed">
+              <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
                 {formation.descriptionCourte}
               </p>
             </div>
 
             {formation.description != null &&
               formation.description.trim() !== "" && (
-                <div className="rounded-2xl border border-gray-100 bg-white p-6 md:p-8 shadow-sm">
+                <div className="rounded-xl sm:rounded-2xl border border-gray-100 bg-white p-4 sm:p-6 md:p-8 shadow-sm">
                   <div
-                    className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-primary prose-a:text-secondary"
+                    className="prose prose-sm sm:prose-lg max-w-none prose-headings:font-serif prose-headings:text-primary prose-a:text-secondary"
                     dangerouslySetInnerHTML={{
                       __html: formation.description,
                     }}
@@ -170,7 +170,7 @@ export default async function FormationPage({ params }: PageProps) {
 
             <SchedulingModeExplainer mode={formation.schedulingMode} />
 
-            <div className="flex flex-wrap gap-6 py-6 border-y border-gray-200">
+            <div className="flex flex-wrap gap-4 sm:gap-6 py-4 sm:py-6 border-y border-gray-200 text-sm sm:text-base">
               {formation.placesMax != null && (
                 <div className="flex items-center gap-2 text-gray-600">
                   <Users className="h-5 w-5 text-secondary" />

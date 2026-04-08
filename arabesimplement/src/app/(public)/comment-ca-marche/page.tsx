@@ -24,11 +24,11 @@ export default function CommentCaMarchePage() {
   return (
     <div className="pt-20 bg-surface min-h-screen">
       <header className="bg-gradient-to-br from-primary to-primary/90 text-white">
-        <div className="max-w-7xl mx-auto px-6 py-14 md:py-16">
-          <p className="text-secondary font-medium text-sm uppercase tracking-wide mb-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14 md:py-16">
+          <p className="text-secondary font-medium text-xs sm:text-sm uppercase tracking-wide mb-3">
             ArabeSimplement
           </p>
-          <h1 className="font-serif text-3xl md:text-5xl font-bold mb-4 max-w-3xl">
+          <h1 className="font-serif text-2xl sm:text-3xl md:text-5xl font-bold mb-4 max-w-3xl">
             Comment ça marche ?
           </h1>
           <p className="text-gray-200 max-w-2xl text-lg leading-relaxed">
@@ -61,7 +61,7 @@ export default function CommentCaMarchePage() {
       <AfterPurchaseJourneySection />
 
       <section className="py-16 bg-white border-t border-gray-100">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-gray-600 leading-relaxed mb-6">
             Une question précise sur une formation ou un créneau ? Écrivez-nous
             ou consultez la page contact — nous vous répondons dans les

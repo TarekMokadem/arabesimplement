@@ -72,18 +72,16 @@ export default async function TableauDeBordPage() {
   return (
     <div className="min-h-screen bg-surface">
       {/* Header */}
-      <header className="bg-primary text-white py-6">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          <div>
-            <Link href="/" className="flex items-center gap-3">
-              <BrandLogoMark size={40} />
-              <span className="font-serif font-bold text-xl">
-                ArabeSimplement
-              </span>
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-300">
+      <header className="bg-primary text-white py-4 sm:py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <BrandLogoMark size={32} />
+            <span className="font-serif font-bold text-base sm:text-xl">
+              ArabeSimplement
+            </span>
+          </Link>
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <span className="text-xs sm:text-sm text-gray-300 truncate hidden sm:inline">
               {user.prenom} {user.nom}
             </span>
             <LogoutButton />
@@ -91,10 +89,10 @@ export default async function TableauDeBordPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
         {/* Welcome */}
-        <div className="mb-8">
-          <h1 className="font-serif text-3xl font-bold text-primary mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-primary mb-2">
             Assalamou alaykoum, {user.prenom} !
           </h1>
           <p className="text-gray-600">
@@ -146,7 +144,7 @@ export default async function TableauDeBordPage() {
           )}
         </section>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Formations */}
           <div className="lg:col-span-2">
             <Card className="bg-white">
