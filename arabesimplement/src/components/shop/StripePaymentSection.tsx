@@ -64,7 +64,12 @@ function PaymentForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <PaymentElement />
+      <PaymentElement
+        options={{
+          /** Ordre des moyens de paiement (PayPal avant carte si activé sur le compte Stripe). */
+          paymentMethodOrder: ["paypal", "card"],
+        }}
+      />
       <Button
         type="submit"
         disabled={!stripe || loading}
@@ -115,8 +120,6 @@ export function StripePaymentSection({
         theme: "stripe" as const,
         variables: { colorPrimary: "#324530" },
       },
-      /** PayPal avant la carte lorsque le compte Stripe l’autorise (Dashboard Stripe). */
-      paymentMethodOrder: ["paypal", "card"],
     }),
     [clientSecret]
   );

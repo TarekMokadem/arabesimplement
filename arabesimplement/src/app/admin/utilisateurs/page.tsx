@@ -9,6 +9,9 @@ import { cn } from "@/lib/utils";
 import { getAdminUserList } from "@/lib/data/admin.service";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 
+/** Données toujours à jour (évite un cache statique stale sur la liste). */
+export const dynamic = "force-dynamic";
+
 export default async function UtilisateursPage() {
   const db = isDatabaseConfigured();
   const utilisateurs = db ? await getAdminUserList() : [];
@@ -73,8 +76,8 @@ export default async function UtilisateursPage() {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
                           <span className="font-bold text-secondary">
-                            {u.prenom[0]}
-                            {u.nom[0]}
+                            {(u.prenom?.trim()?.[0] ?? "?").toUpperCase()}
+                            {(u.nom?.trim()?.[0] ?? "?").toUpperCase()}
                           </span>
                         </div>
                         <Link

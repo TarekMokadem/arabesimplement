@@ -7,6 +7,8 @@ import { getAdminOrdersList } from "@/lib/data/admin.service";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import type { OrderStatus } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
 function paiementStatutLabel(s: OrderStatus): string {
   switch (s) {
     case "PAID":
