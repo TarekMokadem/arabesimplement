@@ -9,7 +9,8 @@ import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
 import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
 import { StripePaymentSection } from "@/components/shop/StripePaymentSection";
 import { PaymentExperiencePreface } from "@/components/shop/PaymentExperiencePreface";
-import { useCartStore } from "@/store/cart.store";
+import { useCart } from "@/hooks/useCart";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { formatPrice } from "@/lib/utils/format";
 import { toast } from "sonner";
 import type { StoredCheckoutOrder } from "@/types/checkout.types";
@@ -27,11 +28,12 @@ function parseOrderInfo(raw: string | null): StoredCheckoutOrder | null {
 
 export default function PaiementPage() {
   const router = useRouter();
-  const { items, getTotal, clearCart } = useCartStore();
+  const { items, getTotal, clearCart, isHydrated: cartHydrated } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [orderInfo, setOrderInfo] = useState<StoredCheckoutOrder | null>(null);
 
   useEffect(() => {
+    if (!cartHydrated) return;
     const raw = sessionStorage.getItem("orderInfo");
     const parsed = parseOrderInfo(raw);
     if (!parsed) {
@@ -43,7 +45,7 @@ export default function PaiementPage() {
       return;
     }
     setOrderInfo(parsed);
-  }, [items.length, router]);
+  }, [items.length, router, cartHydrated]);
 
   const displayItems: CartItem[] = useMemo(() => {
     const raw = items.length > 0 ? items : orderInfo?.items ?? [];
@@ -106,6 +108,14 @@ export default function PaiementPage() {
         : "/commande/confirmation"
     );
   };
+
+  if (!cartHydrated) {
+    return (
+      <div className="pt-20 min-h-screen bg-surface flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   if (!orderInfo && items.length === 0) {
     return null;

@@ -11,6 +11,7 @@ import {
 import { Loader2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { stripeReturnAbsoluteUrl } from "@/lib/site-url";
 
 const stripePromises = new Map<string, Promise<Stripe | null>>();
 
@@ -42,7 +43,9 @@ function PaymentForm({
 
     setLoading(true);
     try {
-      const returnUrl = `${window.location.origin}/commande/confirmation?${confirmationSearchParams}`;
+      const returnUrl = stripeReturnAbsoluteUrl(
+        `/commande/confirmation?${confirmationSearchParams}`
+      );
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {

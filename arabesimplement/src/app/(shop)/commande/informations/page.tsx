@@ -22,7 +22,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
 import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
-import { useCartStore } from "@/store/cart.store";
+import { useCart } from "@/hooks/useCart";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { orderFormSchema, type OrderFormInput } from "@/lib/validations/order.schema";
 import { formatPrice } from "@/lib/utils/format";
 import { toast } from "sonner";
@@ -49,7 +50,7 @@ import {
 
 export default function InformationsPage() {
   const router = useRouter();
-  const { items, getTotal } = useCartStore();
+  const { items, getTotal, isHydrated: cartHydrated } = useCart();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -74,12 +75,12 @@ export default function InformationsPage() {
     },
   });
 
-  // Redirect if cart is empty
   useEffect(() => {
+    if (!cartHydrated) return;
     if (items.length === 0) {
       router.push("/panier");
     }
-  }, [items, router]);
+  }, [items, router, cartHydrated]);
 
   const [checkoutLoggedIn, setCheckoutLoggedIn] = useState(false);
 
@@ -142,6 +143,14 @@ export default function InformationsPage() {
       setIsLoading(false);
     }
   };
+
+  if (!cartHydrated) {
+    return (
+      <div className="pt-20 min-h-screen bg-surface flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return null;

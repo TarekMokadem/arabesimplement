@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import type { StudentSex } from "@prisma/client";
 import { MessageCircle } from "lucide-react";
@@ -27,6 +27,14 @@ import {
 } from "@/lib/contact/learner-whatsapp";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button-variants";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export type WeeklyPanelRow = {
   id: string;
@@ -37,6 +45,11 @@ export type WeeklyPanelRow = {
   currentPeriodEnd: string | null;
   formation: { titre: string };
 };
+
+type WeeklySubConfirmAction =
+  | "pause"
+  | "cancel_at_period_end"
+  | "cancel_now";
 
 function statusLabel(s: WeeklyPanelRow["status"]): string {
   switch (s) {
@@ -61,6 +74,11 @@ export function WeeklySubscriptionsSection({
   learnerSexe: StudentSex | null;
 }) {
   const [pending, startTransition] = useTransition();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState<{
+    subId: string;
+    action: WeeklySubConfirmAction;
+  } | null>(null);
 
   const groups = useMemo(() => {
     const m = new Map<string, WeeklyPanelRow[]>();
@@ -86,6 +104,58 @@ export function WeeklySubscriptionsSection({
       });
     });
   };
+
+  const openConfirm = (subId: string, action: WeeklySubConfirmAction) => {
+    setConfirmTarget({ subId, action });
+    setConfirmOpen(true);
+  };
+
+  const closeConfirm = () => {
+    setConfirmOpen(false);
+    setConfirmTarget(null);
+  };
+
+  const executeConfirm = () => {
+    if (!confirmTarget) return;
+    const { subId, action } = confirmTarget;
+    closeConfirm();
+    if (action === "pause") {
+      run(() => pauseMyWeeklySubscription(subId));
+      return;
+    }
+    if (action === "cancel_at_period_end") {
+      run(() => cancelMyWeeklySubscriptionAtPeriodEnd(subId));
+      return;
+    }
+    run(() => cancelMyWeeklySubscriptionNow(subId));
+  };
+
+  const confirmCopy = (action: WeeklySubConfirmAction | null) => {
+    switch (action) {
+      case "pause":
+        return {
+          title: "Mettre en pause cet abonnement ?",
+          body:
+            "Aucun nouveau prélèvement n’aura lieu tant que l’abonnement reste en pause. Vous gardez l’accès aux indications déjà communiquées ; pour la suite du cours, reprenez l’abonnement ici quand vous êtes prêt·e. La pause limite les clics accidentels mais engage votre suivi : ne l’utilisez que si c’est voulu.",
+        };
+      case "cancel_at_period_end":
+        return {
+          title: "Arrêter à la fin de la période en cours ?",
+          body:
+            "L’abonnement reste actif jusqu’à la date de fin de période affichée, puis s’arrête sans nouveau prélèvement. Les sommes déjà prélevées ne sont pas remboursées. Vous pourrez souscrire à nouveau depuis la boutique plus tard.",
+        };
+      case "cancel_now":
+        return {
+          title: "Arrêter l’abonnement tout de suite ?",
+          body:
+            "Résiliation immédiate : l’abonnement s’arrête sans attendre la fin de la semaine en cours. Le dernier prélèvement déjà encaissé n’est pas remboursé. À utiliser seulement si vous êtes sûr·e — en cas de doute, préférez « Arrêter en fin de période ».",
+        };
+      default:
+        return { title: "", body: "" };
+    }
+  };
+
+  const cc = confirmCopy(confirmTarget?.action ?? null);
 
   return (
     <Card className="bg-white">
@@ -189,7 +259,7 @@ export function WeeklySubscriptionsSection({
                     variant="outline"
                     className="border-primary text-primary"
                     disabled={pending}
-                    onClick={() => run(() => pauseMyWeeklySubscription(subId))}
+                    onClick={() => openConfirm(subId, "pause")}
                   >
                     Mettre en pause
                   </Button>
@@ -213,9 +283,7 @@ export function WeeklySubscriptionsSection({
                       variant="outline"
                       disabled={pending}
                       onClick={() =>
-                        run(() =>
-                          cancelMyWeeklySubscriptionAtPeriodEnd(subId)
-                        )
+                        openConfirm(subId, "cancel_at_period_end")
                       }
                     >
                       Arrêter en fin de période
@@ -225,9 +293,7 @@ export function WeeklySubscriptionsSection({
                       size="sm"
                       variant="destructive"
                       disabled={pending}
-                      onClick={() =>
-                        run(() => cancelMyWeeklySubscriptionNow(subId))
-                      }
+                      onClick={() => openConfirm(subId, "cancel_now")}
                     >
                       Arrêter maintenant
                     </Button>
@@ -238,6 +304,44 @@ export function WeeklySubscriptionsSection({
           );
         })}
       </CardContent>
+
+      <Dialog open={confirmOpen} onOpenChange={(o) => !o && closeConfirm()}>
+        <DialogContent className="sm:max-w-md" showCloseButton>
+          <DialogHeader>
+            <DialogTitle>{cc.title}</DialogTitle>
+            <DialogDescription className="text-left text-gray-700">
+              {cc.body}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={closeConfirm}
+              disabled={pending}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="button"
+              variant={
+                confirmTarget?.action === "cancel_now"
+                  ? "destructive"
+                  : "default"
+              }
+              className={
+                confirmTarget?.action === "cancel_now"
+                  ? undefined
+                  : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+              }
+              disabled={pending}
+              onClick={executeConfirm}
+            >
+              Confirmer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
