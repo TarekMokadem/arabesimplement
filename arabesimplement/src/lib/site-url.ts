@@ -31,19 +31,16 @@ export function toAbsoluteUrl(pathOrUrl: string): string {
 }
 
 /**
- * URL absolue pour `return_url` Stripe (3DS / redirect). Utilise d’abord
- * `NEXT_PUBLIC_SITE_URL` pour éviter un hôte différent du panier (ex. www vs apex).
+ * URL absolue pour `return_url` Stripe (3DS / redirect).
+ * Dans le navigateur : origine courante (même hôte que la page de paiement).
  */
 export function stripeReturnAbsoluteUrl(pathWithQuery: string): string {
   const path = pathWithQuery.startsWith("/")
     ? pathWithQuery
     : `/${pathWithQuery}`;
-  const base = getSiteUrl();
-  if (base) {
-    return `${base}${path}`;
-  }
   if (typeof window !== "undefined") {
     return `${window.location.origin}${path}`;
   }
-  return path;
+  const base = getSiteUrl();
+  return base ? `${base}${path}` : path;
 }

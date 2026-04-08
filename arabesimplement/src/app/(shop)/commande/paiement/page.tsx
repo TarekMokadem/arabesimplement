@@ -28,7 +28,7 @@ function parseOrderInfo(raw: string | null): StoredCheckoutOrder | null {
 
 export default function PaiementPage() {
   const router = useRouter();
-  const { items, getTotal, clearCart, isHydrated: cartHydrated } = useCart();
+  const { items, getTotal, isHydrated: cartHydrated } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [orderInfo, setOrderInfo] = useState<StoredCheckoutOrder | null>(null);
 
@@ -82,8 +82,6 @@ export default function PaiementPage() {
           return;
         }
       }
-      clearCart();
-      sessionStorage.removeItem("orderInfo");
       toast.success("Paiement enregistré !");
       router.push(
         confirmationQuery
@@ -98,9 +96,12 @@ export default function PaiementPage() {
     }
   };
 
+  /**
+   * Ne pas vider le panier ni sessionStorage ici : le useEffect de cette page
+   * redirigerait vers /panier (course avec router.push). Le nettoyage est fait
+   * sur /commande/confirmation via ConfirmationCleanup.
+   */
   const handleStripePaid = () => {
-    clearCart();
-    sessionStorage.removeItem("orderInfo");
     toast.success("Paiement réussi !");
     router.push(
       confirmationQuery
