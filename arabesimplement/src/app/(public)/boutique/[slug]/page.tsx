@@ -10,6 +10,7 @@ import {
   schedulingModeBoutiqueCalendarHint,
   schedulingModeBoutiqueCreneauxHeading,
 } from "@/lib/scheduling-mode";
+import { sanitizeHtml } from "@/lib/utils/sanitize";
 import {
   formatCreneauSlotLine,
   normalizeJourneeSlots,
@@ -162,7 +163,7 @@ export default async function FormationPage({ params }: PageProps) {
                   <div
                     className="prose prose-sm sm:prose-lg max-w-none prose-headings:font-serif prose-headings:text-primary prose-a:text-secondary"
                     dangerouslySetInnerHTML={{
-                      __html: formation.description,
+                      __html: sanitizeHtml(formation.description),
                     }}
                   />
                 </div>

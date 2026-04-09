@@ -30,7 +30,6 @@ const ALLOWED_ATTR = [
   "title",
   "class",
   "target",
-  "style",
   "dir",
 ];
 

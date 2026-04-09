@@ -3,7 +3,7 @@ import { studentSexSchema } from "@/lib/validations/order.schema";
 
 export const loginSchema = z.object({
   email: z.string().email("Adresse email invalide"),
-  password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
+  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
 });
 
 const whatsappDigitsMin = 8;
@@ -21,7 +21,7 @@ export const signupSchema = z
         (s) => s.replace(/\D/g, "").length >= whatsappDigitsMin,
         "Numéro invalide : au moins 8 chiffres (indicatif inclus si besoin)"
       ),
-    password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
+    password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {

@@ -11,6 +11,7 @@ import {
   type FormationAdminInput,
   type CreneauAdminInput,
 } from "@/lib/validations/admin-formations.schema";
+import { sanitizeHtml } from "@/lib/utils/sanitize";
 
 export type AdminMutationResult =
   | { success: true; id?: string }
@@ -39,7 +40,7 @@ function formationToPrismaData(input: FormationAdminInput) {
     titre: input.titre.trim(),
     slug: input.slug.trim().toLowerCase(),
     descriptionCourte: input.descriptionCourte.trim(),
-    description: input.description?.trim() || null,
+    description: input.description?.trim() ? sanitizeHtml(input.description.trim()) : null,
     prix: new Prisma.Decimal(input.prix.toFixed(2)),
     prixPromo:
       input.prixPromo != null && !Number.isNaN(input.prixPromo)
