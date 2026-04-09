@@ -1,5 +1,9 @@
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtmlLib from "sanitize-html";
 
+/**
+ * Sanitisation HTML côté serveur (boutique, admin) sans jsdom :
+ * `isomorphic-dompurify` charge jsdom et casse le bundle Vercel (ERR_REQUIRE_ESM sur des sous-dépendances).
+ */
 const ALLOWED_TAGS = [
   "p",
   "br",
@@ -23,24 +27,23 @@ const ALLOWED_TAGS = [
   "div",
 ];
 
-const ALLOWED_ATTR = [
-  "href",
-  "src",
-  "alt",
-  "title",
-  "class",
-  "target",
-  "dir",
-];
-
 export function sanitizeHtml(dirty: string): string {
   if (typeof dirty !== "string") {
     return "";
   }
   try {
-    return DOMPurify.sanitize(dirty, {
-      ALLOWED_TAGS,
-      ALLOWED_ATTR,
+    return sanitizeHtmlLib(dirty, {
+      allowedTags: ALLOWED_TAGS,
+      allowedAttributes: {
+        a: ["href", "target", "title", "class", "dir"],
+        img: ["src", "alt", "title", "class", "dir"],
+        "*": ["class", "dir"],
+      },
+      allowedSchemes: ["http", "https", "mailto", "tel"],
+      allowedSchemesByTag: {
+        img: ["http", "https"],
+      },
+      allowProtocolRelative: false,
     });
   } catch (e) {
     console.error("[sanitizeHtml]", e);
