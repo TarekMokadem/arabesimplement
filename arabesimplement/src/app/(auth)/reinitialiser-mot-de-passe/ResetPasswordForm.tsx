@@ -6,17 +6,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
-import { z } from "zod";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { completePasswordResetSchema } from "@/lib/validations/password-reset-completion.schema";
+import {
+  resetPasswordFormSchema,
+  type ResetPasswordFormInput,
+} from "@/lib/validations/password-reset-completion.schema";
 import { completePasswordReset } from "@/app/(auth)/actions/password-reset.actions";
-
-const resetFormSchema = completePasswordResetSchema.omit({ token: true });
-type ResetFormValues = z.infer<typeof resetFormSchema>;
 
 type Props = {
   token: string;
@@ -31,12 +30,12 @@ export function ResetPasswordForm({ token }: Props) {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<ResetFormValues>({
-    resolver: zodResolver(resetFormSchema),
+  } = useForm<ResetPasswordFormInput>({
+    resolver: zodResolver(resetPasswordFormSchema),
     defaultValues: { password: "", confirmPassword: "" },
   });
 
-  const onSubmit = async (data: ResetFormValues) => {
+  const onSubmit = async (data: ResetPasswordFormInput) => {
     setServerError(null);
     const r = await completePasswordReset(
       token,
