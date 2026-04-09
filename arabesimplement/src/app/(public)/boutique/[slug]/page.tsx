@@ -25,6 +25,35 @@ import { formationThemeLabel } from "@/lib/content/formation-theme";
 import { FormationTestimonialsPreview } from "@/components/shop/FormationTestimonialsPreview";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/site-url";
 import { isFormationPurchasable } from "@/lib/availability";
+import type { Creneau } from "@/types/domain.types";
+
+/** Props client : pas de `Date` ni champs non sérialisables (évite erreur RSC → client). */
+function creneauxForPurchasePanel(
+  creneaux: Creneau[]
+): Pick<
+  Creneau,
+  | "id"
+  | "nom"
+  | "jours"
+  | "journeeSlots"
+  | "heureDebut"
+  | "dureeMinutes"
+  | "statut"
+  | "placesMax"
+  | "_count"
+>[] {
+  return creneaux.map((c) => ({
+    id: c.id,
+    nom: c.nom,
+    jours: c.jours,
+    journeeSlots: c.journeeSlots,
+    heureDebut: c.heureDebut,
+    dureeMinutes: c.dureeMinutes,
+    statut: c.statut,
+    placesMax: c.placesMax,
+    _count: c._count,
+  }));
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -224,7 +253,7 @@ export default async function FormationPage({ params }: PageProps) {
 
             <PurchaseFormationPanel
               formation={cartFormation}
-              creneaux={formation.creneaux ?? []}
+              creneaux={creneauxForPurchasePanel(formation.creneaux ?? [])}
               formationPurchasable={purchasable}
             />
 

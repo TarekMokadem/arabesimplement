@@ -34,8 +34,16 @@ const ALLOWED_ATTR = [
 ];
 
 export function sanitizeHtml(dirty: string): string {
-  return DOMPurify.sanitize(dirty, {
-    ALLOWED_TAGS,
-    ALLOWED_ATTR,
-  });
+  if (typeof dirty !== "string") {
+    return "";
+  }
+  try {
+    return DOMPurify.sanitize(dirty, {
+      ALLOWED_TAGS,
+      ALLOWED_ATTR,
+    });
+  } catch (e) {
+    console.error("[sanitizeHtml]", e);
+    return "";
+  }
 }

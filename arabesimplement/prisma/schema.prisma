@@ -11,6 +11,12 @@ enum UserRole {
   ADMIN
 }
 
+/** Lien e-mail : mot de passe oublié (public) ou changement demandé depuis l’espace élève. */
+enum PasswordResetPurpose {
+  FORGOT
+  CHANGE
+}
+
 /** Pour orienter l’élève vers le bon interlocuteur WhatsApp (équipe féminine / masculine). */
 enum StudentSex {
   FEMME
@@ -82,8 +88,25 @@ model User {
   orders                 Order[]
   enrollments            Enrollment[]
   courseWeeklySubscriptions CourseWeeklySubscription[]
+  passwordResetTokens    PasswordResetToken[]
 
   @@map("users")
+}
+
+model PasswordResetToken {
+  id        String               @id @default(uuid())
+  userId    String               @map("user_id")
+  tokenHash String               @map("token_hash")
+  purpose   PasswordResetPurpose
+  expiresAt DateTime             @map("expires_at")
+  usedAt    DateTime?            @map("used_at")
+  createdAt DateTime             @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tokenHash])
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 model Formation {

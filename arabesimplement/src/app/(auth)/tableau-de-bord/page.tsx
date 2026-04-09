@@ -22,6 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import { getSession } from "../actions";
 import { LogoutButton } from "./LogoutButton";
 import { LearnerSexeForm } from "./LearnerSexeForm";
+import { LearnerProfileForm } from "@/components/auth/LearnerProfileForm";
+import { RequestPasswordChangeButton } from "@/components/auth/RequestPasswordChangeButton";
 import { getGroupedLearnerCoursesForDashboard } from "@/lib/data/learner-courses.service";
 import { normalizeWhatsappHref } from "@/lib/utils/whatsapp-link";
 import { getWeeklySubscriptionsForLearner } from "@/lib/data/weekly-subscriptions.service";
@@ -48,12 +50,14 @@ export default async function TableauDeBordPage() {
     : [];
 
   let learnerSexe: StudentSex | null = null;
+  let learnerTelephone = "";
   if (session && isDatabaseConfigured()) {
     const row = await prisma.user.findUnique({
       where: { id: session.id },
-      select: { sexe: true },
+      select: { sexe: true, telephone: true },
     });
     learnerSexe = row?.sexe ?? null;
+    learnerTelephone = row?.telephone ?? "";
   }
 
   const weeklyDb = session
@@ -327,31 +331,29 @@ export default async function TableauDeBordPage() {
                   Mes informations
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm">
+              <CardContent className="space-y-4 text-sm">
                 <div>
-                  <span className="text-gray-500">Nom complet</span>
-                  <p className="font-medium text-primary">
-                    {user.prenom} {user.nom}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Email</span>
-                  <p className="font-medium text-primary">{user.email}</p>
+                  <span className="text-gray-500">E-mail (non modifiable)</span>
+                  <p className="font-medium text-primary break-all">{user.email}</p>
                 </div>
                 {session ? (
-                  <LearnerSexeForm
-                    initialSexe={learnerSexe}
-                    disabled={!isDatabaseConfigured()}
-                  />
+                  <>
+                    <LearnerProfileForm
+                      key={`${user.prenom}-${user.nom}-${learnerTelephone}`}
+                      initialPrenom={user.prenom}
+                      initialNom={user.nom}
+                      initialTelephone={learnerTelephone}
+                      disabled={!isDatabaseConfigured()}
+                    />
+                    <LearnerSexeForm
+                      initialSexe={learnerSexe}
+                      disabled={!isDatabaseConfigured()}
+                    />
+                    <RequestPasswordChangeButton
+                      disabled={!isDatabaseConfigured()}
+                    />
+                  </>
                 ) : null}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full mt-4 border-primary text-primary"
-                  disabled
-                >
-                  Modifier nom et e-mail (bientôt)
-                </Button>
               </CardContent>
             </Card>
 

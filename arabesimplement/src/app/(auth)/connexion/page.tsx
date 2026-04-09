@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
@@ -22,9 +22,21 @@ function safeRedirectPath(raw: string | null): string | null {
 
 function ConnexionPageInner() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("reset") !== "ok") return;
+    toast.success(
+      "Votre mot de passe a été mis à jour. Connectez-vous avec le nouveau."
+    );
+    const q = new URLSearchParams(searchParams.toString());
+    q.delete("reset");
+    const next = q.toString() ? `${pathname}?${q}` : pathname;
+    router.replace(next, { scroll: false });
+  }, [searchParams, router, pathname]);
 
   const {
     register,

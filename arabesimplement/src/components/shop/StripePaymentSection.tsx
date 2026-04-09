@@ -36,10 +36,12 @@ function PaymentForm({
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
+  /** Le Payment Element peut être monté avant d’être prêt à confirmer un paiement. */
+  const [paymentElementReady, setPaymentElementReady] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || !paymentElementReady) return;
 
     setLoading(true);
     try {
@@ -65,32 +67,43 @@ function PaymentForm({
     }
   };
 
+  const canSubmit =
+    Boolean(stripe) && Boolean(elements) && paymentElementReady && !loading;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement
+        onReady={() => setPaymentElementReady(true)}
         options={{
           /** Ordre des moyens de paiement (PayPal avant carte si activé sur le compte Stripe). */
           paymentMethodOrder: ["paypal", "card"],
         }}
       />
-      <Button
-        type="submit"
-        disabled={!stripe || loading}
-        className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground py-6 text-lg"
-        data-testid="stripe-pay-button"
-      >
-        {loading ? (
-          <>
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            Traitement en cours...
-          </>
-        ) : (
-          <>
-            <Lock className="mr-2 h-5 w-5" />
-            Payer {amountLabel}
-          </>
-        )}
-      </Button>
+      {!paymentElementReady ? (
+        <p className="flex items-center gap-2 text-sm text-gray-600">
+          <Loader2 className="h-4 w-4 animate-spin shrink-0 text-secondary" />
+          Chargement des moyens de paiement…
+        </p>
+      ) : (
+        <Button
+          type="submit"
+          disabled={!canSubmit}
+          className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground py-6 text-lg"
+          data-testid="stripe-pay-button"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Traitement en cours...
+            </>
+          ) : (
+            <>
+              <Lock className="mr-2 h-5 w-5" />
+              Payer {amountLabel}
+            </>
+          )}
+        </Button>
+      )}
     </form>
   );
 }
@@ -130,6 +143,7 @@ export function StripePaymentSection({
   return (
     <Elements stripe={stripePromise} options={options}>
       <PaymentForm
+        key={clientSecret}
         amountLabel={amountLabel}
         onPaid={onPaid}
         confirmationSearchParams={confirmationSearchParams}

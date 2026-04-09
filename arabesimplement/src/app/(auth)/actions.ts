@@ -4,8 +4,9 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { SESSION_COOKIE_NAME, SESSION_MAX_AGE } from "@/lib/auth/session";
-import { signAuthSession, verifyAuthSessionToken } from "@/lib/auth/session-token";
+import { SESSION_COOKIE_NAME } from "@/lib/auth/session";
+import { verifyAuthSessionToken } from "@/lib/auth/session-token";
+import { setSessionCookie as writeSessionCookie } from "@/lib/auth/set-session-cookie";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import type { AuthSession } from "@/lib/auth/types";
 import type { StudentSex } from "@prisma/client";
@@ -42,22 +43,6 @@ function dbUnavailableMessage(err: unknown): string {
   return (
     "Impossible de joindre la base de données pour le moment. Réessayez plus tard."
   );
-}
-
-async function setSessionCookie(session: AuthSession) {
-  const token = await signAuthSession(session);
-  if (!token) {
-    throw new Error("SESSION_SECRET manquant ou trop court (min. 32 caractères).");
-  }
-
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: SESSION_MAX_AGE,
-    path: "/",
-  });
 }
 
 export async function signIn(
@@ -104,7 +89,7 @@ export async function signIn(
   };
 
   try {
-    await setSessionCookie(session);
+    await writeSessionCookie(session);
   } catch {
     return {
       success: false,
@@ -160,7 +145,7 @@ export async function signUp(
       role: user.role,
     };
 
-    await setSessionCookie(session);
+    await writeSessionCookie(session);
     return { success: true, redirectTo: "/tableau-de-bord" };
   } catch (e: unknown) {
     if (
