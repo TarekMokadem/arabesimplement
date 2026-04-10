@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  pauseMyWeeklySubscription,
-  resumeMyWeeklySubscription,
-  cancelMyWeeklySubscriptionAtPeriodEnd,
-  cancelMyWeeklySubscriptionNow,
+  pauseMyWeeklySubscriptionsBatch,
+  resumeMyWeeklySubscriptionsBatch,
+  cancelMyWeeklySubscriptionsAtPeriodEndBatch,
+  cancelMyWeeklySubscriptionsNowBatch,
 } from "@/app/(auth)/actions/subscription.actions";
 import type { SubscriptionActionResult } from "@/app/(auth)/actions/subscription.actions";
 import {
@@ -38,6 +38,7 @@ import {
 
 export type WeeklyPanelRow = {
   id: string;
+  formationId: string;
   stripeSubscriptionId: string;
   status: "ACTIVE" | "PAUSED" | "CANCELED" | "PAST_DUE";
   hourlyMinutes: number;
@@ -50,6 +51,65 @@ type WeeklySubConfirmAction =
   | "pause"
   | "cancel_at_period_end"
   | "cancel_now";
+
+function weeklyLinesTotalMinutes(lines: WeeklyPanelRow[]): number {
+  return lines.reduce((s, l) => s + l.bundleQuantity * l.hourlyMinutes, 0);
+}
+
+function weeklyLinesDetailLabel(lines: WeeklyPanelRow[]): string {
+  return lines
+    .map((l) =>
+      l.bundleQuantity > 1
+        ? `${l.bundleQuantity} × ${l.hourlyMinutes} min`
+        : `${l.hourlyMinutes} min`
+    )
+    .join(" + ");
+}
+
+function mergedWeeklyStatus(
+  lines: WeeklyPanelRow[]
+): WeeklyPanelRow["status"] {
+  if (lines.some((l) => l.status === "PAST_DUE")) return "PAST_DUE";
+  if (lines.some((l) => l.status === "ACTIVE")) return "ACTIVE";
+  if (lines.some((l) => l.status === "PAUSED")) return "PAUSED";
+  return "CANCELED";
+}
+
+function stripeIdsWithRowStatus(
+  lines: WeeklyPanelRow[],
+  status: WeeklyPanelRow["status"]
+): string[] {
+  const ids = new Set<string>();
+  for (const l of lines) {
+    if (l.status === status) ids.add(l.stripeSubscriptionId);
+  }
+  return [...ids];
+}
+
+function activeStripeIds(lines: WeeklyPanelRow[]): string[] {
+  return stripeIdsWithRowStatus(lines, "ACTIVE");
+}
+
+function pausedStripeIds(lines: WeeklyPanelRow[]): string[] {
+  return stripeIdsWithRowStatus(lines, "PAUSED");
+}
+
+function cancellableStripeIds(lines: WeeklyPanelRow[]): string[] {
+  const ids = new Set<string>();
+  for (const l of lines) {
+    if (l.status !== "CANCELED") ids.add(l.stripeSubscriptionId);
+  }
+  return [...ids];
+}
+
+function maxPeriodEndIso(lines: WeeklyPanelRow[]): string | null {
+  const times = lines
+    .map((l) => l.currentPeriodEnd)
+    .filter((d): d is string => d != null)
+    .map((d) => new Date(d).getTime());
+  if (times.length === 0) return null;
+  return new Date(Math.max(...times)).toISOString();
+}
 
 function statusLabel(s: WeeklyPanelRow["status"]): string {
   switch (s) {
@@ -76,16 +136,16 @@ export function WeeklySubscriptionsSection({
   const [pending, startTransition] = useTransition();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState<{
-    subId: string;
+    stripeSubscriptionIds: string[];
     action: WeeklySubConfirmAction;
   } | null>(null);
 
   const groups = useMemo(() => {
     const m = new Map<string, WeeklyPanelRow[]>();
     for (const r of rows) {
-      const list = m.get(r.stripeSubscriptionId) ?? [];
+      const list = m.get(r.formationId) ?? [];
       list.push(r);
-      m.set(r.stripeSubscriptionId, list);
+      m.set(r.formationId, list);
     }
     return [...m.entries()];
   }, [rows]);
@@ -105,8 +165,12 @@ export function WeeklySubscriptionsSection({
     });
   };
 
-  const openConfirm = (subId: string, action: WeeklySubConfirmAction) => {
-    setConfirmTarget({ subId, action });
+  const openConfirm = (
+    stripeSubscriptionIds: string[],
+    action: WeeklySubConfirmAction
+  ) => {
+    if (stripeSubscriptionIds.length === 0) return;
+    setConfirmTarget({ stripeSubscriptionIds, action });
     setConfirmOpen(true);
   };
 
@@ -117,17 +181,19 @@ export function WeeklySubscriptionsSection({
 
   const executeConfirm = () => {
     if (!confirmTarget) return;
-    const { subId, action } = confirmTarget;
+    const { stripeSubscriptionIds, action } = confirmTarget;
     closeConfirm();
     if (action === "pause") {
-      run(() => pauseMyWeeklySubscription(subId));
+      run(() => pauseMyWeeklySubscriptionsBatch(stripeSubscriptionIds));
       return;
     }
     if (action === "cancel_at_period_end") {
-      run(() => cancelMyWeeklySubscriptionAtPeriodEnd(subId));
+      run(() =>
+        cancelMyWeeklySubscriptionsAtPeriodEndBatch(stripeSubscriptionIds)
+      );
       return;
     }
-    run(() => cancelMyWeeklySubscriptionNow(subId));
+    run(() => cancelMyWeeklySubscriptionsNowBatch(stripeSubscriptionIds));
   };
 
   const confirmCopy = (action: WeeklySubConfirmAction | null) => {
@@ -170,10 +236,20 @@ export function WeeklySubscriptionsSection({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {groups.map(([subId, lines]) => {
-          const st = lines[0]?.status ?? "ACTIVE";
+        {groups.map(([formationId, lines]) => {
+          const st = mergedWeeklyStatus(lines);
+          const titre = lines[0]?.formation.titre ?? "";
+          const totalMin = weeklyLinesTotalMinutes(lines);
+          const detail = weeklyLinesDetailLabel(lines);
+          const periodEnd = maxPeriodEndIso(lines);
+          const waUrl = learnerFormationWhatsAppUrl(learnerSexe, titre);
+          const waLabel = learnerWhatsAppCoachLabel(learnerSexe);
+          const toPause = activeStripeIds(lines);
+          const toResume = pausedStripeIds(lines);
+          const toCancel = cancellableStripeIds(lines);
+
           return (
-            <div key={subId} className="border rounded-lg p-4 space-y-3">
+            <div key={formationId} className="border rounded-lg p-4 space-y-3">
               <div className="flex flex-wrap items-center gap-2 justify-between">
                 <Badge
                   variant="outline"
@@ -185,97 +261,85 @@ export function WeeklySubscriptionsSection({
                 >
                   {statusLabel(st)}
                 </Badge>
-                {lines[0]?.currentPeriodEnd ? (
+                {periodEnd ? (
                   <span className="text-sm text-gray-600">
                     Période en cours jusqu’au{" "}
-                    {new Date(lines[0].currentPeriodEnd).toLocaleDateString(
-                      "fr-FR"
-                    )}
+                    {new Date(periodEnd).toLocaleDateString("fr-FR")}
                   </span>
                 ) : null}
               </div>
-              <ul className="text-sm space-y-2 text-primary">
-                {lines.map((l) => {
-                  const waUrl = learnerFormationWhatsAppUrl(
-                    learnerSexe,
-                    l.formation.titre
-                  );
-                  const waLabel = learnerWhatsAppCoachLabel(learnerSexe);
-                  return (
-                    <li key={l.id} className="space-y-1">
-                      <div>
-                        {l.formation.titre} —{" "}
-                        {l.bundleQuantity > 1
-                          ? `${l.bundleQuantity} × ${l.hourlyMinutes} min`
-                          : `${l.hourlyMinutes} min`}{" "}
-                        / semaine
-                      </div>
-                      {waUrl ? (
-                        <Link
-                          href={waUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={cn(
-                            buttonVariants({
-                              size: "sm",
-                              variant: "outline",
-                            }),
-                            "border-emerald-600 text-emerald-700 hover:bg-emerald-50 inline-flex items-center gap-1.5 w-fit"
-                          )}
-                        >
-                          <MessageCircle className="h-3.5 w-3.5 shrink-0" />
-                          WhatsApp — {waLabel}
-                        </Link>
-                      ) : learnerSexe ? (
-                        <span className="text-xs text-amber-800">
-                          WhatsApp : configuration à compléter ou{" "}
-                          <Link href="/contactez-nous" className="underline">
-                            contact
-                          </Link>
-                          .
-                        </span>
-                      ) : (
-                        <span className="text-xs text-gray-600">
-                          Indiquez votre sexe (prochain achat) pour le lien
-                          WhatsApp adapté, ou{" "}
-                          <Link
-                            href="/contactez-nous"
-                            className="underline text-secondary"
-                          >
-                            contactez-nous
-                          </Link>
-                          .
-                        </span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
+              <div className="text-sm space-y-2 text-primary">
+                <p className="font-medium">
+                  {titre} — {totalMin} min / semaine
+                </p>
+                {detail !== `${totalMin} min` ? (
+                  <p className="text-gray-600 text-xs">{detail}</p>
+                ) : null}
+                {waUrl ? (
+                  <Link
+                    href={waUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      buttonVariants({
+                        size: "sm",
+                        variant: "outline",
+                      }),
+                      "border-emerald-600 text-emerald-700 hover:bg-emerald-50 inline-flex items-center gap-1.5 w-fit"
+                    )}
+                  >
+                    <MessageCircle className="h-3.5 w-3.5 shrink-0" />
+                    WhatsApp — {waLabel}
+                  </Link>
+                ) : learnerSexe ? (
+                  <span className="text-xs text-amber-800">
+                    WhatsApp : configuration à compléter ou{" "}
+                    <Link href="/contactez-nous" className="underline">
+                      contact
+                    </Link>
+                    .
+                  </span>
+                ) : (
+                  <span className="text-xs text-gray-600">
+                    Indiquez votre sexe (prochain achat) pour le lien WhatsApp
+                    adapté, ou{" "}
+                    <Link
+                      href="/contactez-nous"
+                      className="underline text-secondary"
+                    >
+                      contactez-nous
+                    </Link>
+                    .
+                  </span>
+                )}
+              </div>
               <div className="flex flex-wrap gap-2">
-                {st === "ACTIVE" ? (
+                {toPause.length > 0 ? (
                   <Button
                     type="button"
                     size="sm"
                     variant="outline"
                     className="border-primary text-primary"
                     disabled={pending}
-                    onClick={() => openConfirm(subId, "pause")}
+                    onClick={() => openConfirm(toPause, "pause")}
                   >
                     Mettre en pause
                   </Button>
                 ) : null}
-                {st === "PAUSED" ? (
+                {toResume.length > 0 ? (
                   <Button
                     type="button"
                     size="sm"
                     className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
                     disabled={pending}
-                    onClick={() => run(() => resumeMyWeeklySubscription(subId))}
+                    onClick={() =>
+                      run(() => resumeMyWeeklySubscriptionsBatch(toResume))
+                    }
                   >
                     Reprendre
                   </Button>
                 ) : null}
-                {st !== "CANCELED" ? (
+                {toCancel.length > 0 ? (
                   <>
                     <Button
                       type="button"
@@ -283,7 +347,7 @@ export function WeeklySubscriptionsSection({
                       variant="outline"
                       disabled={pending}
                       onClick={() =>
-                        openConfirm(subId, "cancel_at_period_end")
+                        openConfirm(toCancel, "cancel_at_period_end")
                       }
                     >
                       Arrêter en fin de période
@@ -293,7 +357,7 @@ export function WeeklySubscriptionsSection({
                       size="sm"
                       variant="destructive"
                       disabled={pending}
-                      onClick={() => openConfirm(subId, "cancel_now")}
+                      onClick={() => openConfirm(toCancel, "cancel_now")}
                     >
                       Arrêter maintenant
                     </Button>

@@ -7,7 +7,7 @@ import {
   learnerFormationWhatsAppUrl,
   learnerWhatsAppCoachLabel,
 } from "@/lib/contact/learner-whatsapp";
-import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
+import { LearnerAreaHeader } from "@/components/auth/LearnerAreaHeader";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getSession } from "../actions";
-import { LogoutButton } from "./LogoutButton";
 import { LearnerSexeForm } from "./LearnerSexeForm";
 import { LearnerProfileForm } from "@/components/auth/LearnerProfileForm";
 import { RequestPasswordChangeButton } from "@/components/auth/RequestPasswordChangeButton";
@@ -61,10 +60,13 @@ export default async function TableauDeBordPage() {
   }
 
   const weeklyDb = session
-    ? await getWeeklySubscriptionsForLearner(session.id)
+    ? await getWeeklySubscriptionsForLearner(session.id, {
+        excludeCanceled: true,
+      })
     : [];
   const weeklyPanel = weeklyDb.map((r) => ({
     id: r.id,
+    formationId: r.formationId,
     stripeSubscriptionId: r.stripeSubscriptionId,
     status: r.status,
     hourlyMinutes: r.hourlyMinutes,
@@ -75,23 +77,7 @@ export default async function TableauDeBordPage() {
 
   return (
     <div className="min-h-screen bg-surface">
-      {/* Header */}
-      <header className="bg-primary text-white py-4 sm:py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <BrandLogoMark size={32} />
-            <span className="font-serif font-bold text-base sm:text-xl">
-              ArabeSimplement
-            </span>
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-            <span className="text-xs sm:text-sm text-gray-300 truncate hidden sm:inline">
-              {user.prenom} {user.nom}
-            </span>
-            <LogoutButton />
-          </div>
-        </div>
-      </header>
+      <LearnerAreaHeader prenom={user.prenom} nom={user.nom} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
         {/* Welcome */}
@@ -370,6 +356,12 @@ export default async function TableauDeBordPage() {
                   className="block p-3 rounded-lg hover:bg-surface transition-colors text-primary"
                 >
                   Voir les formations
+                </Link>
+                <Link
+                  href="/historique-achats"
+                  className="block p-3 rounded-lg hover:bg-surface transition-colors text-primary"
+                >
+                  Historique d&apos;achats
                 </Link>
                 <Link
                   href="/contactez-nous"

@@ -4,7 +4,7 @@ import { SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { verifyAuthSessionToken } from "@/lib/auth/session-token";
 
 const ADMIN_PATHS = ["/admin"];
-const AUTH_REQUIRED_PATHS = ["/tableau-de-bord"];
+const AUTH_REQUIRED_PATHS = ["/tableau-de-bord", "/historique-achats"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -36,5 +36,10 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/tableau-de-bord/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/tableau-de-bord/:path*",
+    "/historique-achats",
+    "/historique-achats/:path*",
+  ],
 };

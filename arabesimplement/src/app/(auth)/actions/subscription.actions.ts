@@ -196,3 +196,48 @@ export async function cancelMyWeeklySubscriptionNow(
     };
   }
 }
+
+function dedupeStripeIds(ids: string[]): string[] {
+  return [...new Set(ids)];
+}
+
+/** Pause plusieurs abonnements Stripe (ex. plusieurs souscriptions pour une même formation). */
+export async function pauseMyWeeklySubscriptionsBatch(
+  stripeSubscriptionIds: string[]
+): Promise<SubscriptionActionResult> {
+  for (const id of dedupeStripeIds(stripeSubscriptionIds)) {
+    const r = await pauseMyWeeklySubscription(id);
+    if (!r.success) return r;
+  }
+  return { success: true };
+}
+
+export async function resumeMyWeeklySubscriptionsBatch(
+  stripeSubscriptionIds: string[]
+): Promise<SubscriptionActionResult> {
+  for (const id of dedupeStripeIds(stripeSubscriptionIds)) {
+    const r = await resumeMyWeeklySubscription(id);
+    if (!r.success) return r;
+  }
+  return { success: true };
+}
+
+export async function cancelMyWeeklySubscriptionsAtPeriodEndBatch(
+  stripeSubscriptionIds: string[]
+): Promise<SubscriptionActionResult> {
+  for (const id of dedupeStripeIds(stripeSubscriptionIds)) {
+    const r = await cancelMyWeeklySubscriptionAtPeriodEnd(id);
+    if (!r.success) return r;
+  }
+  return { success: true };
+}
+
+export async function cancelMyWeeklySubscriptionsNowBatch(
+  stripeSubscriptionIds: string[]
+): Promise<SubscriptionActionResult> {
+  for (const id of dedupeStripeIds(stripeSubscriptionIds)) {
+    const r = await cancelMyWeeklySubscriptionNow(id);
+    if (!r.success) return r;
+  }
+  return { success: true };
+}
