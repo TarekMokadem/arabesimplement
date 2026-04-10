@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SITE_CONTACT } from "@/lib/site-contact";
 
@@ -70,8 +71,23 @@ export default function MentionsLegalesPage() {
             Les présentes mentions légales sont soumises au droit français. En cas de litige, les tribunaux français seront compétents.
           </p>
 
+          <h2 className="font-serif text-2xl font-bold text-primary mt-8">
+            8. Ventes en ligne
+          </h2>
+          <p className="text-gray-600">
+            Les ventes de formations et prestations sur ce site sont régies par
+            les{" "}
+            <Link
+              href="/conditions-generales-de-vente"
+              className="text-secondary hover:underline"
+            >
+              conditions générales de vente (CGV)
+            </Link>
+            , que tout client doit accepter avant de valider une commande.
+          </p>
+
           <p className="text-gray-500 mt-12 text-sm">
-            Dernière mise à jour : Janvier 2026
+            Dernière mise à jour : avril 2026
           </p>
         </div>
       </section>

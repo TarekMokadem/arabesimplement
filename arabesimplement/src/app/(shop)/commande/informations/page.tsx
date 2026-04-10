@@ -72,6 +72,7 @@ export default function InformationsPage() {
       telephone: "",
       pays: "",
       acceptReglement: false,
+      acceptCgv: false,
     },
   });
 
@@ -97,6 +98,7 @@ export default function InformationsPage() {
           telephone: p.telephone,
           pays: "",
           acceptReglement: false,
+          acceptCgv: false,
         },
         { keepDefaultValues: false }
       );
@@ -361,6 +363,46 @@ export default function InformationsPage() {
                       <AlertCircle className="h-4 w-4" />
                       <AlertDescription>
                         {errors.acceptReglement.message}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="flex items-start gap-3 pt-4 border-t">
+                    <Controller
+                      name="acceptCgv"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          id="acceptCgv"
+                          checked={field.value}
+                          onCheckedChange={(checked) =>
+                            field.onChange(checked === true)
+                          }
+                          data-testid="checkbox-cgv"
+                        />
+                      )}
+                    />
+                    <Label
+                      htmlFor="acceptCgv"
+                      className="text-sm text-gray-600 cursor-pointer leading-relaxed"
+                    >
+                      J&apos;ai lu et j&apos;accepte les{" "}
+                      <Link
+                        href="/conditions-generales-de-vente"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-secondary font-medium underline-offset-2 hover:underline"
+                      >
+                        conditions générales de vente (CGV)
+                      </Link>{" "}
+                      *
+                    </Label>
+                  </div>
+                  {errors.acceptCgv && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        {errors.acceptCgv.message}
                       </AlertDescription>
                     </Alert>
                   )}

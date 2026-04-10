@@ -24,6 +24,7 @@ const footerLinks = {
     { href: "/cours-de-din", label: "Cours de din" },
   ],
   legal: [
+    { href: "/conditions-generales-de-vente", label: "CGV" },
     { href: "/mentions-legales", label: "Mentions légales" },
     { href: "/politique-de-confidentialite", label: "Politique de confidentialité" },
     { href: "/contactez-nous", label: "Contactez-nous" },

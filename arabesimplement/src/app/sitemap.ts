@@ -13,6 +13,7 @@ const STATIC_PATHS = [
   "/notre-parcours",
   "/contactez-nous",
   "/mentions-legales",
+  "/conditions-generales-de-vente",
   "/politique-de-confidentialite",
   "/tajwid",
   "/cours-de-din",

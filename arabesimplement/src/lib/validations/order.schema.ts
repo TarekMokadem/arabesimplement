@@ -21,6 +21,9 @@ export const orderFormSchema = z.object({
   acceptReglement: z.boolean().refine((val) => val === true, {
     message: "Vous devez accepter le règlement intérieur",
   }),
+  acceptCgv: z.boolean().refine((val) => val === true, {
+    message: "Vous devez accepter les conditions générales de vente",
+  }),
 });
 
 export type OrderFormInput = z.infer<typeof orderFormSchema>;
