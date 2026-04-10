@@ -85,7 +85,11 @@ export default async function HistoriqueAchatsPage() {
 
   return (
     <div className="min-h-screen bg-surface">
-      <LearnerAreaHeader prenom={user.prenom} nom={user.nom} />
+      <LearnerAreaHeader
+        prenom={user.prenom}
+        nom={user.nom}
+        currentSection="history"
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
         <Link
