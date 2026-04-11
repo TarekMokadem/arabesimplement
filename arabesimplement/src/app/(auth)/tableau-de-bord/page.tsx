@@ -44,26 +44,34 @@ export default async function TableauDeBordPage() {
     ? { prenom: session.prenom, nom: session.nom, email: session.email }
     : { prenom: "Invité", nom: "", email: "" };
 
-  const courseGroups = session
-    ? await getGroupedLearnerCoursesForDashboard(session.id)
-    : [];
-
   let learnerSexe: StudentSex | null = null;
   let learnerTelephone = "";
+  let weeklyDb: Awaited<
+    ReturnType<typeof getWeeklySubscriptionsForLearner>
+  > = [];
+
+  let courseGroups: Awaited<
+    ReturnType<typeof getGroupedLearnerCoursesForDashboard>
+  > = [];
+
   if (session && isDatabaseConfigured()) {
-    const row = await prisma.user.findUnique({
-      where: { id: session.id },
-      select: { sexe: true, telephone: true },
-    });
+    const [cg, row, weekly] = await Promise.all([
+      getGroupedLearnerCoursesForDashboard(session.id),
+      prisma.user.findUnique({
+        where: { id: session.id },
+        select: { sexe: true, telephone: true },
+      }),
+      getWeeklySubscriptionsForLearner(session.id, {
+        excludeCanceled: true,
+      }),
+    ]);
+    courseGroups = cg;
     learnerSexe = row?.sexe ?? null;
     learnerTelephone = row?.telephone ?? "";
+    weeklyDb = weekly;
+  } else if (session) {
+    courseGroups = await getGroupedLearnerCoursesForDashboard(session.id);
   }
-
-  const weeklyDb = session
-    ? await getWeeklySubscriptionsForLearner(session.id, {
-        excludeCanceled: true,
-      })
-    : [];
   const weeklyPanel = weeklyDb.map((r) => ({
     id: r.id,
     formationId: r.formationId,

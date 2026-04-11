@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Libre_Baskerville, Inter, Amiri } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { NavigationTopLoader } from "@/components/navigation/NavigationTopLoader";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/site-url";
 
 const libreBaskerville = Libre_Baskerville({
@@ -74,6 +75,7 @@ export default function RootLayout({
       <body
         className={`${libreBaskerville.variable} ${inter.variable} ${amiri.variable} font-sans antialiased`}
       >
+        <NavigationTopLoader />
         {children}
         <Toaster position="top-right" richColors />
       </body>
