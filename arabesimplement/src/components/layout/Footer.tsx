@@ -39,7 +39,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4 sm:space-y-6 col-span-2 md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3">
-              <BrandLogoMark size={36} />
+              <BrandLogoMark size={48} />
               <span className="font-serif font-bold text-lg sm:text-xl">ArabeSimplement</span>
             </div>
             <p

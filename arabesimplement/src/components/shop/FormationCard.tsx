@@ -14,6 +14,7 @@ import {
   schedulingModeShortLabel,
 } from "@/lib/scheduling-mode";
 import { formationCardCategoryVisual } from "@/lib/content/boutique-category-visual";
+import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { cn } from "@/lib/utils";
 
 interface FormationCardProps {
@@ -77,13 +78,7 @@ export function FormationCard({ formation }: FormationCardProps) {
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center p-8">
-            <Image
-              src="/brand/logo-arabe-simplement.png"
-              alt=""
-              width={180}
-              height={180}
-              className="object-contain w-[42%] max-w-36 opacity-95 drop-shadow-sm"
-            />
+            <BrandLogoMark size={152} className="shadow-md" />
           </div>
         )}
 

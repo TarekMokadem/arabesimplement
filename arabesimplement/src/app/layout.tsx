@@ -3,6 +3,7 @@ import { Libre_Baskerville, Inter, Amiri } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { NavigationTopLoader } from "@/components/navigation/NavigationTopLoader";
+import { BRAND_LOGO_PUBLIC_PATH } from "@/components/layout/BrandLogoMark";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/site-url";
 
 const libreBaskerville = Libre_Baskerville({
@@ -27,7 +28,7 @@ const amiri = Amiri({
 });
 
 const siteUrl = getSiteUrl();
-const defaultOgImage = toAbsoluteUrl("/brand/logo-arabe-simplement.png");
+const defaultOgImage = toAbsoluteUrl(BRAND_LOGO_PUBLIC_PATH);
 
 export const metadata: Metadata = {
   metadataBase: siteUrl ? new URL(siteUrl) : undefined,

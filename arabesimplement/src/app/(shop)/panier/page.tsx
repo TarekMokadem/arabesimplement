@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
 import { useCart } from "@/hooks/useCart";
 import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
+import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { formatPrice } from "@/lib/utils/format";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
@@ -71,24 +72,18 @@ export default function PanierPage() {
               >
                 <CardContent className="p-4">
                   <div className="flex gap-4">
-                    <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="relative w-28 h-28 shrink-0 flex items-center justify-center">
                       {item.imageUrl ? (
-                        <Image
-                          src={item.imageUrl}
-                          alt={item.titre}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center p-2">
+                        <div className="relative w-full h-full rounded-xl overflow-hidden">
                           <Image
-                            src="/brand/logo-arabe-simplement.png"
-                            alt=""
-                            width={80}
-                            height={80}
-                            className="object-contain w-4/5 opacity-95"
+                            src={item.imageUrl}
+                            alt={item.titre}
+                            fill
+                            className="object-cover"
                           />
                         </div>
+                      ) : (
+                        <BrandLogoMark size={104} />
                       )}
                     </div>
 

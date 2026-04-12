@@ -23,6 +23,10 @@ import {
 import { getApprovedTestimonialsPreview } from "@/lib/data/testimonials.service";
 import { formationThemeLabel } from "@/lib/content/formation-theme";
 import { FormationTestimonialsPreview } from "@/components/shop/FormationTestimonialsPreview";
+import {
+  BRAND_LOGO_PUBLIC_PATH,
+  BrandLogoMark,
+} from "@/components/layout/BrandLogoMark";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/site-url";
 import { isFormationPurchasable } from "@/lib/availability";
 import type { Creneau } from "@/types/domain.types";
@@ -76,7 +80,7 @@ export async function generateMetadata({
   const url = base ? `${base}/boutique/${slug}` : `/boutique/${slug}`;
   const ogImage = formation.imageUrl
     ? toAbsoluteUrl(formation.imageUrl)
-    : toAbsoluteUrl("/brand/logo-arabe-simplement.png");
+    : toAbsoluteUrl(BRAND_LOGO_PUBLIC_PATH);
   const images =
     ogImage.startsWith("http") && ogImage.length > 0
       ? [{ url: ogImage, alt: formation.titre }]
@@ -144,12 +148,10 @@ export default async function FormationPage({ params }: PageProps) {
                 />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center p-10">
-                  <Image
-                    src="/brand/logo-arabe-simplement.png"
-                    alt={formation.titre}
-                    width={320}
-                    height={320}
-                    className="object-contain max-w-[55%] opacity-95 drop-shadow-md"
+                  <BrandLogoMark
+                    size={240}
+                    className="shadow-lg"
+                    priority
                   />
                 </div>
               )}

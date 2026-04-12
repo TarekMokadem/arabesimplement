@@ -59,8 +59,8 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3">
-            <BrandLogoMark size={32} />
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <BrandLogoMark size={44} priority />
             <span className="font-serif font-bold text-base sm:text-xl transition-colors duration-300 text-primary">
               ArabeSimplement
             </span>
@@ -134,7 +134,7 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
               <SheetContent side="right" className="w-[85vw] max-w-80 bg-white p-0">
                 <div className="flex flex-col h-full px-5 pt-6 pb-4 overflow-y-auto">
                   <div className="flex items-center gap-3 pb-5 border-b border-gray-100">
-                    <BrandLogoMark size={36} />
+                    <BrandLogoMark size={40} priority />
                     <span className="font-serif font-bold text-lg text-primary">
                       ArabeSimplement
                     </span>

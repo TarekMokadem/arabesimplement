@@ -77,7 +77,7 @@ export default function InscriptionPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
-            <BrandLogoMark size={48} />
+            <BrandLogoMark size={56} priority />
             <span className="font-serif font-bold text-2xl text-primary">
               ArabeSimplement
             </span>

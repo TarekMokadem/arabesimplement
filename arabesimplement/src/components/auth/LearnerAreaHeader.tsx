@@ -49,7 +49,7 @@ export function LearnerAreaHeader({
             href="/"
             className="flex items-center gap-2 sm:gap-3 shrink-0 w-fit"
           >
-            <BrandLogoMark size={32} />
+            <BrandLogoMark size={44} priority />
             <span className="font-serif font-bold text-base sm:text-xl">
               ArabeSimplement
             </span>

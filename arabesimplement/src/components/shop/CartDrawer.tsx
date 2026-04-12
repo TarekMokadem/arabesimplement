@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { useCart } from "@/hooks/useCart";
 import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
+import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { formatPrice } from "@/lib/utils/format";
 
 export function CartDrawer() {
@@ -60,24 +61,18 @@ export function CartDrawer() {
                     className="flex gap-4 p-4 bg-surface rounded-lg"
                     data-testid={`cart-item-${item.lineId}`}
                   >
-                    <div className="relative w-20 h-20 rounded-md overflow-hidden bg-gray-200 flex-shrink-0">
+                    <div className="relative w-[5.25rem] h-[5.25rem] shrink-0 flex items-center justify-center">
                       {item.imageUrl ? (
-                        <Image
-                          src={item.imageUrl}
-                          alt={item.titre}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/90 to-primary-light p-2">
+                        <div className="relative w-full h-full rounded-xl overflow-hidden bg-gray-200">
                           <Image
-                            src="/brand/logo-arabe-simplement.png"
-                            alt=""
-                            width={64}
-                            height={64}
-                            className="object-contain w-4/5 opacity-95"
+                            src={item.imageUrl}
+                            alt={item.titre}
+                            fill
+                            className="object-cover"
                           />
                         </div>
+                      ) : (
+                        <BrandLogoMark size={84} />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">

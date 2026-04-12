@@ -38,8 +38,8 @@ export function AdminSidebar() {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="p-6 border-b border-white/15">
-        <Link href="/admin" className="flex items-center gap-3">
-          <BrandLogoMark size={40} />
+        <Link href="/admin" className="flex items-center gap-3 shrink-0">
+          <BrandLogoMark size={44} priority />
           <div>
             <span className="font-serif font-bold text-white block">Admin</span>
             <span className="text-xs text-gray-400">ArabeSimplement</span>
@@ -104,8 +104,8 @@ export function AdminSidebar() {
       {/* Mobile Sidebar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-primary border-b border-white/15 px-4 py-3">
         <div className="flex items-center justify-between">
-          <Link href="/admin" className="flex items-center gap-2">
-            <BrandLogoMark size={32} />
+          <Link href="/admin" className="flex items-center gap-2 shrink-0">
+            <BrandLogoMark size={40} priority />
             <span className="font-serif font-bold text-white">Admin</span>
           </Link>
 
