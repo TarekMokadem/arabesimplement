@@ -76,25 +76,53 @@ async function weeklyMapForUser(userId: string): Promise<
   return map;
 }
 
+/**
+ * Cours à la carte : si toutes les lignes Stripe liées à la formation sont résiliées,
+ * l’inscription ne doit plus apparaître dans « Mes formations » (l’historique / boutique restent la référence).
+ */
+function hideHourlyWhenSubscriptionFullyEnded(
+  groups: LearnerCourseDisplayGroup[]
+): LearnerCourseDisplayGroup[] {
+  return groups.filter((g) => {
+    if (g.kind !== "HOURLY") return true;
+    if (g.weeklyLines.length === 0) return true;
+    const allCanceled = g.weeklyLines.every((w) => w.status === "CANCELED");
+    return !allCanceled;
+  });
+}
+
+async function buildGroupedLearnerCourses(
+  userId: string
+): Promise<LearnerCourseDisplayGroup[]> {
+  const [enrollments, weeklyMap] = await Promise.all([
+    loadEnrollmentRowsForUser(userId),
+    weeklyMapForUser(userId),
+  ]);
+  return groupEnrollmentsForLearnerDisplay(enrollments, weeklyMap);
+}
+
 export async function getGroupedLearnerCoursesForDashboard(
   userId: string
 ): Promise<LearnerCourseDisplayGroup[]> {
   if (!isDatabaseConfigured()) return [];
   try {
-    const [enrollments, weeklyMap] = await Promise.all([
-      loadEnrollmentRowsForUser(userId),
-      weeklyMapForUser(userId),
-    ]);
-    return groupEnrollmentsForLearnerDisplay(enrollments, weeklyMap);
+    const groups = await buildGroupedLearnerCourses(userId);
+    return hideHourlyWhenSubscriptionFullyEnded(groups);
   } catch (e) {
     console.error("[getGroupedLearnerCoursesForDashboard]", e);
     return [];
   }
 }
 
-/** Même regroupement pour la fiche admin élève. */
+/** Même regroupement pour la fiche admin élève (y compris abonnements résiliés). */
 export async function getGroupedLearnerCoursesForAdmin(
   userId: string
 ): Promise<LearnerCourseDisplayGroup[]> {
-  return getGroupedLearnerCoursesForDashboard(userId);
+  if (!isDatabaseConfigured()) return [];
+  try {
+    return await buildGroupedLearnerCourses(userId);
+  } catch (e) {
+    console.error("[getGroupedLearnerCoursesForAdmin]", e);
+    return [];
+  }
 }
