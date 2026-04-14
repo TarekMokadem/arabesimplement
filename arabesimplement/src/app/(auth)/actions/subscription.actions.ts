@@ -13,38 +13,33 @@ export type SubscriptionActionResult =
   | { success: true }
   | { success: false; error: string };
 
-async function assertOwnsSubscription(
-  userId: string,
+/** La gestion pause / résiliation est réservée à l’administration (plus l’élève seul). */
+async function requireAdminManagesSubscription(
   stripeSubscriptionId: string
-): Promise<boolean> {
+): Promise<SubscriptionActionResult | { ok: true }> {
+  const session = await getSession();
+  if (!session || session.role !== "ADMIN") {
+    return {
+      success: false,
+      error:
+        "La gestion de l’abonnement (pause, arrêt, volume) est effectuée par l’équipe. Contactez-nous si besoin.",
+    };
+  }
   const row = await prisma.courseWeeklySubscription.findFirst({
-    where: { userId, stripeSubscriptionId },
+    where: { stripeSubscriptionId },
     select: { id: true },
   });
-  return row != null;
-}
-
-async function requireStudentOwnsSubscription(
-  stripeSubscriptionId: string
-): Promise<
-  | { ok: true; session: NonNullable<Awaited<ReturnType<typeof getSession>>> }
-  | SubscriptionActionResult
-> {
-  const session = await getSession();
-  if (!session || session.role !== "STUDENT") {
-    return { success: false, error: "Non autorisé." };
-  }
-  if (!(await assertOwnsSubscription(session.id, stripeSubscriptionId))) {
+  if (!row) {
     return { success: false, error: "Abonnement introuvable." };
   }
-  return { ok: true, session };
+  return { ok: true };
 }
 
 /** Met en pause les prélèvements (abonnement Stripe inchangé, pas de facturation). */
 export async function pauseMyWeeklySubscription(
   stripeSubscriptionId: string
 ): Promise<SubscriptionActionResult> {
-  const auth = await requireStudentOwnsSubscription(stripeSubscriptionId);
+  const auth = await requireAdminManagesSubscription(stripeSubscriptionId);
   if ("success" in auth) return auth;
 
   if (stripeSubscriptionId.startsWith("mock_sub_")) {
@@ -82,7 +77,7 @@ export async function pauseMyWeeklySubscription(
 export async function resumeMyWeeklySubscription(
   stripeSubscriptionId: string
 ): Promise<SubscriptionActionResult> {
-  const auth = await requireStudentOwnsSubscription(stripeSubscriptionId);
+  const auth = await requireAdminManagesSubscription(stripeSubscriptionId);
   if ("success" in auth) return auth;
 
   if (stripeSubscriptionId.startsWith("mock_sub_")) {
@@ -122,7 +117,7 @@ export async function resumeMyWeeklySubscription(
 export async function cancelMyWeeklySubscriptionAtPeriodEnd(
   stripeSubscriptionId: string
 ): Promise<SubscriptionActionResult> {
-  const auth = await requireStudentOwnsSubscription(stripeSubscriptionId);
+  const auth = await requireAdminManagesSubscription(stripeSubscriptionId);
   if ("success" in auth) return auth;
 
   if (stripeSubscriptionId.startsWith("mock_sub_")) {
@@ -145,7 +140,7 @@ export async function cancelMyWeeklySubscriptionAtPeriodEnd(
     const sub = await stripe.subscriptions.update(stripeSubscriptionId, {
       cancel_at_period_end: true,
     });
-      await syncWeeklyRowsFromStripeSubscription(sub);
+    await syncWeeklyRowsFromStripeSubscription(sub);
     return { success: true };
   } catch (e) {
     console.error("[cancelMyWeeklySubscriptionAtPeriodEnd]", e);
@@ -160,7 +155,7 @@ export async function cancelMyWeeklySubscriptionAtPeriodEnd(
 export async function cancelMyWeeklySubscriptionNow(
   stripeSubscriptionId: string
 ): Promise<SubscriptionActionResult> {
-  const auth = await requireStudentOwnsSubscription(stripeSubscriptionId);
+  const auth = await requireAdminManagesSubscription(stripeSubscriptionId);
   if ("success" in auth) return auth;
 
   if (stripeSubscriptionId.startsWith("mock_sub_")) {

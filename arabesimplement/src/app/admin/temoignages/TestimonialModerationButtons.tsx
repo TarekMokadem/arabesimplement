@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, X } from "lucide-react";
+import { Check, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { approveTestimonial, deleteTestimonial } from "./actions";
 
@@ -12,7 +12,37 @@ export function TestimonialModerationButtons({ id, approuve }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
-  if (approuve) return null;
+  const runDelete = () => {
+    if (
+      !window.confirm(
+        "Supprimer définitivement ce témoignage ? Cette action est irréversible."
+      )
+    ) {
+      return;
+    }
+    startTransition(async () => {
+      await deleteTestimonial(id);
+      router.refresh();
+    });
+  };
+
+  if (approuve) {
+    return (
+      <div className="flex gap-2 pt-4 border-t">
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          className="text-red-600 border-red-200"
+          disabled={pending}
+          onClick={runDelete}
+        >
+          <Trash2 className="h-4 w-4 mr-1" />
+          Supprimer
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex gap-2 pt-4 border-t">
@@ -37,12 +67,7 @@ export function TestimonialModerationButtons({ id, approuve }: Props) {
         variant="outline"
         className="text-red-600"
         disabled={pending}
-        onClick={() =>
-          startTransition(async () => {
-            await deleteTestimonial(id);
-            router.refresh();
-          })
-        }
+        onClick={runDelete}
       >
         <X className="h-4 w-4 mr-1" />
         Refuser

@@ -13,8 +13,8 @@ type BrandLogoMarkProps = {
 };
 
 /**
- * Logo officiel dans un cercle parfait (ratio 1:1), sans déformation.
- * `object-contain` + léger fond évite l’effet ovale si le fichier source n’est pas carré.
+ * Logo officiel dans un cercle parfait (ratio 1:1).
+ * L’image remplit toute la bulle (`object-cover`), comme un fond circulaire.
  */
 export function BrandLogoMark({
   size = 44,
@@ -44,7 +44,7 @@ export function BrandLogoMark({
         sizes={imgSizes}
         quality={92}
         priority={priority}
-        className="object-contain object-center p-[12%]"
+        className="h-full w-full object-cover object-center"
       />
     </div>
   );

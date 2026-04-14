@@ -144,7 +144,7 @@ export default async function FormationPage({ params }: PageProps) {
                   alt={formation.titre}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-contain object-center"
+                  className="object-cover object-center"
                   priority
                 />
               ) : (

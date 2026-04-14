@@ -2,6 +2,7 @@ import type Stripe from "stripe";
 import type { WeeklySubscriptionStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getServerStripe } from "@/lib/stripe/server";
+import { hourlyMinutesFromStripePriceId } from "@/lib/stripe/recurring-cart-prices";
 
 function maxDate(a: Date, b: Date): Date {
   return a.getTime() >= b.getTime() ? a : b;
@@ -155,6 +156,30 @@ export async function syncWeeklyRowsFromStripeSubscription(
       ...(periodEnd ? { currentPeriodEnd: periodEnd } : {}),
     },
   });
+}
+
+/** Après modification d’un SubscriptionItem (quantité / prix), resynchronise chaque ligne Prisma. */
+export async function syncCourseWeeklyLinesFromStripeSubscriptionItems(
+  sub: Stripe.Subscription
+): Promise<void> {
+  await syncWeeklyRowsFromStripeSubscription(sub);
+  for (const si of sub.items.data) {
+    const priceId =
+      typeof si.price === "string"
+        ? si.price
+        : si.price && typeof si.price === "object" && "id" in si.price
+          ? si.price.id
+          : null;
+    const minutes = hourlyMinutesFromStripePriceId(priceId);
+    const qty = Math.max(1, si.quantity ?? 1);
+    await prisma.courseWeeklySubscription.updateMany({
+      where: { stripeSubscriptionItemId: si.id },
+      data: {
+        bundleQuantity: qty,
+        ...(minutes != null ? { hourlyMinutes: minutes } : {}),
+      },
+    });
+  }
 }
 
 export async function extendWeeklyAccessAfterRenewal(

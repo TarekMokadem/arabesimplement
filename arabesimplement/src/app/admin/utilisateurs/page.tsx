@@ -8,12 +8,15 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import { getAdminUserList } from "@/lib/data/admin.service";
 import { isDatabaseConfigured } from "@/lib/utils/database";
+import { requireAdminSession } from "@/lib/auth/require-admin";
+import { DeleteUserButton } from "./DeleteUserButton";
 
 /** Données toujours à jour (évite un cache statique stale sur la liste). */
 export const dynamic = "force-dynamic";
 
 export default async function UtilisateursPage() {
   const db = isDatabaseConfigured();
+  const adminSession = await requireAdminSession();
   const utilisateurs = db ? await getAdminUserList() : [];
 
   return (
@@ -137,6 +140,13 @@ export default async function UtilisateursPage() {
                         >
                           <Mail className="h-4 w-4" />
                         </a>
+                        {adminSession ? (
+                          <DeleteUserButton
+                            userId={u.id}
+                            userLabel={`${u.prenom} ${u.nom}`}
+                            disabled={u.id === adminSession.id}
+                          />
+                        ) : null}
                       </div>
                     </td>
                   </tr>

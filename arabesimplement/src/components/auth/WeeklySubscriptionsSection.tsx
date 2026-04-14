@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import type { StudentSex } from "@prisma/client";
@@ -129,9 +130,18 @@ function statusLabel(s: WeeklyPanelRow["status"]): string {
 export function WeeklySubscriptionsSection({
   rows,
   learnerSexe,
+  readOnly = false,
+  adminMode = false,
+  adminLineSlot,
 }: {
   rows: WeeklyPanelRow[];
   learnerSexe: StudentSex | null;
+  /** Élève : affichage informatif uniquement (pas de pause / résiliation). */
+  readOnly?: boolean;
+  /** Admin : affiche les actions Stripe (pause, etc.). */
+  adminMode?: boolean;
+  /** Admin : formulaire par ligne (quantité / durée). */
+  adminLineSlot?: (line: WeeklyPanelRow) => React.ReactNode;
 }) {
   const [pending, startTransition] = useTransition();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -223,16 +233,28 @@ export function WeeklySubscriptionsSection({
 
   const cc = confirmCopy(confirmTarget?.action ?? null);
 
+  const showActions = !readOnly && adminMode;
+
   return (
     <Card className="bg-white">
       <CardHeader>
         <CardTitle className="font-serif">
-          Cours à la carte — prélèvement chaque semaine
+          Cours à la carte — prélèvement mensuel
         </CardTitle>
         <CardDescription>
-          Gérez vous-même vos abonnements : pause des prélèvements, reprise ou
-          arrêt en fin de période / immédiat. Les changements passent par notre
-          prestataire de paiement (Stripe).
+          {readOnly ? (
+            <>
+              Vos abonnements sont visibles ci-dessous. La gestion (pause, arrêt,
+              volume) est assurée par l’équipe : écrivez-nous via WhatsApp ou la
+              page contact si vous souhaitez un changement.
+            </>
+          ) : (
+            <>
+              Pause des prélèvements, reprise ou arrêt en fin de période /
+              immédiat. Les changements passent par notre prestataire de
+              paiement (Stripe).
+            </>
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -270,11 +292,18 @@ export function WeeklySubscriptionsSection({
               </div>
               <div className="text-sm space-y-2 text-primary">
                 <p className="font-medium">
-                  {titre} — {totalMin} min / semaine
+                  {titre} — {totalMin} min / semaine (volume créneau)
                 </p>
                 {detail !== `${totalMin} min` ? (
                   <p className="text-gray-600 text-xs">{detail}</p>
                 ) : null}
+                {adminLineSlot
+                  ? lines.map((line) => (
+                      <div key={line.id} className="space-y-2">
+                        {adminLineSlot(line)}
+                      </div>
+                    ))
+                  : null}
                 {waUrl ? (
                   <Link
                     href={waUrl}
@@ -313,62 +342,65 @@ export function WeeklySubscriptionsSection({
                   </span>
                 )}
               </div>
-              <div className="flex flex-wrap gap-2">
-                {toPause.length > 0 ? (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className="border-primary text-primary"
-                    disabled={pending}
-                    onClick={() => openConfirm(toPause, "pause")}
-                  >
-                    Mettre en pause
-                  </Button>
-                ) : null}
-                {toResume.length > 0 ? (
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
-                    disabled={pending}
-                    onClick={() =>
-                      run(() => resumeMyWeeklySubscriptionsBatch(toResume))
-                    }
-                  >
-                    Reprendre
-                  </Button>
-                ) : null}
-                {toCancel.length > 0 ? (
-                  <>
+              {showActions ? (
+                <div className="flex flex-wrap gap-2">
+                  {toPause.length > 0 ? (
                     <Button
                       type="button"
                       size="sm"
                       variant="outline"
+                      className="border-primary text-primary"
                       disabled={pending}
-                      onClick={() =>
-                        openConfirm(toCancel, "cancel_at_period_end")
-                      }
+                      onClick={() => openConfirm(toPause, "pause")}
                     >
-                      Arrêter en fin de période
+                      Mettre en pause
                     </Button>
+                  ) : null}
+                  {toResume.length > 0 ? (
                     <Button
                       type="button"
                       size="sm"
-                      variant="destructive"
+                      className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
                       disabled={pending}
-                      onClick={() => openConfirm(toCancel, "cancel_now")}
+                      onClick={() =>
+                        run(() => resumeMyWeeklySubscriptionsBatch(toResume))
+                      }
                     >
-                      Arrêter maintenant
+                      Reprendre
                     </Button>
-                  </>
-                ) : null}
-              </div>
+                  ) : null}
+                  {toCancel.length > 0 ? (
+                    <>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={pending}
+                        onClick={() =>
+                          openConfirm(toCancel, "cancel_at_period_end")
+                        }
+                      >
+                        Arrêter en fin de période
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="destructive"
+                        disabled={pending}
+                        onClick={() => openConfirm(toCancel, "cancel_now")}
+                      >
+                        Arrêter maintenant
+                      </Button>
+                    </>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           );
         })}
       </CardContent>
 
+      {showActions ? (
       <Dialog open={confirmOpen} onOpenChange={(o) => !o && closeConfirm()}>
         <DialogContent className="sm:max-w-md" showCloseButton>
           <DialogHeader>
@@ -406,6 +438,7 @@ export function WeeklySubscriptionsSection({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      ) : null}
     </Card>
   );
 }

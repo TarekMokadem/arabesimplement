@@ -10,9 +10,9 @@ import { getServerStripe } from "@/lib/stripe/server";
 import { resolveIncompleteSubscriptionInvoicePayment } from "@/lib/stripe/incomplete-subscription-payment";
 import { ensureStripeCustomerForCheckout } from "@/lib/stripe/checkout-customer";
 import {
-  weeklyStripePriceIdForMinutes,
-  weeklyStripePriceIdsConfigured,
-} from "@/lib/stripe/weekly-prices";
+  recurringCartStripePriceIdForMinutes,
+  recurringCartStripePriceIdsConfigured,
+} from "@/lib/stripe/recurring-cart-prices";
 import {
   classifyCheckoutCart,
   MIXED_CART_CHECKOUT_ERROR,
@@ -121,13 +121,14 @@ export async function createOrder(
   const stripe = getServerStripe();
 
   if (checkoutKind === "hourly_only") {
-    if (!weeklyStripePriceIdsConfigured()) {
+    if (!recurringCartStripePriceIdsConfigured()) {
       await deletePendingOrder(orderId).catch(() => {});
       return {
         success: false,
         error:
-          "Configuration Stripe : créez trois prix récurrents hebdomadaires (60 / 40 / 30 min) " +
-          "puis renseignez STRIPE_PRICE_WEEKLY_60, STRIPE_PRICE_WEEKLY_40 et STRIPE_PRICE_WEEKLY_30 dans .env.",
+          "Configuration Stripe : créez trois prix récurrents mensuels (60 / 40 / 30 min) " +
+          "puis renseignez STRIPE_PRICE_MONTHLY_60, STRIPE_PRICE_MONTHLY_40 et STRIPE_PRICE_MONTHLY_30 dans .env " +
+          "(ou les anciennes clés STRIPE_PRICE_WEEKLY_*).",
       };
     }
 
@@ -157,9 +158,9 @@ export async function createOrder(
       const subItems: Stripe.SubscriptionCreateParams.Item[] = [];
       for (const oi of orderWithItems.orderItems) {
         if (oi.hourlyMinutes == null) continue;
-        const priceId = weeklyStripePriceIdForMinutes(oi.hourlyMinutes);
+        const priceId = recurringCartStripePriceIdForMinutes(oi.hourlyMinutes);
         if (!priceId) {
-          throw new Error("Prix Stripe hebdo introuvable pour cette durée");
+          throw new Error("Prix Stripe récurrent introuvable pour cette durée");
         }
         subItems.push({
           price: priceId,

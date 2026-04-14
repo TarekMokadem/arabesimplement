@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Pencil } from "lucide-react";
+import type { StudentSex } from "@prisma/client";
 import { getUserForAdminById } from "@/lib/data/admin.service";
 import { getGroupedLearnerCoursesForAdmin } from "@/lib/data/learner-courses.service";
+import { getWeeklySubscriptionsForLearner } from "@/lib/data/weekly-subscriptions.service";
+import { WeeklySubscriptionsSection } from "@/components/auth/WeeklySubscriptionsSection";
 import { LearnerCourseAssignmentForm } from "../LearnerCourseAssignmentForm";
+import { AdminCourseWeeklyLineForm } from "../AdminCourseWeeklyLineForm";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import type { LearnerCourseDisplayGroup } from "@/lib/learner-course-groups";
@@ -26,7 +30,7 @@ function detailLinesForGroup(group: LearnerCourseDisplayGroup): string[] {
     if (group.weeklyLines.length > 0) {
       for (const w of group.weeklyLines) {
         lines.push(
-          `Stripe : ${w.hourlyMinutes} min × ${w.bundleQuantity} / semaine — ${w.status}`
+          `Stripe : ${w.hourlyMinutes} min × ${w.bundleQuantity} (prélèvement mensuel) — ${w.status}`
         );
       }
     }
@@ -88,6 +92,26 @@ export default async function AdminLearnerDetailPage({
       ? await getGroupedLearnerCoursesForAdmin(user.id)
       : [];
 
+  const weeklyDb =
+    user.role === "STUDENT"
+      ? await getWeeklySubscriptionsForLearner(user.id, {
+          excludeCanceled: false,
+        })
+      : [];
+
+  const weeklyPanel = weeklyDb.map((r) => ({
+    id: r.id,
+    formationId: r.formationId,
+    stripeSubscriptionId: r.stripeSubscriptionId,
+    status: r.status,
+    hourlyMinutes: r.hourlyMinutes,
+    bundleQuantity: r.bundleQuantity,
+    currentPeriodEnd: r.currentPeriodEnd?.toISOString() ?? null,
+    formation: { titre: r.formation.titre },
+  }));
+
+  const learnerSexe: StudentSex | null = user.sexe ?? null;
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-3xl">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -127,6 +151,33 @@ export default async function AdminLearnerDetailPage({
           Ce compte n’est pas un élève — pas de cours à afficher.
         </p>
       ) : (
+        <>
+        {weeklyPanel.length > 0 ? (
+          <section
+            aria-labelledby="abonnements-cartes-admin"
+            className="mb-10 space-y-3"
+          >
+            <h2
+              id="abonnements-cartes-admin"
+              className="font-serif text-xl font-semibold text-primary"
+            >
+              Abonnements cours à la carte (Stripe)
+            </h2>
+            <WeeklySubscriptionsSection
+              rows={weeklyPanel}
+              learnerSexe={learnerSexe}
+              readOnly={false}
+              adminMode
+              adminLineSlot={(line) => (
+                <AdminCourseWeeklyLineForm
+                  courseWeeklySubscriptionId={line.id}
+                  initialBundleQuantity={line.bundleQuantity}
+                  initialHourlyMinutes={line.hourlyMinutes}
+                />
+              )}
+            />
+          </section>
+        ) : null}
         <section aria-labelledby="cours-eleve-heading" className="space-y-6">
           <h2
             id="cours-eleve-heading"
@@ -162,6 +213,7 @@ export default async function AdminLearnerDetailPage({
             </div>
           )}
         </section>
+        </>
       )}
     </div>
   );

@@ -75,7 +75,7 @@ export function FormationCard({ formation }: FormationCardProps) {
             alt={formation.titre}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-contain object-center group-hover:scale-[1.02] transition-transform duration-500"
+            className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-light flex items-center justify-center p-8">

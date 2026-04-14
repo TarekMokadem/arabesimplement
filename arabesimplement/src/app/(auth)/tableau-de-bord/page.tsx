@@ -114,6 +114,7 @@ export default async function TableauDeBordPage() {
             <WeeklySubscriptionsSection
               rows={weeklyPanel}
               learnerSexe={learnerSexe}
+              readOnly
             />
           ) : (
             <Card className="bg-white border-dashed border-2 border-gray-200">

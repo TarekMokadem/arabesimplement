@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/auth/require-admin";
+import { isStripeConfigured } from "@/lib/stripe/config";
+import { getServerStripe } from "@/lib/stripe/server";
 import {
   adminUserUpdateSchema,
   type AdminUserUpdateInput,
@@ -75,19 +77,40 @@ export async function deleteAdminUser(userId: string): Promise<UserAdminResult> 
 
   const u = await prisma.user.findUnique({
     where: { id: userId },
-    include: { _count: { select: { orders: true, enrollments: true } } },
   });
   if (!u) return { success: false, error: "Utilisateur introuvable." };
-  if (u._count.orders > 0 || u._count.enrollments > 0) {
-    return {
-      success: false,
-      error:
-        "Suppression impossible : commandes ou inscriptions liées à ce compte.",
-    };
-  }
+
+  const weeklyRows = await prisma.courseWeeklySubscription.findMany({
+    where: { userId },
+    select: { stripeSubscriptionId: true },
+  });
+  const stripeSubIds = [
+    ...new Set(weeklyRows.map((w) => w.stripeSubscriptionId)),
+  ];
 
   try {
-    await prisma.user.delete({ where: { id: userId } });
+    if (isStripeConfigured()) {
+      const stripe = getServerStripe();
+      for (const sid of stripeSubIds) {
+        if (sid.startsWith("mock_sub_")) continue;
+        try {
+          await stripe.subscriptions.cancel(sid);
+        } catch (e) {
+          console.error("[deleteAdminUser] Stripe cancel", sid, e);
+        }
+      }
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.courseWeeklySubscription.deleteMany({ where: { userId } });
+      await tx.enrollment.deleteMany({ where: { userId } });
+      await tx.order.updateMany({
+        where: { userId },
+        data: { userId: null },
+      });
+      await tx.user.delete({ where: { id: userId } });
+    });
+
     revalidatePath("/admin/utilisateurs");
     return { success: true };
   } catch (e) {

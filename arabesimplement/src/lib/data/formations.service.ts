@@ -69,7 +69,8 @@ export type FeaturedSessionHome = {
   prix: number;
   prixPromo: number;
   slug: string;
-  expiresAt: Date;
+  /** Compte à rebours uniquement si une date limite est définie. */
+  expiresAt: Date | null;
   schedulingMode?: import("@/types/domain.types").FormationSchedulingMode;
 };
 
@@ -207,9 +208,7 @@ export function getBoutiqueThemeFilters(
 }
 
 function formationListItemToFeaturedHome(f: Formation): FeaturedSessionHome {
-  const fallbackExpires = new Date();
-  fallbackExpires.setDate(fallbackExpires.getDate() + 7);
-  const expiresAt = f.featuredExpiresAt ?? fallbackExpires;
+  const expiresAt = f.featuredExpiresAt ?? null;
   return {
     titre: f.featuredTitre ?? f.titre,
     description: f.featuredContent ?? f.descriptionCourte,
@@ -238,9 +237,7 @@ export async function getFeaturedSessionHome(): Promise<FeaturedSessionHome | nu
     });
     if (!row) return null;
 
-    const fallbackExpires = new Date();
-    fallbackExpires.setDate(fallbackExpires.getDate() + 7);
-    const expiresAt = row.featuredExpiresAt ?? fallbackExpires;
+    const expiresAt = row.featuredExpiresAt ?? null;
     return {
       titre: row.featuredTitre ?? row.titre,
       description: row.featuredContent ?? row.descriptionCourte,

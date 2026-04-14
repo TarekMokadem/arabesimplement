@@ -16,7 +16,8 @@ interface SessionDuMomentProps {
   prix: number;
   prixPromo: number;
   slug: string;
-  expiresAt: Date;
+  /** Si absent : pas de compte à rebours (offre sans échéance). */
+  expiresAt: Date | null;
   schedulingMode?: FormationSchedulingMode;
 }
 
@@ -38,7 +39,11 @@ export function SessionDuMoment({
   });
   const [isExpired, setIsExpired] = useState(false);
 
+  const showCountdown = expiresAt != null;
+
   useEffect(() => {
+    if (!expiresAt) return;
+
     const calculateTimeLeft = () => {
       const now = new Date().getTime();
       const target = new Date(expiresAt).getTime();
@@ -62,7 +67,7 @@ export function SessionDuMoment({
     return () => clearInterval(interval);
   }, [expiresAt]);
 
-  if (isExpired) return null;
+  if (showCountdown && isExpired) return null;
 
   const hourly = schedulingMode === "HOURLY_PURCHASE";
   const showPromo =
@@ -76,7 +81,11 @@ export function SessionDuMoment({
       data-testid="session-du-moment"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-16">
+        <div
+          className={`flex flex-col items-center gap-6 sm:gap-8 lg:gap-16 ${
+            showCountdown ? "lg:flex-row" : ""
+          }`}
+        >
           {/* Left Content */}
           <div className="flex-1 text-center lg:text-left">
             <div className="flex items-center gap-2 justify-center lg:justify-start mb-4">
@@ -129,22 +138,23 @@ export function SessionDuMoment({
             </Link>
           </div>
 
-          {/* Countdown Timer */}
-          <div className="flex-shrink-0">
-            <div className="bg-primary rounded-2xl p-4 sm:p-6 text-white text-center w-full lg:w-auto">
-              <div className="flex items-center gap-2 justify-center mb-4">
-                <Clock className="h-5 w-5 text-secondary" />
-                <span className="text-sm text-gray-300">Offre expire dans</span>
-              </div>
+          {showCountdown ? (
+            <div className="flex-shrink-0">
+              <div className="bg-primary rounded-2xl p-4 sm:p-6 text-white text-center w-full lg:w-auto">
+                <div className="flex items-center gap-2 justify-center mb-4">
+                  <Clock className="h-5 w-5 text-secondary" />
+                  <span className="text-sm text-gray-300">Offre expire dans</span>
+                </div>
 
-              <div className="flex gap-3">
-                <TimeBlock value={timeLeft.days} label="Jours" />
-                <TimeBlock value={timeLeft.hours} label="Heures" />
-                <TimeBlock value={timeLeft.minutes} label="Min" />
-                <TimeBlock value={timeLeft.seconds} label="Sec" />
+                <div className="flex gap-3">
+                  <TimeBlock value={timeLeft.days} label="Jours" />
+                  <TimeBlock value={timeLeft.hours} label="Heures" />
+                  <TimeBlock value={timeLeft.minutes} label="Min" />
+                  <TimeBlock value={timeLeft.seconds} label="Sec" />
+                </div>
               </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </section>
