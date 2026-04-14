@@ -28,7 +28,7 @@ export function hourlyMinPriceEuros(): number {
   return Math.min(...HOURLY_SLOTS_PRICING.map((r) => r.priceEuros));
 }
 
-/** Durées facturables pour un pack hebdomadaire (plusieurs unités par durée). */
+/** Durées facturables pour l’abonnement cours à la carte (plusieurs unités par durée). */
 export const HOURLY_BUNDLE_MINUTES = [60, 40, 30] as const;
 export type HourlyBundleMinutes = (typeof HOURLY_BUNDLE_MINUTES)[number];
 export type HourlyDurationBundle = Partial<Record<HourlyBundleMinutes, number>>;
@@ -54,7 +54,7 @@ export function totalMinutesInHourlyBundle(bundle: HourlyDurationBundle): number
   return t;
 }
 
-/** Texte court : « 2×1 h + 1×30 min (25 € / semaine) » — sans montant si omitPrice. */
+/** Texte court : « 2×1 h + 1×30 min (25 € / mois) » — sans montant si omitPrice. */
 export function formatHourlyBundleForDisplay(
   bundle: HourlyDurationBundle,
   options?: { omitPrice?: boolean }
@@ -71,7 +71,7 @@ export function formatHourlyBundleForDisplay(
   const core = parts.join(" + ");
   if (options?.omitPrice) return core;
   const euros = sumHourlyBundleEuros(bundle);
-  return `${core} (${euros} € / semaine)`;
+  return `${core} (${euros} € / mois)`;
 }
 
 export function mergeHourlyBundles(
@@ -95,7 +95,7 @@ export function emptyHourlyBundle(): Record<HourlyBundleMinutes, number> {
 export function schedulingModeTitle(mode: FormationSchedulingMode): string {
   switch (mode) {
     case "HOURLY_PURCHASE":
-      return "Cours à la carte — même créneau chaque semaine, payé chaque semaine";
+      return "Cours à la carte — créneau récurrent chaque semaine, prélèvement mensuel";
     case "FLEXIBLE_FORMATION":
       return "Paiement forfaitaire — organisation avec le professeur";
     case "FIXED_SLOTS":
@@ -126,7 +126,7 @@ export function schedulingModeBoutiquePriceShort(
     case "FLEXIBLE_FORMATION":
       return "Un seul paiement · horaires libres avec le prof";
     case "HOURLY_PURCHASE":
-      return "Paiement chaque semaine · une séance récurrente (durée au choix, voir grille)";
+      return "Prélèvement chaque mois · une séance récurrente (durée au choix, voir grille)";
     default:
       return "";
   }
@@ -139,7 +139,7 @@ export function schedulingModeDescription(
     case "HOURLY_PURCHASE":
       return (
         "Vous réservez une durée par séance (ex. 1 h) : c’est le même créneau chaque semaine, " +
-        "avec le même montant prélevé chaque semaine tant que vous suivez ce cours. " +
+        "avec le même montant prélevé chaque mois tant que vous suivez ce cours. " +
         "Les horaires se finalisent avec l’équipe comme pour un forfait flexible."
       );
     case "FLEXIBLE_FORMATION":
@@ -174,8 +174,8 @@ export function schedulingModePaymentExplanation(
       );
     case "HOURLY_PURCHASE":
       return (
-        "Paiement : chaque semaine, selon la durée de votre séance récurrente (grille indicative 10 € / 8 € / 5 €). " +
-        "Ex. 1 h par semaine = le même créneau hebdo, 10 € par semaine. L’horaire exact se confirme avec l’équipe."
+        "Paiement : chaque mois, selon la durée et le volume choisis (grille indicative 10 € / 8 € / 5 € par unité). " +
+        "Ex. 1 h par semaine au créneau : rythme hebdomadaire, montant mensuel aligné sur votre sélection. L’horaire exact se confirme avec l’équipe."
       );
     default:
       return "";
@@ -190,7 +190,7 @@ export function schedulingModePaymentBrief(mode: FormationSchedulingMode): strin
     case "FLEXIBLE_FORMATION":
       return "Paiement unique. Les séances s’organisent avec le professeur après l’achat.";
     case "HOURLY_PURCHASE":
-      return "Paiement chaque semaine selon le nombre d'heures choisies. Les séances s’organisent avec le professeur après l’achat.";
+      return "Prélèvement chaque mois selon le nombre d’heures choisies au créneau. Les séances s’organisent avec le professeur après l’achat.";
     default:
       return "";
   }
@@ -222,7 +222,7 @@ export function schedulingModeBoutiqueCalendarHint(
     case "FLEXIBLE_FORMATION":
       return "Planning avec le professeur";
     case "HOURLY_PURCHASE":
-      return "Séance hebdomadaire fixe · paiement chaque semaine";
+      return "Séance hebdomadaire au créneau · prélèvement mensuel";
     default:
       return "";
   }
@@ -262,7 +262,7 @@ export function schedulingModeAdminCreneauxIntro(
       );
     case "HOURLY_PURCHASE":
       return (
-        "Les élèves paient chaque semaine selon la durée choisie : les fiches peuvent illustrer " +
+        "Les élèves sont prélevés chaque mois selon la durée et le volume choisis : les fiches peuvent illustrer " +
         "des créneaux types ou des liens WhatsApp ; vous pouvez aussi laisser vide."
       );
     default:

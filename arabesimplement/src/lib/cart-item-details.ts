@@ -7,7 +7,7 @@ import {
 function hourlyLine(minutes: number): string | null {
   const row = HOURLY_SLOTS_PRICING.find((r) => r.minutes === minutes);
   if (!row) return null;
-  return `Durée : ${row.durationLabel} — ${row.priceEuros} € / semaine`;
+  return `Durée : ${row.durationLabel} — ${row.priceEuros} € / mois`;
 }
 
 /** True if ce extrait du choiceSummary duplique déjà le bloc bundle / durée. */
@@ -39,7 +39,7 @@ export function getCartItemDetailLines(item: CartItem): string[] {
   switch (item.schedulingMode) {
     case "HOURLY_PURCHASE":
       lines.push(
-        "Cours à la carte — même créneau type chaque semaine, montant total prélevé chaque semaine"
+        "Cours à la carte — créneau récurrent chaque semaine, montant total prélevé chaque mois"
       );
       if (item.hourlyBundle && Object.keys(item.hourlyBundle).length > 0) {
         const t = formatHourlyBundleForDisplay(item.hourlyBundle);

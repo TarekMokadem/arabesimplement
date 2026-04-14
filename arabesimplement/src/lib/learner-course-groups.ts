@@ -49,7 +49,7 @@ export type LearnerCourseDisplayGroup = {
   enrollmentIds: string[];
   creneauId: string | null;
   creneau: LearnerCreneauSummary;
-  /** Synthèse abonnement hebdo (cours particulier / din). */
+  /** Synthèse volume au créneau (cours particulier / din). */
   hourlyBundleSummary: string | null;
   weeklyLines: WeeklySubLine[];
   assignedProfessorName: string | null;

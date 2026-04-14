@@ -63,7 +63,7 @@ enum PaypalMeRecipient {
   JANA_OKF
 }
 
-/** Abonnement hebdo cours à la carte (Stripe). */
+/** Statut d’une ligne d’abonnement cours à la carte (Stripe, facturation mensuelle). */
 enum WeeklySubscriptionStatus {
   ACTIVE
   PAUSED
@@ -171,7 +171,7 @@ model Order {
   stripePaymentIntentId String?     @unique @map("stripe_payment_intent_id")
   /** Client Stripe créé pour le tunnel (invité inclus, recopié sur User après paiement). */
   stripeCustomerId      String?     @map("stripe_customer_id")
-  /** Abonnement hebdo (cours à la carte — plusieurs lignes = un seul Subscription Stripe). */
+  /** Abonnement cours à la carte — plusieurs lignes OrderItem = une seule Subscription Stripe (mensuelle). */
   stripeSubscriptionId  String?     @unique @map("stripe_subscription_id")
   reglementSigneAt      DateTime?   @map("reglement_signe_at")
   reglementIp           String?     @map("reglement_ip")
@@ -193,7 +193,7 @@ model OrderItem {
   formationId   String  @map("formation_id")
   creneauId     String? @map("creneau_id")
   hourlyMinutes Int?    @map("hourly_minutes")
-  /** Pour cours à la carte : nombre de « unités » de cette durée facturées chaque semaine (ex. 2 × 1 h). */
+  /** Pour cours à la carte : nombre d’unités de cette durée au créneau (ex. 2 × 1 h / semaine) ; le prélèvement Stripe est mensuel. */
   hourlyQuantity Int    @default(1) @map("hourly_quantity")
   /** Identifiant stable de ligne panier (abonnement Stripe / rattachement des metadata). */
   cartLineId    String? @map("cart_line_id")
@@ -227,7 +227,7 @@ model Enrollment {
   @@map("enrollments")
 }
 
-/** Une ligne d’abonnement hebdomadaire (cours à la carte) liée à Stripe SubscriptionItem. */
+/** Une ligne d’abonnement cours à la carte (prélèvement mensuel) liée à Stripe SubscriptionItem. */
 model CourseWeeklySubscription {
   id                       String                   @id @default(uuid())
   userId                   String                   @map("user_id")
@@ -235,7 +235,7 @@ model CourseWeeklySubscription {
   formationId              String                   @map("formation_id")
   creneauId                String?                  @map("creneau_id")
   hourlyMinutes            Int                      @map("hourly_minutes")
-  /** Aligné sur la quantity du SubscriptionItem Stripe (unités / semaine pour cette durée). */
+  /** Aligné sur la quantity du SubscriptionItem Stripe (volume au créneau pour cette durée). */
   bundleQuantity           Int                      @default(1) @map("bundle_quantity")
   stripeSubscriptionId     String                   @map("stripe_subscription_id")
   stripeSubscriptionItemId String?                  @unique @map("stripe_subscription_item_id")

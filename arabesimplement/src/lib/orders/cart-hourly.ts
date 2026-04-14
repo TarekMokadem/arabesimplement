@@ -14,4 +14,4 @@ export function classifyCheckoutCart(items: CartItem[]): CheckoutCartKind {
 }
 
 export const MIXED_CART_CHECKOUT_ERROR =
-  "Mélange interdit : les cours à la carte (abonnement hebdo) doivent être commandés séparément des autres formations. Videz le panier et procédez en deux commandes.";
+  "Mélange interdit : les cours à la carte (abonnement mensuel) doivent être commandés séparément des autres formations. Videz le panier et procédez en deux commandes.";

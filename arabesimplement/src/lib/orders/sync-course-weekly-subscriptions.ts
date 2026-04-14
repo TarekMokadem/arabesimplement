@@ -138,7 +138,7 @@ async function upsertMockWeeklyRows(order: OrderWithItems): Promise<void> {
 }
 
 /**
- * Renouvellement hebdomadaire : met à jour les lignes d’abonnement et prolonge l’accès (enrollment).
+ * À chaque renouvellement Stripe (période mensuelle) : met à jour les lignes d’abonnement et prolonge l’accès (enrollment).
  */
 export async function syncWeeklyRowsFromStripeSubscription(
   sub: Stripe.Subscription

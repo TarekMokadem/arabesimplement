@@ -19,7 +19,7 @@ export async function getLearnerPurchaseOrders(userId: string) {
   });
 }
 
-/** Abonnements hebdomadaires résiliés (retirés du tableau de bord « en cours »). */
+/** Abonnements cours à la carte résiliés (retirés du tableau de bord « en cours »). */
 export async function getLearnerCanceledWeeklySubscriptions(userId: string) {
   return prisma.courseWeeklySubscription.findMany({
     where: { userId, status: "CANCELED" },

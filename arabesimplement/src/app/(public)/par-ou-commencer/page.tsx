@@ -69,7 +69,7 @@ const faqs = [
   {
     question: "Comment savoir comment les cours seront organisés après l’achat ?",
     answer:
-      "Sur chaque fiche formation, le mode d’organisation est expliqué : créneaux proposés, forfait avec organisation libre avec le professeur, ou cours à la carte avec abonnement hebdomadaire possible. Après paiement, votre tableau de bord centralise les prochaines étapes (créneau, contact WhatsApp, etc.).",
+      "Sur chaque fiche formation, le mode d’organisation est expliqué : créneaux proposés, forfait avec organisation libre avec le professeur, ou cours à la carte avec prélèvement mensuel. Après paiement, votre tableau de bord centralise les prochaines étapes (créneau, contact WhatsApp, etc.).",
   },
   {
     question: "Je débute totalement en arabe, par où passer ?",

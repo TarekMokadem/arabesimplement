@@ -20,7 +20,7 @@ export default function CoursDeDinPage() {
             formation de la boutique.
           </p>
           <p>
-            Pour un enseignement à la carte avec abonnement hebdomadaire, les
+            Pour un enseignement à la carte avec abonnement mensuel, les
             formations concernées sont indiquées sur leur page avec le mode « cours
             à la carte ».
           </p>

@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Historique d'achats",
   description:
-    "Vos commandes et abonnements hebdomadaires terminés chez ArabeSimplement.",
+    "Vos commandes et anciens abonnements cours à la carte (prélèvement mensuel) chez ArabeSimplement.",
 };
 
 function orderStatutLabel(
@@ -116,7 +116,7 @@ export default async function HistoriqueAchatsPage() {
             id="titre-abos-termines"
             className="font-serif text-lg font-semibold text-primary mb-4"
           >
-            Abonnements hebdomadaires terminés
+            Abonnements cours à la carte terminés
           </h2>
           {canceledGroups.length === 0 ? (
             <Card className="bg-white border-dashed border-2 border-gray-200">
@@ -225,8 +225,8 @@ export default async function HistoriqueAchatsPage() {
                           {item.hourlyMinutes != null ? (
                             <span className="text-gray-600 block text-xs mt-0.5">
                               {item.hourlyQuantity > 1
-                                ? `${item.hourlyQuantity} × ${item.hourlyMinutes} min / semaine`
-                                : `${item.hourlyMinutes} min / semaine`}
+                                ? `${item.hourlyQuantity} × ${item.hourlyMinutes} min / semaine (créneau)`
+                                : `${item.hourlyMinutes} min / semaine (créneau)`}
                             </span>
                           ) : null}
                           <span className="text-gray-500 block text-xs">

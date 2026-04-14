@@ -86,21 +86,21 @@ export function PurchaseFormationPanel({
     [hourlyQty]
   );
 
-  const weeklyHourlyEuros = useMemo(
+  const monthlyHourlyEuros = useMemo(
     () => sumHourlyBundleEuros(hourlyBundleForTotal),
     [hourlyBundleForTotal]
   );
 
   const unitPrice = useMemo(() => {
     if (mode === "HOURLY_PURCHASE") {
-      return weeklyHourlyEuros;
+      return monthlyHourlyEuros;
     }
     const p = Number(formation.prix);
     const promo =
       formation.prixPromo != null ? Number(formation.prixPromo) : undefined;
     if (promo != null && promo > 0 && (!p || promo <= p)) return promo;
     return p;
-  }, [mode, weeklyHourlyEuros, formation.prix, formation.prixPromo]);
+  }, [mode, monthlyHourlyEuros, formation.prix, formation.prixPromo]);
 
   const catalogOk =
     mode === "HOURLY_PURCHASE" ||
@@ -123,7 +123,7 @@ export function PurchaseFormationPanel({
   const canAdd =
     !disabledReason &&
     unitPrice > 0 &&
-    (needsHourly ? weeklyHourlyEuros > 0 : true) &&
+    (needsHourly ? monthlyHourlyEuros > 0 : true) &&
     (needsCreneau ? !!creneauId : true);
 
   const setTier = (minutes: 60 | 40 | 30, delta: number) => {
@@ -135,7 +135,7 @@ export function PurchaseFormationPanel({
 
   const buildChoiceSummary = (): string => {
     const parts: string[] = [];
-    if (needsHourly && weeklyHourlyEuros > 0) {
+    if (needsHourly && monthlyHourlyEuros > 0) {
       const line = formatHourlyBundleForDisplay(hourlyBundleForTotal);
       if (line) parts.push(line);
     }
@@ -202,11 +202,11 @@ export function PurchaseFormationPanel({
         {needsHourly && (
           <div className="space-y-3">
             <p className="font-medium text-primary text-sm">
-              Durées par semaine (ex. 2×1 h + 1×30 min)
+              Volume au créneau (ex. 2×1 h + 1×30 min)
             </p>
             <p className="text-xs text-gray-600">
-              Chaque durée = une ligne d’abonnement ; le total affiché est prélevé
-              chaque semaine.
+              Chaque durée = une ligne d’abonnement ; le total affiché correspond au
+              prélèvement mensuel.
             </p>
             <div className="grid gap-2">
               {HOURLY_SLOTS_PRICING.map((row) => (
@@ -220,7 +220,7 @@ export function PurchaseFormationPanel({
                     </span>
                     <span className="text-gray-600">
                       {" "}
-                      — {row.priceEuros} € / semaine · unité
+                      — {row.priceEuros} € / mois · unité
                     </span>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
@@ -310,14 +310,14 @@ export function PurchaseFormationPanel({
           </span>
         </div>
 
-        {needsHourly && weeklyHourlyEuros > 0 ? (
+        {needsHourly && monthlyHourlyEuros > 0 ? (
           <p className="text-xs text-gray-500 -mt-2">
             <span className="font-medium text-primary">
               {formatHourlyBundleForDisplay(hourlyBundleForTotal, {
                 omitPrice: true,
               })}
             </span>{" "}
-            — prélevé chaque semaine.
+            — prélevé chaque mois.
           </p>
         ) : null}
 

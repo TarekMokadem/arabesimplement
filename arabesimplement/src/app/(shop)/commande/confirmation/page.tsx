@@ -11,7 +11,7 @@ import { getSession } from "@/app/(auth)/actions";
 import { getOrderConfirmationView } from "@/lib/data/order-confirmation.service";
 import { Badge } from "@/components/ui/badge";
 
-const SUBS_ANCHOR = "/tableau-de-bord#abonnements-hebdo";
+const SUBS_ANCHOR = "/tableau-de-bord#abonnements-cartes";
 
 type PageProps = {
   searchParams: Promise<{ orderId?: string; email?: string }>;
@@ -110,8 +110,9 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
                       Abonnements cours à la carte
                     </p>
                     <p className="text-sm text-gray-500 mb-2">
-                      Mettez en pause, reprenez ou arrêtez vos prélèvements
-                      hebdomadaires depuis votre tableau de bord.
+                      Suivez vos abonnements cours à la carte (prélèvement
+                      mensuel) depuis votre tableau de bord ; toute modification
+                      se fait avec l’équipe.
                     </p>
                     <Link
                       href={subscriptionsManageHref}

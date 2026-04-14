@@ -7,7 +7,6 @@ import { getGroupedLearnerCoursesForAdmin } from "@/lib/data/learner-courses.ser
 import { getWeeklySubscriptionsForLearner } from "@/lib/data/weekly-subscriptions.service";
 import { WeeklySubscriptionsSection } from "@/components/auth/WeeklySubscriptionsSection";
 import { LearnerCourseAssignmentForm } from "../LearnerCourseAssignmentForm";
-import { AdminCourseWeeklyLineForm } from "../AdminCourseWeeklyLineForm";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import type { LearnerCourseDisplayGroup } from "@/lib/learner-course-groups";
@@ -25,7 +24,7 @@ function detailLinesForGroup(group: LearnerCourseDisplayGroup): string[] {
       "Cours à la carte (particulier / din) : toutes les durées d’abonnement sont regroupées sur cette fiche."
     );
     if (group.hourlyBundleSummary) {
-      lines.push(`Volume hebdomadaire : ${group.hourlyBundleSummary}`);
+      lines.push(`Volume au créneau (récap) : ${group.hourlyBundleSummary}`);
     }
     if (group.weeklyLines.length > 0) {
       for (const w of group.weeklyLines) {
@@ -168,13 +167,7 @@ export default async function AdminLearnerDetailPage({
               learnerSexe={learnerSexe}
               readOnly={false}
               adminMode
-              adminLineSlot={(line) => (
-                <AdminCourseWeeklyLineForm
-                  courseWeeklySubscriptionId={line.id}
-                  initialBundleQuantity={line.bundleQuantity}
-                  initialHourlyMinutes={line.hourlyMinutes}
-                />
-              )}
+              showAdminLineEditors
             />
           </section>
         ) : null}

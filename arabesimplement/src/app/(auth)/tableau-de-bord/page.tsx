@@ -103,11 +103,11 @@ export default async function TableauDeBordPage() {
         </div>
 
         <section
-          id="abonnements-hebdo"
+          id="abonnements-cartes"
           className="mb-8 scroll-mt-24"
-          aria-labelledby="titre-abonnements-hebdo"
+          aria-labelledby="titre-abonnements-cartes"
         >
-          <h2 id="titre-abonnements-hebdo" className="sr-only">
+          <h2 id="titre-abonnements-cartes" className="sr-only">
             Abonnements cours à la carte
           </h2>
           {weeklyPanel.length > 0 ? (
@@ -124,8 +124,9 @@ export default async function TableauDeBordPage() {
                 </CardTitle>
                 <CardDescription>
                   Lorsque vous souscrivez un cours à la carte avec prélèvement
-                  chaque semaine, vous le retrouvez ici. Vous pourrez mettre en
-                  pause, reprendre ou arrêter sans contacter le support.
+                  mensuel, vous le retrouvez ici. La gestion (pause, arrêt,
+                  volume) est assurée par l’équipe : contactez-nous pour toute
+                  modification.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -182,7 +183,8 @@ export default async function TableauDeBordPage() {
                         {group.kind === "HOURLY" &&
                           group.hourlyBundleSummary && (
                             <p className="mt-1 text-sm text-gray-600">
-                              Abonnement : {group.hourlyBundleSummary} / semaine
+                              Abonnement : {group.hourlyBundleSummary} — prélèvement
+                              mensuel
                             </p>
                           )}
                         {group.creneau ? (

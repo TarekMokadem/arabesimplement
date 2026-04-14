@@ -80,7 +80,7 @@ export function OrderConfirmationRecap({
                     ? `${line.hourlyQuantity} × ${durationLabel(line.hourlyMinutes)}`
                     : durationLabel(line.hourlyMinutes)}
                   {" · "}
-                  {formatPrice(line.unitPriceEuros)} / unité et / semaine
+                  {formatPrice(line.unitPriceEuros)} / unité et / mois
                 </p>
               ) : (
                 <p className="text-gray-600 mt-1">
@@ -100,7 +100,7 @@ export function OrderConfirmationRecap({
             <p className="font-semibold text-primary sm:text-right shrink-0">
               {formatPrice(line.lineTotalEuros)}
               {line.schedulingMode === "HOURLY_PURCHASE" ? (
-                <span className="font-normal text-gray-500"> / sem.</span>
+                <span className="font-normal text-gray-500"> / mois</span>
               ) : null}
             </p>
           </li>
@@ -117,12 +117,13 @@ export function OrderConfirmationRecap({
       {view.hasWeeklySubscription ? (
         <div className="mt-6 p-4 rounded-lg bg-secondary/10 border border-secondary/20">
           <p className="font-medium text-primary text-sm mb-1">
-            Abonnement hebdomadaire
+            Abonnement mensuel (cours à la carte)
           </p>
           <p className="text-sm text-gray-700 mb-3">
-            Le montant ci-dessus correspond à chaque semaine d’engagement pour
-            les lignes « cours à la carte ». Vous pouvez mettre en pause ou
-            arrêter cet abonnement quand vous le souhaitez.
+            Le montant ci-dessus correspond à votre engagement mensuel pour les
+            lignes « cours à la carte ». Pour toute pause ou résiliation,
+            l’équipe vous accompagne — le suivi apparaît aussi sur votre tableau
+            de bord.
           </p>
           <Link
             href={subscriptionsManageHref}

@@ -35,7 +35,7 @@ export function PaypalMeRecipientSwitch({
   return (
     <div className="flex flex-col gap-3">
       <p className="text-sm text-muted-foreground">
-        Sur la page de paiement (hors abonnement hebdomadaire), le bouton PayPal.me
+        Sur la page de paiement (hors abonnement cours à la carte mensuel), le bouton PayPal.me
         envoie les clients vers le profil sélectionné ci-dessous.
       </p>
       <div

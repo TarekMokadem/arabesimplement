@@ -133,12 +133,12 @@ export async function normalizeCartItemsForCheckout(
         return {
           success: false,
           error:
-            "Indiquez au moins une durée (nombre de séances par semaine) pour chaque cours à la carte.",
+            "Indiquez au moins une durée (volume par unité) pour chaque cours à la carte.",
         };
       }
-      const weeklyTotal = sumHourlyBundleEuros(bundle);
-      if (weeklyTotal <= 0) {
-        return { success: false, error: "Montant hebdomadaire invalide." };
+      const monthlySubscriptionEuros = sumHourlyBundleEuros(bundle);
+      if (monthlySubscriptionEuros <= 0) {
+        return { success: false, error: "Montant d’abonnement mensuel invalide." };
       }
       const creneau = effectiveCreneauId
         ? f.creneaux.find((x) => x.id === effectiveCreneauId)
@@ -155,14 +155,14 @@ export async function normalizeCartItemsForCheckout(
         slug: f.slug,
         imageUrl: f.imageUrl ?? undefined,
         schedulingMode: mode,
-        prix: weeklyTotal,
+        prix: monthlySubscriptionEuros,
         prixPromo: undefined,
         creneauId: effectiveCreneauId,
         hourlyBundle: bundle,
         choiceSummary: summaryParts.join(" · "),
       };
       out.push(normalized);
-      totalEuros += weeklyTotal;
+      totalEuros += monthlySubscriptionEuros;
       continue;
     }
 

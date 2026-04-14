@@ -1,6 +1,5 @@
 "use client";
 
-import type React from "react";
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import type { StudentSex } from "@prisma/client";
@@ -36,6 +35,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { AdminCourseWeeklyLineForm } from "@/app/admin/utilisateurs/AdminCourseWeeklyLineForm";
 
 export type WeeklyPanelRow = {
   id: string;
@@ -132,7 +132,7 @@ export function WeeklySubscriptionsSection({
   learnerSexe,
   readOnly = false,
   adminMode = false,
-  adminLineSlot,
+  showAdminLineEditors = false,
 }: {
   rows: WeeklyPanelRow[];
   learnerSexe: StudentSex | null;
@@ -140,8 +140,8 @@ export function WeeklySubscriptionsSection({
   readOnly?: boolean;
   /** Admin : affiche les actions Stripe (pause, etc.). */
   adminMode?: boolean;
-  /** Admin : formulaire par ligne (quantité / durée). */
-  adminLineSlot?: (line: WeeklyPanelRow) => React.ReactNode;
+  /** Admin uniquement : formulaires quantité / durée par ligne (composant client, pas de fonction passée depuis le serveur). */
+  showAdminLineEditors?: boolean;
 }) {
   const [pending, startTransition] = useTransition();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -224,7 +224,7 @@ export function WeeklySubscriptionsSection({
         return {
           title: "Arrêter l’abonnement tout de suite ?",
           body:
-            "Résiliation immédiate : l’abonnement s’arrête sans attendre la fin de la semaine en cours. Le dernier prélèvement déjà encaissé n’est pas remboursé. À utiliser seulement si vous êtes sûr·e — en cas de doute, préférez « Arrêter en fin de période ».",
+            "Résiliation immédiate : l’abonnement s’arrête sans attendre la fin de la période de facturation en cours. Le dernier prélèvement déjà encaissé n’est pas remboursé. À utiliser seulement si vous êtes sûr·e — en cas de doute, préférez « Arrêter en fin de période ».",
         };
       default:
         return { title: "", body: "" };
@@ -297,10 +297,14 @@ export function WeeklySubscriptionsSection({
                 {detail !== `${totalMin} min` ? (
                   <p className="text-gray-600 text-xs">{detail}</p>
                 ) : null}
-                {adminLineSlot
+                {showAdminLineEditors
                   ? lines.map((line) => (
                       <div key={line.id} className="space-y-2">
-                        {adminLineSlot(line)}
+                        <AdminCourseWeeklyLineForm
+                          courseWeeklySubscriptionId={line.id}
+                          initialBundleQuantity={line.bundleQuantity}
+                          initialHourlyMinutes={line.hourlyMinutes}
+                        />
                       </div>
                     ))
                   : null}

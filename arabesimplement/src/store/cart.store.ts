@@ -22,8 +22,8 @@ export interface CartItem {
   /** Affichage : ex. « Mercredi 10h — Groupe A » */
   choiceSummary?: string;
   /**
-   * Cours à la carte : quantités par durée (60 / 40 / 30 min) pour la même semaine.
-   * Ex. { 60: 2, 30: 1 } → 2×10 € + 1×5 € / semaine.
+   * Cours à la carte : quantités par durée (60 / 40 / 30 min) au créneau.
+   * Ex. { 60: 2, 30: 1 } → 2×10 € + 1×5 € / mois (prélèvement abonnement).
    */
   hourlyBundle?: HourlyDurationBundle;
   /** @deprecated Préférer `hourlyBundle` ; conservé pour paniers persistés anciens. */
@@ -122,8 +122,8 @@ export const useCartStore = create<CartStore>()(
         const lineId = item.lineId || newLineId();
 
         if (item.schedulingMode === "HOURLY_PURCHASE" && item.hourlyBundle) {
-          const weekly = sumHourlyBundleEuros(item.hourlyBundle);
-          if (weekly <= 0) return;
+          const monthlySubscriptionEuros = sumHourlyBundleEuros(item.hourlyBundle);
+          if (monthlySubscriptionEuros <= 0) return;
 
           set((state) => {
             const idx = state.items.findIndex(
@@ -153,7 +153,10 @@ export const useCartStore = create<CartStore>()(
               return { items: next };
             }
             return {
-              items: [...state.items, { ...item, lineId, prix: weekly }],
+              items: [
+                ...state.items,
+                { ...item, lineId, prix: monthlySubscriptionEuros },
+              ],
             };
           });
           return;
@@ -208,13 +211,13 @@ export function buildCartItemFromSelection(input: {
   hourlyMinutes?: number;
   hourlyBundle?: HourlyDurationBundle;
 }): CartItem {
-  const weeklyFromBundle = input.hourlyBundle
+  const monthlyFromBundle = input.hourlyBundle
     ? sumHourlyBundleEuros(input.hourlyBundle)
     : 0;
   const prix =
     input.schedulingMode === "HOURLY_PURCHASE"
-      ? weeklyFromBundle > 0
-        ? weeklyFromBundle
+      ? monthlyFromBundle > 0
+        ? monthlyFromBundle
         : input.unitEuros
       : input.unitEuros;
 

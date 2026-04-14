@@ -20,7 +20,7 @@ export type OrderConfirmationView = {
   createdAt: string;
   billing: { prenom: string; nom: string; email: string };
   lines: OrderConfirmationLine[];
-  /** Abonnement Stripe cours à la carte rattaché à cette commande. */
+  /** Abonnement Stripe cours à la carte (mensuel) rattaché à cette commande. */
   hasWeeklySubscription: boolean;
 };
 

@@ -140,13 +140,13 @@ export default function PaiementPage() {
         {orderInfo?.checkoutKind === "hourly_only" ? (
           <div className="mb-6 p-4 rounded-lg border border-secondary/40 bg-secondary/5 text-sm text-gray-700">
             <p className="font-medium text-primary mb-1">
-              Abonnement hebdomadaire (cours à la carte)
+              Abonnement mensuel (cours à la carte)
             </p>
             <p>
-              Le montant affiché correspond à votre première semaine. Le même
-              prélèvement est renouvelé automatiquement chaque semaine pour
-              chaque ligne du panier, jusqu’à ce que vous mettiez en pause ou
-              arrêtiez depuis votre tableau de bord après la création du compte.
+              Le montant affiché correspond à votre première période mensuelle.
+              Le même prélèvement est renouvelé automatiquement chaque mois pour
+              chaque ligne du panier, jusqu’à résiliation ou ajustement avec
+              l’équipe après la création du compte.
             </p>
           </div>
         ) : null}
