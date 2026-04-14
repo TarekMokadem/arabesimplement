@@ -137,17 +137,18 @@ export default async function FormationPage({ params }: PageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
           <div className="relative">
-            <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl">
+            <div className="relative aspect-square w-full max-w-xl mx-auto lg:mx-0 rounded-2xl overflow-hidden shadow-xl bg-neutral-100">
               {formation.imageUrl ? (
                 <Image
                   src={formation.imageUrl}
                   alt={formation.titre}
                   fill
-                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-contain object-center"
                   priority
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center p-10">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-light flex items-center justify-center p-10">
                   <BrandLogoMark
                     size={240}
                     className="shadow-lg"
