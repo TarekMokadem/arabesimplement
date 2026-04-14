@@ -16,7 +16,10 @@ import { formatPrice } from "@/lib/utils/format";
 import { toast } from "sonner";
 import type { StoredCheckoutOrder } from "@/types/checkout.types";
 import { migrateRawCartItem, type CartItem } from "@/store/cart.store";
-import { finalizeMockPayment } from "@/app/(shop)/actions/order.actions";
+import {
+  finalizeMockPayment,
+  syncPaidOrderFromStripe,
+} from "@/app/(shop)/actions/order.actions";
 
 function parseOrderInfo(raw: string | null): StoredCheckoutOrder | null {
   if (!raw) return null;
@@ -102,7 +105,10 @@ export default function PaiementPage() {
    * redirigerait vers /panier (course avec router.push). Le nettoyage est fait
    * sur /commande/confirmation via ConfirmationCleanup.
    */
-  const handleStripePaid = () => {
+  const handleStripePaid = async () => {
+    if (orderInfo?.orderId) {
+      await syncPaidOrderFromStripe(orderInfo.orderId);
+    }
     toast.success("Paiement réussi !");
     router.push(
       confirmationQuery
@@ -133,7 +139,7 @@ export default function PaiementPage() {
         </h1>
         <p className="text-sm text-gray-600 mb-8">
           {orderInfo?.checkoutKind === "hourly_only"
-            ? "Abonnement : règlement via Stripe uniquement (carte ou PayPal intégré au formulaire Stripe si activé)."
+            ? "Abonnement : prélèvement automatique via Stripe (carte). Un lien PayPal.me (compte paramétré par l’équipe) est aussi proposé pour un règlement manuel si besoin — indiquez la référence commande."
             : "Règlement par carte ou PayPal via Stripe, ou virement direct PayPal.me selon votre choix ci-dessous."}
         </p>
 
@@ -215,9 +221,9 @@ export default function PaiementPage() {
                   </div>
                 )}
 
-                {orderInfo &&
-                orderInfo.checkoutKind !== "hourly_only" &&
-                orderInfo.orderId ? (
+                {orderInfo?.orderId &&
+                orderInfo.paymentMode === "stripe" &&
+                !orderInfo.orderId.startsWith("ORD-MOCK") ? (
                   <>
                     <div className="relative py-2">
                       <div

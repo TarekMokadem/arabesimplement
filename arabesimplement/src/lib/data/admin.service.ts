@@ -1,4 +1,8 @@
-import type { FormationStatus, OrderStatus } from "@prisma/client";
+import type {
+  FormationStatus,
+  OrderStatus,
+  WeeklySubscriptionStatus,
+} from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { parseBillingSnapshot } from "@/lib/orders/billing-snapshot";
@@ -65,7 +69,46 @@ export type AdminPaymentRow = {
   date: Date;
   /** Si renseigné, la commande est un abonnement Stripe — ne pas utiliser le marquage manuel. */
   stripeSubscriptionId: string | null;
+  /** Stripe (PI / abonnement réel) vs validation manuelle (ex. PayPal.me). */
+  paymentChannelLabel: string;
+  /** Résumé des lignes d’abonnement cours à la carte liées à la commande. */
+  weeklySubscriptionHint: string | null;
 };
+
+function paymentChannelLabelForOrder(o: {
+  statut: OrderStatus;
+  stripePaymentIntentId: string | null;
+  stripeSubscriptionId: string | null;
+}): string {
+  const mockSub = o.stripeSubscriptionId?.startsWith("mock_sub_") ?? false;
+  const hasStripe =
+    (!!o.stripePaymentIntentId && o.stripePaymentIntentId.length > 0) ||
+    (!!o.stripeSubscriptionId &&
+      o.stripeSubscriptionId.length > 0 &&
+      !mockSub);
+  if (hasStripe) return "Stripe";
+  if (o.statut === "PAID") return "Manuel (ex. PayPal.me)";
+  if (o.statut === "PENDING") return "En attente";
+  return "—";
+}
+
+function weeklySubscriptionHintFromRows(
+  statuses: WeeklySubscriptionStatus[]
+): string | null {
+  if (statuses.length === 0) return null;
+  const count = (s: WeeklySubscriptionStatus) =>
+    statuses.filter((x) => x === s).length;
+  const parts: string[] = [];
+  const nActive = count("ACTIVE");
+  const nPaused = count("PAUSED");
+  const nPastDue = count("PAST_DUE");
+  const nCanceled = count("CANCELED");
+  if (nActive) parts.push(`${nActive} actif(s)`);
+  if (nPaused) parts.push(`${nPaused} en pause`);
+  if (nPastDue) parts.push(`${nPastDue} impayé`);
+  if (nCanceled) parts.push(`${nCanceled} résilié(s)`);
+  return `Abonnement hebdo : ${parts.join(", ")}`;
+}
 
 function startOfMonth(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), 1);
@@ -335,6 +378,7 @@ export async function getAdminOrdersList(): Promise<AdminPaymentRow[]> {
       orderItems: {
         include: { formation: { select: { titre: true } } },
       },
+      courseWeeklySubscriptions: { select: { status: true } },
     },
   });
   return orders.map((o) => ({
@@ -345,5 +389,13 @@ export async function getAdminOrdersList(): Promise<AdminPaymentRow[]> {
     statut: o.statut,
     date: o.createdAt,
     stripeSubscriptionId: o.stripeSubscriptionId,
+    paymentChannelLabel: paymentChannelLabelForOrder({
+      statut: o.statut,
+      stripePaymentIntentId: o.stripePaymentIntentId,
+      stripeSubscriptionId: o.stripeSubscriptionId,
+    }),
+    weeklySubscriptionHint: weeklySubscriptionHintFromRows(
+      o.courseWeeklySubscriptions.map((s) => s.status)
+    ),
   }));
 }

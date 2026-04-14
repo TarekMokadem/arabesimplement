@@ -305,6 +305,95 @@ export async function finalizeMockPayment(
   }
 }
 
+export type SyncPaidOrderFromStripeResult =
+  | { success: true; statut: "PAID" | "PENDING" | "FINAL" }
+  | { success: false; error: string };
+
+/**
+ * Après `confirmPayment` côté client, le webhook Stripe peut arriver avec un léger retard :
+ * cette action interroge l’API Stripe et aligne la commande sur PAID si le paiement / l’abonnement est déjà effectif.
+ */
+export async function syncPaidOrderFromStripe(
+  orderId: string
+): Promise<SyncPaidOrderFromStripeResult> {
+  const id = orderId?.trim();
+  if (!id) {
+    return { success: false, error: "Commande invalide." };
+  }
+  if (!isDatabaseConfigured() || !isStripeConfigured()) {
+    return { success: false, error: "Stripe non configuré." };
+  }
+
+  const order = await prisma.order.findUnique({
+    where: { id },
+    select: {
+      statut: true,
+      stripeSubscriptionId: true,
+      stripePaymentIntentId: true,
+    },
+  });
+
+  if (!order) {
+    return { success: false, error: "Commande introuvable." };
+  }
+  if (order.statut === "PAID") {
+    return { success: true, statut: "PAID" };
+  }
+  if (order.statut !== "PENDING") {
+    return { success: true, statut: "FINAL" };
+  }
+
+  const stripe = getServerStripe();
+
+  try {
+    if (
+      order.stripeSubscriptionId &&
+      !order.stripeSubscriptionId.startsWith("mock_sub_")
+    ) {
+      const sub = await stripe.subscriptions.retrieve(
+        order.stripeSubscriptionId,
+        { expand: ["latest_invoice"] }
+      );
+
+      const subscriptionPaid =
+        sub.status === "active" ||
+        sub.status === "trialing" ||
+        (typeof sub.latest_invoice === "object" &&
+          sub.latest_invoice !== null &&
+          (sub.latest_invoice as Stripe.Invoice).status === "paid");
+
+      if (subscriptionPaid) {
+        await prisma.order.update({
+          where: { id },
+          data: { statut: "PAID" },
+        });
+        await ensureEnrollmentsForPaidOrder(id);
+        return { success: true, statut: "PAID" };
+      }
+      return { success: true, statut: "PENDING" };
+    }
+
+    if (order.stripePaymentIntentId) {
+      const pi = await stripe.paymentIntents.retrieve(
+        order.stripePaymentIntentId
+      );
+      if (pi.status === "succeeded") {
+        await prisma.order.update({
+          where: { id },
+          data: { statut: "PAID" },
+        });
+        await ensureEnrollmentsForPaidOrder(id);
+        return { success: true, statut: "PAID" };
+      }
+    }
+
+    return { success: true, statut: "PENDING" };
+  } catch (e) {
+    console.error("[syncPaidOrderFromStripe]", e);
+    return { success: false, error: "Synchronisation Stripe impossible." };
+  }
+}
+
 export type CheckoutPrefill = {
   isLoggedIn: boolean;
   prenom: string;

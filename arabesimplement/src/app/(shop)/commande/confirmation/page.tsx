@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
 import { ConfirmationCleanup } from "@/components/shop/ConfirmationCleanup";
 import { OrderConfirmationRecap } from "@/components/shop/OrderConfirmationRecap";
+import { ConfirmationPaymentSync } from "@/components/shop/ConfirmationPaymentSync";
 import { getSession } from "@/app/(auth)/actions";
 import { getOrderConfirmationView } from "@/lib/data/order-confirmation.service";
 import { Badge } from "@/components/ui/badge";
@@ -74,10 +75,16 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
             ) : null}
 
             {view ? (
-              <OrderConfirmationRecap
-                view={view}
-                subscriptionsManageHref={subscriptionsManageHref}
-              />
+              <>
+                <ConfirmationPaymentSync
+                  orderId={view.orderId}
+                  initialPending={view.statut === "PENDING"}
+                />
+                <OrderConfirmationRecap
+                  view={view}
+                  subscriptionsManageHref={subscriptionsManageHref}
+                />
+              </>
             ) : null}
 
             <div className="bg-surface rounded-xl p-6 text-left mb-8">

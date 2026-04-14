@@ -24,7 +24,7 @@ function getStripe(publishableKey: string) {
 
 type PaymentFormProps = {
   amountLabel: string;
-  onPaid: () => void;
+  onPaid: () => void | Promise<void>;
   confirmationSearchParams: string;
 };
 
@@ -61,7 +61,7 @@ function PaymentForm({
         return;
       }
 
-      onPaid();
+      await onPaid();
     } finally {
       setLoading(false);
     }
@@ -112,7 +112,7 @@ export type StripePaymentSectionProps = {
   publishableKey: string;
   clientSecret: string;
   amountLabel: string;
-  onPaid: () => void;
+  onPaid: () => void | Promise<void>;
   /** Query string (sans « ? ») : orderId et email pour afficher le récap après retour Stripe. */
   confirmationSearchParams: string;
 };

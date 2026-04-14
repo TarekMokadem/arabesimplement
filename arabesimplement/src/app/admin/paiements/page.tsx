@@ -90,16 +90,23 @@ export default async function PaiementsPage() {
                 <th className="text-left p-4 font-medium text-gray-600">
                   Montant
                 </th>
+                <th className="text-left p-4 font-medium text-gray-600">Canal</th>
+                <th className="text-left p-4 font-medium text-gray-600 min-w-[140px]">
+                  Abonnement
+                </th>
                 <th className="text-left p-4 font-medium text-gray-600">
                   Statut
                 </th>
                 <th className="text-left p-4 font-medium text-gray-600">Date</th>
+                <th className="text-left p-4 font-medium text-gray-600">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
               {paiements.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-500 text-sm">
+                  <td colSpan={9} className="p-8 text-center text-gray-500 text-sm">
                     {db ? "Aucune commande." : "Données non disponibles."}
                   </td>
                 </tr>
@@ -112,6 +119,14 @@ export default async function PaiementsPage() {
                     <td className="p-4 text-primary">{p.userLabel}</td>
                     <td className="p-4 text-gray-600">{p.formationLabel}</td>
                     <td className="p-4 font-bold">{p.montant.toFixed(2)} €</td>
+                    <td className="p-4 text-gray-700 text-sm whitespace-nowrap">
+                      {p.paymentChannelLabel}
+                    </td>
+                    <td className="p-4 text-gray-600 text-xs max-w-[200px]">
+                      {p.weeklySubscriptionHint ?? (
+                        <span className="text-gray-400">—</span>
+                      )}
+                    </td>
                     <td className="p-4">
                       <Badge className={paiementStatutClass(p.statut)}>
                         {paiementStatutLabel(p.statut)}
