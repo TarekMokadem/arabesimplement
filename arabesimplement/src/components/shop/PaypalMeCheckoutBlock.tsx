@@ -8,11 +8,7 @@ import { getPaypalMePaymentLink } from "@/app/(shop)/actions/paypal-me.actions";
 
 type LinkState =
   | { status: "loading" }
-  | {
-      status: "ready";
-      url: string;
-      recipientShortLabel: string;
-    }
+  | { status: "ready"; url: string }
   | { status: "error" };
 
 export function PaypalMeCheckoutBlock({
@@ -33,7 +29,6 @@ export function PaypalMeCheckoutBlock({
         setState({
           status: "ready",
           url: r.url,
-          recipientShortLabel: r.recipientShortLabel,
         });
       } else {
         setState({ status: "error" });
@@ -65,10 +60,9 @@ export function PaypalMeCheckoutBlock({
       <div>
         <p className="font-medium text-primary">Payer avec PayPal.me</p>
         <p className="text-sm text-gray-600 mt-1">
-          Redirection vers le compte <strong>{state.recipientShortLabel}</strong>{" "}
-          (montant prérempli). Après votre paiement sur PayPal, l’équipe valide
-          la commande depuis l’admin — indiquez bien la référence ci-dessous dans
-          la note PayPal.
+          Vous serez redirigé vers PayPal.me avec le montant prérempli. Après
+          votre paiement, l’équipe valide la commande depuis l’admin — indiquez
+          bien la référence ci-dessous dans la note PayPal.
         </p>
       </div>
       <p className="text-xs font-mono bg-white border rounded-md px-2 py-1.5 text-primary break-all">
