@@ -1,5 +1,8 @@
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
+/** Toujours relire la BDD : évite un HTML/RSC obsolète après purge ou changements hors UI. */
+export const dynamic = "force-dynamic";
+
 export default function AdminLayout({
   children,
 }: {
