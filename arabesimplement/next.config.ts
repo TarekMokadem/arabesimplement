@@ -16,7 +16,7 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://www.arabesimplement.fr https://arabesimplement.fr https://arche-informatique.com https://*.stripe.com",
+      "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://www.arabesimplement.fr https://arabesimplement.fr https://arche-informatique.com https://*.stripe.com https://*.supabase.co https://*.public.blob.vercel-storage.com",
       "font-src 'self' https://fonts.gstatic.com",
       "frame-src https://js.stripe.com https://hooks.stripe.com",
       "connect-src 'self' https://api.stripe.com https://*.supabase.co https://api.cloudinary.com",
@@ -60,6 +60,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "arche-informatique.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
       },
     ],
   },

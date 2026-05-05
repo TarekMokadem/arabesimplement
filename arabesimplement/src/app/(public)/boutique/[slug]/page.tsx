@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -27,6 +26,7 @@ import {
   BRAND_LOGO_PUBLIC_PATH,
   BrandLogoMark,
 } from "@/components/layout/BrandLogoMark";
+import { FormationCoverImage } from "@/components/shop/FormationCoverImage";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/site-url";
 import { isFormationPurchasable } from "@/lib/availability";
 import type { Creneau } from "@/types/domain.types";
@@ -139,12 +139,10 @@ export default async function FormationPage({ params }: PageProps) {
           <div className="relative">
             <div className="relative aspect-square w-full max-w-xl mx-auto lg:mx-0 rounded-2xl overflow-hidden shadow-xl bg-neutral-100">
               {formation.imageUrl ? (
-                <Image
+                <FormationCoverImage
                   src={formation.imageUrl}
                   alt={formation.titre}
-                  fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover object-center"
                   priority
                 />
               ) : (

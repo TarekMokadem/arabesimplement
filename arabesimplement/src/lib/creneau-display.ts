@@ -36,17 +36,31 @@ export function normalizeJourneeSlots(
   fallback: { jours: string[]; heureDebut: string; dureeMinutes: number }
 ): JourneeSlot[] {
   if (slots && slots.length > 0) {
-    return slots.map((s) => ({
-      jour: s.jour.trim(),
-      heureDebut: clipHeure(s.heureDebut),
-      dureeMinutes: s.dureeMinutes,
-    }));
+    return slots
+      .filter(
+        (s) =>
+          s &&
+          typeof s.jour === "string" &&
+          typeof s.heureDebut === "string" &&
+          typeof s.dureeMinutes === "number" &&
+          Number.isFinite(s.dureeMinutes)
+      )
+      .map((s) => ({
+        jour: s.jour.trim(),
+        heureDebut: clipHeure(s.heureDebut),
+        dureeMinutes: s.dureeMinutes,
+      }));
   }
-  const h = clipHeure(fallback.heureDebut);
-  return fallback.jours.map((jour) => ({
-    jour: jour.trim(),
+  const jours = Array.isArray(fallback.jours) ? fallback.jours : [];
+  const h = clipHeure(fallback.heureDebut ?? "");
+  const dm = fallback.dureeMinutes;
+  if (!h || !Number.isFinite(dm) || dm <= 0) {
+    return [];
+  }
+  return jours.map((jour) => ({
+    jour: String(jour).trim(),
     heureDebut: h,
-    dureeMinutes: fallback.dureeMinutes,
+    dureeMinutes: dm,
   }));
 }
 
