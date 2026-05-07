@@ -2,6 +2,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Schéma métier (utilisateurs, formations, commandes, abonnements hebdo…).
+// Documentation projet : docs/ARCHITECTURE.md
+
 datasource db {
   provider  = "postgresql"
 }

@@ -3,6 +3,8 @@ import type { NextRequest } from "next/server";
 import { SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { verifyAuthSessionToken } from "@/lib/auth/session-token";
 
+/** Garde d’accès ; carte des zones `(auth)` / `admin` → docs/ARCHITECTURE.md */
+
 const ADMIN_PATHS = ["/admin"];
 const AUTH_REQUIRED_PATHS = ["/tableau-de-bord", "/historique-achats"];
 

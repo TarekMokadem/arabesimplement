@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ArabeSimplement — application web
 
-## Getting Started
+Site vitrine, boutique en ligne (formations), tunnel de commande, espace élève et administration — stack **Next.js** (App Router).
 
-First, run the development server:
+## En deux phrases
+
+- **Front / SSR / API routes :** Next.js 16, React 19, TypeScript, Tailwind.
+- **Données :** PostgreSQL via **Prisma** ; paiements **Stripe** ; e-mails **Resend** ; images formations **Cloudinary** (ou fichiers locaux en secours).
+
+Pour la structure du code et les dossiers importants, voir **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+
+---
+
+## Prérequis
+
+- Node.js 20+ (recommandé)
+- npm
+
+---
+
+## Démarrage local
+
+```bash
+cd arabesimplement
+npm install
+cp .env.example .env
+```
+
+Renseigner au minimum **`DATABASE_URL`** et **`SESSION_SECRET`** dans `.env` pour tester avec une vraie base (voir [docs/ENVIRONNEMENT.md](docs/ENVIRONNEMENT.md)).
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+→ [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Scripts utiles
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Commande | Rôle |
+|----------|------|
+| `npm run dev` | Serveur de développement |
+| `npm run build` | Build production (comme CI / Vercel) |
+| `npm run lint` | ESLint |
+| `npm run db:dev` | Crée une migration Prisma (dev) |
+| `npm run db:migrate` | Applique les migrations (`migrate deploy`, prod / CI) |
+| `npm run db:seed` | Données de démo + compte admin (voir seed) |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Déploiement
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Résumé : dépôt GitHub relié à **Vercel**, variables d’environnement sur le tableau de bord Vercel.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Détails : **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)**
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Variables d’environnement
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Liste commentée : **`.env.example`**
+
+Pourquoi ton `.env` local peut être vide alors que la prod fonctionne : **[docs/ENVIRONNEMENT.md](docs/ENVIRONNEMENT.md)**
+
+---
+
+## Documentation développeur
+
+| Fichier | Contenu |
+|---------|---------|
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Organisation du repo, routes, couches (`lib`, `actions`, composants) |
+| [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) | Vercel, base de données, Stripe webhook |
+| [docs/ENVIRONNEMENT.md](docs/ENVIRONNEMENT.md) | Variables d’env, comportement sans DB / sans Stripe |
+
+---
+
+## Choix techniques (résumé)
+
+- **App Router + Server Components** par défaut : données sensibles et appels Prisma côté serveur ; petits îlots **client** (`"use client"`) pour panier, formulaires interactifs, Stripe Elements.
+- **Auth « maison »** : cookie session signé (Jose), utilisateurs en base — pas NextAuth ; dépendance **Supabase** présente pour usages futurs / SSR, ce n’est pas le fournisseur principal des sessions actuelles.
+- **Prisma** : schéma unique dans `prisma/schema.prisma`, migrations versionnées.
+- **Paiement :** Stripe (carte / flux abonnement cours à la carte) ; **PayPal.me** en lien manuel configurable (`site_config`), hors Checkout PayPal intégré.
+- **E-mails :** Resend (transactionnels).
+- **Images formations :** Cloudinary en prod si les clés sont présentes ; sinon écriture sous `public/uploads/formations` (adapté au serveur local, pas idéal sur Vercel sans volume persistant).
+
+Plus de détail dans **ARCHITECTURE.md** et **DEPLOIEMENT.md**.
+
+---
+
+## Licence / propriété
+
+Projet privé (`"private": true` dans `package.json`). Ajuster selon la politique du projet.
