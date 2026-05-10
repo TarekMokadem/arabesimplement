@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { getApprovedTestimonials } from "@/lib/data/testimonials.service";
+import { MARKETING_BOUTIQUE_SLUGS } from "@/lib/content/marketing-boutique-links";
 
 export type HomeHeroTrust = {
   studentCountLabel: string;
@@ -13,7 +14,8 @@ export type HomeHeroTrust = {
 
 const FALLBACK_STUDENTS = 500;
 const FALLBACK_RATING = 4.9;
-const HERO_FORMATION_SLUG = "lire-en-10-lecons";
+/** Slug « vedette » accueil — aligné sur les liens marketing / admin. */
+const HERO_FORMATION_SLUG = MARKETING_BOUTIQUE_SLUGS.lectureArabe;
 
 function initialsFromName(nom: string): string {
   const parts = nom.trim().split(/\s+/).filter(Boolean);

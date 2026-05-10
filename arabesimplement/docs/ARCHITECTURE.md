@@ -51,6 +51,23 @@ Gardez la logique métier lourde dans **`lib/`** et les actions comme **orchestr
 
 ---
 
+## Paiements : Stripe vs PayPal.me
+
+- **Stripe** (carte / abonnement) : le serveur et les webhooks peuvent passer la commande en **payée** automatiquement (`PAID`).
+- **PayPal.me** (`PaypalMeCheckoutBlock`) : simple lien vers un profil PayPal — **aucun webhook** n’informe l’application qu’un paiement a été reçu. La commande reste **`PENDING`** jusqu’à validation manuelle dans l’admin (**Marquer comme payé**), sauf si l’équipe impose une autre procédure.
+
+Sur la page paiement, un bouton permet à l’acheteur d’ouvrir la **page de confirmation** après avoir payé sur PayPal : le récapitulatif affiche alors le statut **en attente** jusqu’à traitement admin.
+
+Pour une confirmation PayPal **entièrement automatique**, il faudrait intégrer l’API PayPal (Checkout / webhooks), hors périmètre actuel du lien PayPal.me.
+
+---
+
+## Contenu marketing / liens boutique
+
+Les URLs **`/boutique/[slug]`** utilisées dans le footer, « Cours d’arabe », « Par où commencer », etc. sont centralisées dans **`src/lib/content/marketing-boutique-links.ts`**. À mettre à jour si le slug d’une formation change en admin (sinon 404).
+
+---
+
 ## Schéma base de données
 
 Un seul fichier source : **`prisma/schema.prisma`**.

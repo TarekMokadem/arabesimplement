@@ -12,16 +12,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
+import {
+  MARKETING_BOUTIQUE_SLUGS,
+  boutiqueFormationHref,
+} from "@/lib/content/marketing-boutique-links";
 
 const suggestions = [
   {
     icon: BookOpen,
-    title: "Apprendre à lire l’arabe",
+    title: "Apprendre à lire l'arabe",
     description:
       "Vous débutez ou voulez une base solide en lecture (alphabet, fusion, lecture de textes simples).",
     primary: { href: "/cours-darabe", label: "Présentation du parcours" },
     secondary: {
-      href: "/boutique/lire-en-10-lecons",
+      href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.lectureArabe),
       label: "Formation « Lire en 10 leçons »",
     },
   },
@@ -32,7 +36,7 @@ const suggestions = [
       "Vous souhaitez mieux réciter le Coran et respecter les règles de récitation.",
     primary: { href: "/tajwid", label: "Découvrir le Tajwid" },
     secondary: {
-      href: "/boutique/formation-tajwid",
+      href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.tajwid),
       label: "Voir la formation Tajwid",
     },
   },
@@ -46,7 +50,7 @@ const suggestions = [
       label: "Présentation des invocations",
     },
     secondary: {
-      href: "/boutique/sessions-invocations",
+      href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.invocationsMatinSoir),
       label: "Sessions invocations",
     },
   },

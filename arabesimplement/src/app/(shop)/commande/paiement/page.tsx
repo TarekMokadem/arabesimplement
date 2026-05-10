@@ -241,6 +241,11 @@ export default function PaiementPage() {
                     <PaypalMeCheckoutBlock
                       amountEuros={total}
                       orderId={orderInfo.orderId}
+                      confirmationHref={
+                        confirmationQuery
+                          ? `/commande/confirmation?${confirmationQuery}`
+                          : undefined
+                      }
                     />
                   </>
                 ) : null}

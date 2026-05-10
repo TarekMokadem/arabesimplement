@@ -3,6 +3,10 @@ import { Instagram, Mail, MapPin, MessageCircle, Send } from "lucide-react";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { FinancialAidCta } from "@/components/shared/FinancialAidCta";
 import { SITE_CONTACT } from "@/lib/site-contact";
+import {
+  MARKETING_BOUTIQUE_SLUGS,
+  boutiqueFormationHref,
+} from "@/lib/content/marketing-boutique-links";
 
 const footerLinks = {
   navigation: [
@@ -18,9 +22,20 @@ const footerLinks = {
     { href: "/faq", label: "FAQ" },
   ],
   formations: [
-    { href: "/boutique/lire-en-10-lecons", label: "Lire en 10 leçons" },
-    { href: "/boutique/sessions-invocations", label: "Sessions invocations" },
-    { href: "/tajwid", label: "Tajwid" },
+    {
+      href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.lectureArabe),
+      label: "Lire en 10 leçons",
+    },
+    {
+      href: boutiqueFormationHref(
+        MARKETING_BOUTIQUE_SLUGS.invocationsMatinSoir
+      ),
+      label: "Sessions invocations",
+    },
+    {
+      href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.tajwid),
+      label: "Tajwid",
+    },
     { href: "/cours-de-din", label: "Cours de din" },
   ],
   legal: [

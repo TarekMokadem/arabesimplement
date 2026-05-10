@@ -1,3 +1,8 @@
+import {
+  MARKETING_BOUTIQUE_SLUGS,
+  boutiqueFormationHref,
+} from "@/lib/content/marketing-boutique-links";
+
 export type PublicFaqEntry = {
   q: string;
   a: string;
@@ -40,7 +45,7 @@ export const PUBLIC_FAQ_ENTRIES: PublicFaqEntry[] = [
   {
     q: "Les groupes « invocations » hommes et femmes sont-ils séparés ?",
     a: "Oui : les sessions invocations matin et soir sont organisées dans des groupes distincts pour respecter un cadre adapté à chacun.",
-    href: "/boutique/sessions-invocations",
+    href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.invocationsMatinSoir),
     cta: "Sessions invocations",
   },
 ];

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { ExternalLink, Loader2 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
@@ -14,9 +15,12 @@ type LinkState =
 export function PaypalMeCheckoutBlock({
   amountEuros,
   orderId,
+  /** Après paiement sur PayPal.me : lien vers la confirmation (récap + statut « en attente » tant que l’admin n’a pas validé). */
+  confirmationHref,
 }: {
   amountEuros: number;
   orderId: string;
+  confirmationHref?: string;
 }) {
   const [state, setState] = useState<LinkState>({ status: "loading" });
 
@@ -60,9 +64,12 @@ export function PaypalMeCheckoutBlock({
       <div>
         <p className="font-medium text-primary">Payer avec PayPal.me</p>
         <p className="text-sm text-gray-600 mt-1">
-          Vous serez redirigé vers PayPal.me avec le montant prérempli. Après
-          votre paiement, l’équipe valide la commande depuis l’admin — indiquez
-          bien la référence ci-dessous dans la note PayPal.
+          PayPal.me <strong className="font-medium text-primary">ne prévient pas</strong>{" "}
+          automatiquement ce site : tant que l’équipe n’a pas vérifié le virement,
+          votre commande reste affichée comme{" "}
+          <strong className="font-medium text-primary">en attente</strong>. Indiquez la
+          référence ci-dessous dans la note sur PayPal pour qu’on puisse vous
+          rattacher rapidement.
         </p>
       </div>
       <p className="text-xs font-mono bg-white border rounded-md px-2 py-1.5 text-primary break-all">
@@ -81,6 +88,24 @@ export function PaypalMeCheckoutBlock({
         <ExternalLink className="h-4 w-4 shrink-0" />
         Ouvrir PayPal.me
       </a>
+      {confirmationHref ? (
+        <div className="rounded-lg border border-amber-200 bg-amber-50/90 px-3 py-3 space-y-2">
+          <p className="text-sm text-amber-950">
+            Une fois le paiement envoyé sur PayPal, ouvrez votre{" "}
+            <strong>récapitulatif de commande</strong> sur notre site — ce n’est pas
+            mis à jour automatiquement sur cette page.
+          </p>
+          <Link
+            href={confirmationHref}
+            className={cn(
+              buttonVariants({ variant: "default", size: "default" }),
+              "w-full inline-flex items-center justify-center bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+            )}
+          >
+            J’ai payé sur PayPal — voir ma commande
+          </Link>
+        </div>
+      ) : null}
       <p className="text-xs text-gray-500">
         Si vous avez déjà payé par carte sur Stripe ci-dessus, ignorez ce bloc.
       </p>

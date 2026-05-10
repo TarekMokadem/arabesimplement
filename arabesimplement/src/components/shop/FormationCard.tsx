@@ -16,6 +16,7 @@ import {
 import { formationCardCategoryVisual } from "@/lib/content/boutique-category-visual";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button-variants";
 
 interface FormationCardProps {
   formation: FormationBoutiqueCard;
@@ -219,13 +220,17 @@ export function FormationCard({ formation }: FormationCardProps) {
               </span>
             )
           ) : (
-            <Button
-              variant="outline"
-              className="border-primary-light text-primary-light shrink-0"
-              size="sm"
+            <Link
+              href={`/contactez-nous?sujet=${encodeURIComponent(
+                `Liste d'attente : ${formation.titre}`
+              )}`}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "border-primary-light text-primary-light shrink-0 inline-flex items-center justify-center"
+              )}
             >
               S&apos;inscrire à la liste
-            </Button>
+            </Link>
           )}
         </div>
       </CardContent>

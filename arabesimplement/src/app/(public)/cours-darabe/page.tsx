@@ -7,6 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
+import {
+  MARKETING_BOUTIQUE_SLUGS,
+  boutiqueFormationHref,
+} from "@/lib/content/marketing-boutique-links";
 
 const sessionHighlights = [
   {
@@ -16,7 +20,7 @@ const sessionHighlights = [
     imageSrc: "/images/sessions/module-lire-arabe-1.png",
     imageAlt:
       "Couverture du module 1 « J'apprends à lire l'arabe », ArabeSimplement",
-    href: "/boutique/lire-en-10-lecons",
+    href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.lectureArabe),
     cta: "Voir la formation",
     imageBgClass:
       "bg-[radial-gradient(ellipse_95%_85%_at_50%_35%,#e8f6fc_0%,#d5f0f0_42%,#fceeeb_88%)] ring-1 ring-teal-900/10",
@@ -31,7 +35,7 @@ const sessionHighlights = [
     imageSrc: "/images/sessions/session-invocations-femme.png",
     imageAlt:
       "Visuel « Session invocations du matin et du soir », groupe femmes, ArabeSimplement",
-    href: "/boutique/sessions-invocations",
+    href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.invocationsMatinSoir),
     cta: "Découvrir la session",
     imageBgClass:
       "bg-[radial-gradient(ellipse_90%_75%_at_50%_45%,#5c4478_0%,#3d2a52_38%,#1a0f24_100%)] shadow-[inset_0_1px_0_0_rgba(212,175,55,0.12)]",
@@ -46,7 +50,7 @@ const sessionHighlights = [
     imageSrc: "/images/sessions/session-invocations-homme.png",
     imageAlt:
       "Visuel « Session invocations du matin et du soir », groupe hommes, ArabeSimplement",
-    href: "/boutique/sessions-invocations",
+    href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.invocationsMatinSoir),
     cta: "Découvrir la session",
     imageBgClass:
       "bg-[radial-gradient(ellipse_90%_75%_at_50%_45%,#2a8a7e_0%,#1a5c54_40%,#0c2522_100%)] shadow-[inset_0_1px_0_0_rgba(212,175,55,0.1)]",
@@ -228,7 +232,9 @@ export default function CoursDarabePage() {
           </div>
 
           <div className="text-center mt-12">
-            <Link href="/boutique/lire-en-10-lecons">
+            <Link
+              href={boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.lectureArabe)}
+            >
               <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg">
                 Commencer maintenant
                 <ArrowRight className="ml-2 h-5 w-5" />

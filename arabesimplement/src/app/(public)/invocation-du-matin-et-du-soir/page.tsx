@@ -3,6 +3,10 @@ import { ArrowRight, Sun, Moon, Shield, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
+import {
+  MARKETING_BOUTIQUE_SLUGS,
+  boutiqueFormationHref,
+} from "@/lib/content/marketing-boutique-links";
 
 const invocations = [
   {
@@ -142,7 +146,11 @@ export default function InvocationsPage() {
           <p className="text-gray-300 mb-8">
             Notre formation vous accompagne dans la mémorisation et la compréhension de chaque invocation.
           </p>
-          <Link href="/boutique/sessions-invocations">
+          <Link
+            href={boutiqueFormationHref(
+              MARKETING_BOUTIQUE_SLUGS.invocationsMatinSoir
+            )}
+          >
             <Button className="bg-secondary text-secondary-foreground hover:bg-white hover:text-primary px-8 py-6 text-lg">
               Rejoindre les sessions
               <ArrowRight className="ml-2 h-5 w-5" />
