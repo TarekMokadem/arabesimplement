@@ -30,7 +30,7 @@ const footerLinks = {
       href: boutiqueFormationHref(
         MARKETING_BOUTIQUE_SLUGS.invocationsMatinSoir
       ),
-      label: "Sessions invocations",
+      label: "Les invocations matin et soir",
     },
     {
       href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.tajwid),

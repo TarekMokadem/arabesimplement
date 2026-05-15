@@ -70,10 +70,10 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
       },
     ],
   },
-  "sessions-invocations": {
+  "les-invocations-matin-et-soir": {
     id: "2",
-    titre: "Sessions Invocations du matin et du soir",
-    slug: "sessions-invocations",
+    titre: "Les Invocations Matin et Soir",
+    slug: "les-invocations-matin-et-soir",
     descriptionCourte:
       "Mémorisez et comprenez les invocations quotidiennes avec accompagnement personnalisé.",
     description: `
