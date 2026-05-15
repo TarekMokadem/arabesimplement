@@ -33,10 +33,9 @@ const footerLinks = {
       label: "Les invocations matin et soir",
     },
     {
-      href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.tajwid),
+      href: "/boutique/apprends-a-lire-le-coran",
       label: "Tajwid",
     },
-    { href: "/cours-de-din", label: "Cours de din" },
   ],
   legal: [
     { href: "/conditions-generales-de-vente", label: "CGV" },
