@@ -64,6 +64,10 @@ export const metadata: Metadata = {
           ]
         : undefined,
   },
+  icons: {
+    icon: [{ url: BRAND_LOGO_PUBLIC_PATH, type: "image/png", sizes: "512x512" }],
+    apple: [{ url: BRAND_LOGO_PUBLIC_PATH, sizes: "180x180" }],
+  },
 };
 
 export default function RootLayout({

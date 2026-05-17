@@ -7,6 +7,10 @@ import type { CartItem } from "@/store/cart.store";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { isStripeConfigured } from "@/lib/stripe/config";
 import { getServerStripe } from "@/lib/stripe/server";
+import {
+  stripePaymentMethodTypeFromExpandedPaymentIntent,
+  stripePaymentMethodTypeFromPaymentIntent,
+} from "@/lib/stripe/stripe-payment-method-type";
 import { resolveIncompleteSubscriptionInvoicePayment } from "@/lib/stripe/incomplete-subscription-payment";
 import { ensureStripeCustomerForCheckout } from "@/lib/stripe/checkout-customer";
 import {
@@ -352,7 +356,9 @@ export async function syncPaidOrderFromStripe(
     ) {
       const sub = await stripe.subscriptions.retrieve(
         order.stripeSubscriptionId,
-        { expand: ["latest_invoice"] }
+        {
+          expand: ["latest_invoice.payment_intent.payment_method"],
+        }
       );
 
       const subscriptionPaid =
@@ -363,9 +369,31 @@ export async function syncPaidOrderFromStripe(
           (sub.latest_invoice as Stripe.Invoice).status === "paid");
 
       if (subscriptionPaid) {
+        let pmType: string | null = null;
+        const inv = sub.latest_invoice;
+        if (typeof inv === "object" && inv !== null) {
+          const pit = (
+            inv as Stripe.Invoice & {
+              payment_intent?: string | Stripe.PaymentIntent | null;
+            }
+          ).payment_intent;
+          if (typeof pit === "object" && pit !== null) {
+            pmType = stripePaymentMethodTypeFromExpandedPaymentIntent(
+              pit as Stripe.PaymentIntent
+            );
+          } else if (typeof pit === "string") {
+            pmType = await stripePaymentMethodTypeFromPaymentIntent(
+              stripe,
+              pit
+            );
+          }
+        }
         await prisma.order.update({
           where: { id },
-          data: { statut: "PAID" },
+          data: {
+            statut: "PAID",
+            ...(pmType != null ? { stripePaymentMethodType: pmType } : {}),
+          },
         });
         await ensureEnrollmentsForPaidOrder(id);
         return { success: true, statut: "PAID" };
@@ -375,12 +403,17 @@ export async function syncPaidOrderFromStripe(
 
     if (order.stripePaymentIntentId) {
       const pi = await stripe.paymentIntents.retrieve(
-        order.stripePaymentIntentId
+        order.stripePaymentIntentId,
+        { expand: ["payment_method"] }
       );
       if (pi.status === "succeeded") {
+        const pmType = stripePaymentMethodTypeFromExpandedPaymentIntent(pi);
         await prisma.order.update({
           where: { id },
-          data: { statut: "PAID" },
+          data: {
+            statut: "PAID",
+            ...(pmType != null ? { stripePaymentMethodType: pmType } : {}),
+          },
         });
         await ensureEnrollmentsForPaidOrder(id);
         return { success: true, statut: "PAID" };

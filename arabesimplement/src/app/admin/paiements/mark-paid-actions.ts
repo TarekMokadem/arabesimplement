@@ -24,7 +24,11 @@ export async function markOrderPaidManuallyAsAdmin(
 
   const order = await prisma.order.findFirst({
     where: { id: orderId },
-    select: { statut: true, stripeSubscriptionId: true },
+    select: {
+      statut: true,
+      stripeSubscriptionId: true,
+      stripePaymentIntentId: true,
+    },
   });
 
   if (!order) {
@@ -36,11 +40,18 @@ export async function markOrderPaidManuallyAsAdmin(
       error: "Seules les commandes en attente peuvent être validées ainsi.",
     };
   }
-  if (order.stripeSubscriptionId) {
+
+  const sid = order.stripeSubscriptionId;
+  const stripeTunnelCompletesAutomatically =
+    (order.stripePaymentIntentId != null &&
+      order.stripePaymentIntentId !== "") ||
+    (sid != null && sid !== "" && !sid.startsWith("mock_sub_"));
+
+  if (stripeTunnelCompletesAutomatically) {
     return {
       success: false,
       error:
-        "Cette commande est liée à un abonnement Stripe. Corrigez le paiement ou les webhooks plutôt que de marquer manuellement.",
+        "Cette commande passe par Stripe : le statut « Payé » est appliqué automatiquement après confirmation du paiement (webhook ou retour boutique).",
     };
   }
 

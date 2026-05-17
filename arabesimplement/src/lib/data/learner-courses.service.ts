@@ -19,6 +19,26 @@ function mapWeeklyLine(r: {
   };
 }
 
+function paidEnrollmentSlotKey(
+  formationId: string,
+  creneauId: string | null
+): string {
+  return `${formationId}\u001f${creneauId ?? ""}`;
+}
+
+/** Places / accès élève : ne reflète que les lignes liées à une commande réellement payée. */
+async function loadPaidEnrollmentSlotKeys(userId: string): Promise<Set<string>> {
+  const rows = await prisma.orderItem.findMany({
+    where: {
+      order: { userId, statut: "PAID" },
+    },
+    select: { formationId: true, creneauId: true },
+  });
+  return new Set(
+    rows.map((r) => paidEnrollmentSlotKey(r.formationId, r.creneauId))
+  );
+}
+
 async function loadEnrollmentRowsForUser(userId: string): Promise<
   EnrollmentForGrouping[]
 > {
@@ -59,7 +79,10 @@ async function weeklyMapForUser(userId: string): Promise<
   Map<string, WeeklySubLine[]>
 > {
   const subs = await prisma.courseWeeklySubscription.findMany({
-    where: { userId },
+    where: {
+      userId,
+      OR: [{ orderId: null }, { order: { statut: "PAID" } }],
+    },
     select: {
       formationId: true,
       hourlyMinutes: true,
@@ -94,10 +117,14 @@ function hideHourlyWhenSubscriptionFullyEnded(
 async function buildGroupedLearnerCourses(
   userId: string
 ): Promise<LearnerCourseDisplayGroup[]> {
-  const [enrollments, weeklyMap] = await Promise.all([
+  const [enrollmentRows, weeklyMap, paidSlots] = await Promise.all([
     loadEnrollmentRowsForUser(userId),
     weeklyMapForUser(userId),
+    loadPaidEnrollmentSlotKeys(userId),
   ]);
+  const enrollments = enrollmentRows.filter((e) =>
+    paidSlots.has(paidEnrollmentSlotKey(e.formationId, e.creneauId))
+  );
   return groupEnrollmentsForLearnerDisplay(enrollments, weeklyMap);
 }
 

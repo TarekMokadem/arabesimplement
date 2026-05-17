@@ -6,6 +6,9 @@ import type {
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { parseBillingSnapshot } from "@/lib/orders/billing-snapshot";
+import {
+  stripeTunnelChannelLabel,
+} from "@/lib/stripe/stripe-payment-method-type";
 
 export type AdminStats = {
   revenusThisMois: number;
@@ -69,26 +72,36 @@ export type AdminPaymentRow = {
   date: Date;
   /** Si renseigné, la commande est un abonnement Stripe — ne pas utiliser le marquage manuel. */
   stripeSubscriptionId: string | null;
+  /** Tunnel Stripe actif : passage en payé géré par Stripe / webhook (pas « Marquer payé »). */
+  stripeTunnelCompletesAutomatically: boolean;
   /** Stripe (PI / abonnement réel) vs validation manuelle (ex. PayPal.me). */
   paymentChannelLabel: string;
   /** Résumé des lignes d’abonnement cours à la carte liées à la commande. */
   weeklySubscriptionHint: string | null;
 };
 
+function orderStripeTunnelPresent(o: {
+  stripePaymentIntentId: string | null;
+  stripeSubscriptionId: string | null;
+}): boolean {
+  if (o.stripePaymentIntentId != null && o.stripePaymentIntentId !== "") {
+    return true;
+  }
+  const sid = o.stripeSubscriptionId;
+  return sid != null && sid !== "" && !sid.startsWith("mock_sub_");
+}
+
 function paymentChannelLabelForOrder(o: {
   statut: OrderStatus;
   stripePaymentIntentId: string | null;
   stripeSubscriptionId: string | null;
+  stripePaymentMethodType: string | null;
 }): string {
-  const mockSub = o.stripeSubscriptionId?.startsWith("mock_sub_") ?? false;
-  const hasStripe =
-    (!!o.stripePaymentIntentId && o.stripePaymentIntentId.length > 0) ||
-    (!!o.stripeSubscriptionId &&
-      o.stripeSubscriptionId.length > 0 &&
-      !mockSub);
-  if (hasStripe) return "Stripe";
-  if (o.statut === "PAID") return "Manuel (ex. PayPal.me)";
-  if (o.statut === "PENDING") return "En attente";
+  if (orderStripeTunnelPresent(o)) {
+    return stripeTunnelChannelLabel(o.stripePaymentMethodType);
+  }
+  if (o.statut === "PAID") return "PayPal.me / hors Stripe (confirmé)";
+  if (o.statut === "PENDING") return "En attente de paiement";
   return "—";
 }
 
@@ -389,10 +402,15 @@ export async function getAdminOrdersList(): Promise<AdminPaymentRow[]> {
     statut: o.statut,
     date: o.createdAt,
     stripeSubscriptionId: o.stripeSubscriptionId,
+    stripeTunnelCompletesAutomatically: orderStripeTunnelPresent({
+      stripePaymentIntentId: o.stripePaymentIntentId,
+      stripeSubscriptionId: o.stripeSubscriptionId,
+    }),
     paymentChannelLabel: paymentChannelLabelForOrder({
       statut: o.statut,
       stripePaymentIntentId: o.stripePaymentIntentId,
       stripeSubscriptionId: o.stripeSubscriptionId,
+      stripePaymentMethodType: o.stripePaymentMethodType,
     }),
     weeklySubscriptionHint: weeklySubscriptionHintFromRows(
       o.courseWeeklySubscriptions.map((s) => s.status)

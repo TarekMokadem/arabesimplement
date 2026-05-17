@@ -8,8 +8,35 @@ import {
 } from "@/lib/orders/sync-course-weekly-subscriptions";
 import { isStripeConfigured } from "@/lib/stripe/config";
 import { getServerStripe } from "@/lib/stripe/server";
+import {
+  paymentIntentIdFromStripeInvoice,
+  stripePaymentMethodTypeFromPaymentIntent,
+} from "@/lib/stripe/stripe-payment-method-type";
 
 export const runtime = "nodejs";
+
+async function persistStripePaymentMethodTypeForOrders(
+  paymentIntentId: string,
+  orderIds: string[]
+): Promise<void> {
+  if (!isStripeConfigured() || orderIds.length === 0) return;
+  try {
+    const stripe = getServerStripe();
+    const pmType = await stripePaymentMethodTypeFromPaymentIntent(
+      stripe,
+      paymentIntentId
+    );
+    await prisma.order.updateMany({
+      where: { id: { in: orderIds } },
+      data: { stripePaymentMethodType: pmType },
+    });
+  } catch (e) {
+    console.error(
+      "[webhook stripe] persistStripePaymentMethodTypeForOrders",
+      e
+    );
+  }
+}
 
 function getSubscriptionIdFromInvoice(invoice: Stripe.Invoice): string | null {
   const p = invoice.parent;
@@ -66,23 +93,27 @@ export async function POST(req: NextRequest) {
     if (pi.status !== "succeeded") {
       return NextResponse.json({ received: true });
     }
-    const orderId = pi.metadata?.orderId;
-    const pending = await prisma.order.findMany({
+    const orderIdMeta = pi.metadata?.orderId;
+    const matching = await prisma.order.findMany({
       where: {
-        statut: "PENDING",
         stripePaymentIntentId: pi.id,
-        ...(orderId ? { id: orderId } : {}),
+        ...(orderIdMeta ? { id: orderIdMeta } : {}),
       },
-      select: { id: true },
+      select: { id: true, statut: true },
     });
-    if (pending.length > 0) {
+    const toFinalize = matching.filter((o) => o.statut === "PENDING");
+    if (toFinalize.length > 0) {
       await prisma.order.updateMany({
-        where: { id: { in: pending.map((o) => o.id) } },
+        where: { id: { in: toFinalize.map((o) => o.id) } },
         data: { statut: "PAID" },
       });
-      for (const o of pending) {
+      for (const o of toFinalize) {
         await ensureEnrollmentsForPaidOrder(o.id);
       }
+    }
+    const orderIdsForPm = matching.map((o) => o.id);
+    if (orderIdsForPm.length > 0) {
+      await persistStripePaymentMethodTypeForOrders(pi.id, orderIdsForPm);
     }
   }
 
@@ -105,6 +136,12 @@ export async function POST(req: NextRequest) {
           data: { statut: "PAID" },
         });
         await ensureEnrollmentsForPaidOrder(order.id);
+      }
+      if (order) {
+        const piId = paymentIntentIdFromStripeInvoice(invoice);
+        if (piId) {
+          await persistStripePaymentMethodTypeForOrders(piId, [order.id]);
+        }
       }
     } else if (invoice.billing_reason === "subscription_cycle") {
       const end = invoice.period_end;

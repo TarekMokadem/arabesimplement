@@ -176,6 +176,8 @@ model Order {
   stripeCustomerId      String?     @map("stripe_customer_id")
   /** Abonnement cours à la carte — plusieurs lignes OrderItem = une seule Subscription Stripe (mensuelle). */
   stripeSubscriptionId  String?     @unique @map("stripe_subscription_id")
+  /** Type Stripe du moyen réellement utilisé (ex. `card`, `paypal`) — renseigné au webhook / synchro. */
+  stripePaymentMethodType String?   @map("stripe_payment_method_type") @db.VarChar(64)
   reglementSigneAt      DateTime?   @map("reglement_signe_at")
   reglementIp           String?     @map("reglement_ip")
   reglementVersion      String?     @map("reglement_version")

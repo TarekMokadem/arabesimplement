@@ -142,8 +142,8 @@ export default async function PaiementsPage() {
                           montantEuros={p.montant}
                           formationSummary={p.formationLabel}
                           disabledReason={
-                            p.stripeSubscriptionId
-                              ? "Abonnement Stripe — valider via paiement / webhook."
+                            p.stripeTunnelCompletesAutomatically
+                              ? "Tunnel Stripe — le passage en « Payé » est automatique (webhook ou retour boutique)."
                               : undefined
                           }
                         />
