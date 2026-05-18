@@ -64,10 +64,7 @@ export const metadata: Metadata = {
           ]
         : undefined,
   },
-  icons: {
-    icon: [{ url: BRAND_LOGO_PUBLIC_PATH, type: "image/png", sizes: "512x512" }],
-    apple: [{ url: BRAND_LOGO_PUBLIC_PATH, sizes: "180x180" }],
-  },
+  /* Favicon : src/app/icon.png (32), favicon.ico, apple-icon.png — voir scripts/generate-favicons.mjs */
 };
 
 export default function RootLayout({
