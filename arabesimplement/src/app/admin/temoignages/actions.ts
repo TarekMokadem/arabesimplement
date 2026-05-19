@@ -4,7 +4,14 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/auth/require-admin";
+import {
+  generatePasswordResetPlainToken,
+  hashPasswordResetToken,
+} from "@/lib/auth/password-reset-crypto";
+import { toAbsoluteUrl } from "@/lib/site-url";
 import { adminTestimonialWriteSchema } from "@/lib/validations/admin-testimonial.schema";
+
+const INVITE_TTL_MS = 90 * 24 * 60 * 60 * 1000;
 
 export type TestimonialActionResult =
   | { success: true }
@@ -12,6 +19,32 @@ export type TestimonialActionResult =
 
 function zodFirstMessage(err: z.ZodError): string {
   return err.issues[0]?.message ?? "Données invalides";
+}
+
+export type CreateTestimonialInviteLinkResult =
+  | { success: true; url: string; expiresAt: string }
+  | { success: false; error: string };
+
+/** Génère un lien unique pour qu’un élève dépose un avis (modération ensuite). */
+export async function createTestimonialInviteLink(): Promise<CreateTestimonialInviteLinkResult> {
+  const admin = await requireAdminSession();
+  if (!admin) return { success: false, error: "Non autorisé." };
+
+  const plain = generatePasswordResetPlainToken();
+  const tokenHash = hashPasswordResetToken(plain);
+  const expiresAt = new Date(Date.now() + INVITE_TTL_MS);
+
+  try {
+    await prisma.testimonialInvite.create({
+      data: { tokenHash, expiresAt },
+    });
+    const url = toAbsoluteUrl(
+      `/donner-son-avis?token=${encodeURIComponent(plain)}`
+    );
+    return { success: true, url, expiresAt: expiresAt.toISOString() };
+  } catch {
+    return { success: false, error: "Impossible de créer le lien." };
+  }
 }
 
 export async function approveTestimonial(

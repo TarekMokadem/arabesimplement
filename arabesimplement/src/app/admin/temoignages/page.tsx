@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { getTestimonialsForAdmin } from "@/lib/data/testimonials.service";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { TestimonialModerationButtons } from "./TestimonialModerationButtons";
+import { TestimonialInviteGenerator } from "./TestimonialInviteGenerator";
 import { TestimonialForm } from "./TestimonialForm";
 import { getDefaultTestimonialValues } from "./testimonial-defaults";
 
@@ -31,6 +32,7 @@ export default async function TemoignagesPage() {
           Configurez DATABASE_URL pour gérer les témoignages.
         </p>
       )}
+      {db && <TestimonialInviteGenerator />}
       {db && (
         <TestimonialForm
           mode="create"
