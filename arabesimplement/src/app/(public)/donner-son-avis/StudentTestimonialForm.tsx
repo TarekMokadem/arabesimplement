@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import type { Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle, Loader2, Star } from "lucide-react";
+import { Loader2, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { TestimonialThankYouCard } from "./TestimonialThankYouCard";
 import {
   studentTestimonialSchema,
   type StudentTestimonialInput,
@@ -23,6 +25,7 @@ type Props = {
 };
 
 export function StudentTestimonialForm({ token, defaultNom = "" }: Props) {
+  const router = useRouter();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -49,6 +52,11 @@ export function StudentTestimonialForm({ token, defaultNom = "" }: Props) {
       const result = await submitStudentTestimonial({ ...data, token });
       if (result.success) {
         setSubmitted(true);
+        const q = new URLSearchParams({
+          token,
+          sent: "1",
+        });
+        router.replace(`/donner-son-avis?${q.toString()}`, { scroll: false });
       } else {
         toast.error(result.error);
       }
@@ -58,20 +66,7 @@ export function StudentTestimonialForm({ token, defaultNom = "" }: Props) {
   };
 
   if (submitted) {
-    return (
-      <Card className="max-w-lg mx-auto bg-white">
-        <CardContent className="p-8 text-center space-y-4">
-          <CheckCircle className="h-12 w-12 text-accent mx-auto" />
-          <h2 className="font-serif text-xl font-bold text-primary">
-            Merci pour votre témoignage
-          </h2>
-          <p className="text-gray-600 text-sm">
-            Votre avis a bien été enregistré. Il sera publié sur le site après
-            validation par l&apos;équipe ArabeSimplement.
-          </p>
-        </CardContent>
-      </Card>
-    );
+    return <TestimonialThankYouCard />;
   }
 
   return (
