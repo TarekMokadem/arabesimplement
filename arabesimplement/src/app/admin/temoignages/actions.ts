@@ -9,6 +9,8 @@ import {
   hashPasswordResetToken,
 } from "@/lib/auth/password-reset-crypto";
 import { toAbsoluteUrl } from "@/lib/site-url";
+import { isDatabaseConfigured } from "@/lib/utils/database";
+import { prismaActionErrorMessage } from "@/lib/utils/prisma-action-error";
 import { adminTestimonialWriteSchema } from "@/lib/validations/admin-testimonial.schema";
 
 const INVITE_TTL_MS = 90 * 24 * 60 * 60 * 1000;
@@ -29,6 +31,12 @@ export type CreateTestimonialInviteLinkResult =
 export async function createTestimonialInviteLink(): Promise<CreateTestimonialInviteLinkResult> {
   const admin = await requireAdminSession();
   if (!admin) return { success: false, error: "Non autorisé." };
+  if (!isDatabaseConfigured()) {
+    return {
+      success: false,
+      error: "Base de données non configurée (DATABASE_URL).",
+    };
+  }
 
   const plain = generatePasswordResetPlainToken();
   const tokenHash = hashPasswordResetToken(plain);
@@ -42,8 +50,11 @@ export async function createTestimonialInviteLink(): Promise<CreateTestimonialIn
       `/donner-son-avis?token=${encodeURIComponent(plain)}`
     );
     return { success: true, url, expiresAt: expiresAt.toISOString() };
-  } catch {
-    return { success: false, error: "Impossible de créer le lien." };
+  } catch (e) {
+    return {
+      success: false,
+      error: prismaActionErrorMessage(e, "Impossible de créer le lien."),
+    };
   }
 }
 

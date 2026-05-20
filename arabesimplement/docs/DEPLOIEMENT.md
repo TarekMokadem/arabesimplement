@@ -21,7 +21,7 @@ Le script **`npm run db:migrate`** exécute `prisma migrate deploy`. À lancer :
 - via une étape CI dédiée, ou  
 - manuellement depuis une machine de confiance après déploiement,
 
-selon la façon dont l’équipe travaille. **Ce projet ne lance pas automatiquement les migrations dans `npm run build`** — surveiller les nouvelles migrations avant/après mise en ligne.
+selon la façon dont l’équipe travaille. Sur **Vercel**, `vercel.json` exécute **`npm run db:migrate`** avant le build pour appliquer les migrations sur la base de production.
 
 Le seed (**`npm run db:seed`**) est pour dev / recréation d’environnement, pas pour chaque déploiement prod automatique.
 
