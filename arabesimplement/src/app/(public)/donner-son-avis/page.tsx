@@ -31,10 +31,7 @@ export default async function DonnerSonAvisPage({ searchParams }: PageProps) {
     inviteStatus = await getTestimonialInviteStatus(token);
   }
 
-  const showThankYou =
-    isDatabaseConfigured() &&
-    token &&
-    (sentConfirmed || inviteStatus === "used");
+  const showThankYou = isDatabaseConfigured() && token && sentConfirmed;
 
   return (
     <div className="pt-20 pb-16">
@@ -71,7 +68,7 @@ export default async function DonnerSonAvisPage({ searchParams }: PageProps) {
               pour recevoir un nouveau lien.
             </p>
           )}
-          {showThankYou && <TestimonialThankYouCard />}
+          {showThankYou && <TestimonialThankYouCard token={token} />}
           {isDatabaseConfigured() &&
             token &&
             inviteStatus === "valid" &&

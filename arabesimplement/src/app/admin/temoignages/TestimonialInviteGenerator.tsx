@@ -52,8 +52,9 @@ export function TestimonialInviteGenerator() {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-gray-600">
-          Générez un lien personnel : l’élève pourra déposer son témoignage sans
-          compte admin. L’avis reste en attente jusqu’à votre validation.
+          Générez un lien personnel : l’élève peut envoyer autant d’avis que
+          souhaité pendant <strong>7 jours</strong>. Chaque avis reste en attente
+          jusqu’à votre validation.
         </p>
         <Button
           type="button"
@@ -73,7 +74,7 @@ export function TestimonialInviteGenerator() {
         {url && (
           <div className="space-y-2 rounded-lg border bg-gray-50 p-4">
             <p className="text-xs text-gray-500">
-              Valide jusqu’au {expiresLabel ?? "—"} · un seul envoi par lien
+              Valide 7 jours (jusqu’au {expiresLabel ?? "—"}) · envois illimités
             </p>
             <div className="flex flex-col sm:flex-row gap-2">
               <Input readOnly value={url} className="font-mono text-xs bg-white" />

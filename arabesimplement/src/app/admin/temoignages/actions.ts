@@ -13,7 +13,7 @@ import { isDatabaseConfigured } from "@/lib/utils/database";
 import { prismaActionErrorMessage } from "@/lib/utils/prisma-action-error";
 import { adminTestimonialWriteSchema } from "@/lib/validations/admin-testimonial.schema";
 
-const INVITE_TTL_MS = 90 * 24 * 60 * 60 * 1000;
+const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 export type TestimonialActionResult =
   | { success: true }

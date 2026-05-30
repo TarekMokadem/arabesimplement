@@ -33,35 +33,27 @@ export async function submitStudentTestimonial(
   const tokenHash = hashPasswordResetToken(parsed.data.token.trim());
   const invite = await prisma.testimonialInvite.findUnique({
     where: { tokenHash },
-    select: { id: true, expiresAt: true, usedAt: true },
+    select: { expiresAt: true },
   });
 
   if (!invite) {
     return { success: false, error: "Ce lien n’est pas valide." };
   }
-  if (invite.usedAt) {
+  if (invite.expiresAt.getTime() < Date.now()) {
     return {
       success: false,
-      error: "Ce lien a déjà été utilisé pour envoyer un avis.",
+      error: "Ce lien a expiré (validité 7 jours). Demandez un nouveau lien à l’équipe.",
     };
-  }
-  if (invite.expiresAt.getTime() < Date.now()) {
-    return { success: false, error: "Ce lien a expiré. Demandez un nouveau lien à l’équipe." };
   }
 
   try {
-    const testimonial = await prisma.testimonial.create({
+    await prisma.testimonial.create({
       data: {
         nom: parsed.data.nom,
         texte: parsed.data.texte,
         note: parsed.data.note,
         approuve: false,
       },
-    });
-
-    await prisma.testimonialInvite.update({
-      where: { id: invite.id },
-      data: { usedAt: new Date(), testimonialId: testimonial.id },
     });
 
     revalidatePath("/admin/temoignages");

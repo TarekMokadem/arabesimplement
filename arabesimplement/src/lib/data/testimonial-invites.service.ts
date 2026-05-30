@@ -1,11 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { hashPasswordResetToken } from "@/lib/auth/password-reset-crypto";
 
-export type TestimonialInviteStatus =
-  | "valid"
-  | "invalid"
-  | "expired"
-  | "used";
+export type TestimonialInviteStatus = "valid" | "invalid" | "expired";
 
 export async function getTestimonialInviteStatus(
   plainToken: string
@@ -16,11 +12,10 @@ export async function getTestimonialInviteStatus(
   const tokenHash = hashPasswordResetToken(token);
   const invite = await prisma.testimonialInvite.findUnique({
     where: { tokenHash },
-    select: { expiresAt: true, usedAt: true },
+    select: { expiresAt: true },
   });
 
   if (!invite) return "invalid";
-  if (invite.usedAt) return "used";
   if (invite.expiresAt.getTime() < Date.now()) return "expired";
   return "valid";
 }

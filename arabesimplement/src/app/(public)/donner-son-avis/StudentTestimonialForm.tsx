@@ -66,7 +66,7 @@ export function StudentTestimonialForm({ token, defaultNom = "" }: Props) {
   };
 
   if (submitted) {
-    return <TestimonialThankYouCard />;
+    return <TestimonialThankYouCard token={token} />;
   }
 
   return (
