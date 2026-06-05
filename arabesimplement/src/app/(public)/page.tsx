@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, BookOpen, Users, Award, Star } from "lucide-react";
+import { ArrowRight, BookOpen, Users, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SessionDuMoment } from "@/components/shop/SessionDuMoment";
@@ -8,122 +8,13 @@ import {
   getFeaturedSessionHome,
   type FeaturedSessionHome,
 } from "@/lib/data/formations.service";
-import {
-  getHomeHeroTrust,
-  type HomeHeroTrust,
-} from "@/lib/data/home.service";
-import { cn } from "@/lib/utils";
+import { getHomeHeroTrust } from "@/lib/data/home.service";
 import { AfterPurchaseJourneySection } from "@/components/home/AfterPurchaseJourneySection";
+import { HeroLireArabeSection } from "@/components/home/HeroLireArabeSection";
 import { HomeFaqTeaser } from "@/components/home/HomeFaqTeaser";
 
 function SessionDuMomentSection(props: FeaturedSessionHome) {
   return <SessionDuMoment {...props} />;
-}
-
-// Hero Section
-function HeroSection({ trust }: { trust: HomeHeroTrust }) {
-  const starFill = (i: number) =>
-    trust.ratingAverage != null &&
-    i <= Math.round(Math.min(5, Math.max(0, trust.ratingAverage)));
-
-  return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <Image
-          src="https://images.unsplash.com/photo-1769428197773-e4adbe22aa8e?w=1920&q=80"
-          alt="Mosquée au coucher de soleil"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-transparent" />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 md:py-32">
-        <div className="max-w-2xl">
-          <Badge className="mb-6 bg-secondary/20 text-secondary border-secondary/30 hover:bg-secondary/30">
-            Pédagogie & partenariat Égypte
-          </Badge>
-
-          <h1 className="font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
-            Apprendre l&apos;arabe avec une équipe{" "}
-            <span className="text-secondary">solide et ancrée</span>
-          </h1>
-
-          <p className="text-sm sm:text-base md:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed">
-            Méthodes inspirées de l&apos;enseignement en Égypte, supports
-            (livre du niveau 1 au 11) et accompagnement pour progresser{" "}
-            <span className="font-bold text-white">
-              à votre rythme, en ligne
-            </span>
-            . Pas de promesse miraculeuse — du travail encadré et des repères
-            clairs.
-          </p>
-
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
-            <Link href={trust.primaryCtaHref}>
-              <Button
-                size="lg"
-                className="w-full sm:w-auto bg-secondary text-secondary-foreground hover:bg-secondary-light hover:text-foreground px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                data-testid="hero-cta-primary"
-              >
-                Apprends à lire l&apos;arabe
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/boutique">
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full sm:w-auto border-2 border-white bg-transparent text-white shadow-sm backdrop-blur-[2px] hover:bg-white hover:text-primary px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg transition-all duration-300"
-                data-testid="hero-cta-secondary"
-              >
-                Voir les cours
-              </Button>
-            </Link>
-          </div>
-
-          {/* Trust indicators */}
-          <div className="flex flex-wrap items-center gap-4 sm:gap-8 mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-white/20">
-            <div className="flex items-center gap-2">
-              <div className="flex -space-x-2">
-                {trust.avatarInitials.map((label, idx) => (
-                  <div
-                    key={`${label}-${idx}`}
-                    className="w-8 h-8 rounded-full bg-secondary border-2 border-primary flex items-center justify-center"
-                  >
-                    <span className="text-secondary-foreground text-[10px] font-bold leading-none px-0.5 text-center">
-                      {label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <span className="text-white text-sm">{trust.studentCountLabel}</span>
-            </div>
-            {trust.ratingAverage !== null ? (
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Star
-                    key={i}
-                    className={cn(
-                      "h-4 w-4",
-                      starFill(i)
-                        ? "fill-secondary text-secondary"
-                        : "fill-transparent text-white/35"
-                    )}
-                  />
-                ))}
-                <span className="text-white text-sm ml-2">
-                  {trust.ratingAverage.toFixed(1)}/5
-                </span>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
 }
 
 // Features Section
@@ -203,9 +94,9 @@ function FeaturesSection() {
                 className="object-cover"
               />
             </div>
-            {/* Decorative element */}
-            <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-secondary rounded-2xl -z-10" />
-            <div className="absolute -top-6 -right-6 w-32 h-32 border-4 border-primary rounded-2xl -z-10" />
+            {/* Decorative element (masqué en mobile pour éviter le débordement latéral) */}
+            <div className="hidden sm:block absolute -bottom-6 -left-6 w-24 h-24 bg-secondary rounded-2xl -z-10" />
+            <div className="hidden sm:block absolute -top-6 -right-6 w-32 h-32 border-4 border-primary rounded-2xl -z-10" />
           </div>
         </div>
       </div>
@@ -277,7 +168,10 @@ export default async function HomePage() {
 
   return (
     <div className="pt-20">
-      <HeroSection trust={heroTrust} />
+      <HeroLireArabeSection
+        decouvrirHref={heroTrust.primaryCtaHref}
+        programmeHref="/boutique"
+      />
       {featuredSession ? (
         <SessionDuMomentSection {...featuredSession} />
       ) : null}
