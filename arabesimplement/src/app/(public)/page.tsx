@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, BookOpen, Users, Award } from "lucide-react";
+import { ArrowRight, MapPin, Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SessionDuMoment } from "@/components/shop/SessionDuMoment";
@@ -17,59 +17,111 @@ function SessionDuMomentSection(props: FeaturedSessionHome) {
   return <SessionDuMoment {...props} />;
 }
 
-// Features Section
+// Icônes pleines (silhouettes) pour la section "Pourquoi nous choisir"
+function MosqueIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="2.6" r="0.9" />
+      <path d="M3 21V9.4c0-.6.5-1.1 1.1-1.1s1.1.5 1.1 1.1V21H3Z" />
+      <path d="M18.8 21V9.4c0-.6.5-1.1 1.1-1.1s1.1.5 1.1 1.1V21h-2.2Z" />
+      <path d="M4.1 6.5c.7 0 1.1.6 1.1 1.3H3c0-.7.4-1.3 1.1-1.3Z" />
+      <path d="M19.9 6.5c.7 0 1.1.6 1.1 1.3h-2.2c0-.7.4-1.3 1.1-1.3Z" />
+      <path d="M6 21v-8a6 6 0 0 1 12 0v8h-3.2v-3a2.8 2.8 0 0 0-5.6 0v3H6Z" />
+      <rect x="2" y="21.2" width="20" height="1.5" rx="0.75" />
+    </svg>
+  );
+}
+
+function BookFilledIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M12 6.4C10.5 5.2 8.2 4.6 5.4 4.6c-1 0-1.9.1-2.8.3-.4.1-.6.4-.6.8v12c0 .5.5.9 1 .8.8-.2 1.6-.2 2.4-.2 2.3 0 4.2.5 5.6 1.6V6.4Z" />
+      <path d="M12 6.4c1.5-1.2 3.8-1.8 6.6-1.8 1 0 1.9.1 2.8.3.4.1.6.4.6.8v12c0 .5-.5.9-1 .8-.8-.2-1.6-.2-2.4-.2-2.3 0-4.2.5-5.6 1.6V6.4Z" />
+    </svg>
+  );
+}
+
+function UsersFilledIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <circle cx="9" cy="7.3" r="3.3" />
+      <path d="M9 12c-3.4 0-6.2 2.2-6.2 5v1.4c0 .6.4 1 1 1h10.4c.6 0 1-.4 1-1V17c0-2.8-2.8-5-6.2-5Z" />
+      <circle cx="17.2" cy="8" r="2.6" />
+      <path d="M17.2 12.4c-.8 0-1.6.2-2.3.5 1.1 1.1 1.8 2.7 1.8 4.4v1.1h4.3c.6 0 1-.4 1-1V17c0-2.5-2.1-4.6-4.8-4.6Z" />
+    </svg>
+  );
+}
+
+// Section "Pourquoi nous choisir"
 function FeaturesSection() {
   const features = [
     {
-      icon: BookOpen,
-      title: "Partenariat avec un institut en Égypte",
+      icon: MosqueIcon,
+      title: "Une expérience acquise en Égypte",
       description:
-        "Un lien direct avec une structure d’enseignement en Égypte pour des contenus et des repères fiables, adaptés aux francophones.",
+        "Vivre, étudier et enseigner en Égypte nous a permis de découvrir les méthodes et les supports les plus efficaces pour apprendre l’arabe de manière progressive et durable.",
     },
     {
-      icon: Users,
-      title: "Livre d’Égypte — niveaux 1 à 11",
+      icon: BookFilledIcon,
+      title: "Un parcours pensé étape par étape",
       description:
-        "Progression structurée avec le support du livre jusqu’au niveau 11, pour avancer étape par étape sans improvisation.",
+        "De l’alphabet à l’expression orale, notre parcours suit une logique claire afin d’aider les élèves à construire des bases solides et à progresser avec confiance.",
     },
     {
-      icon: Award,
-      title: "Pédagogie d’inspiration égyptienne",
+      icon: UsersFilledIcon,
+      title: "Un accompagnement tout au long du parcours",
       description:
-        "Méthodes et exercices calqués sur des pratiques éprouvées en Égypte, avec des explications en français quand il le faut.",
+        "Derrière chaque élève se trouve une personne avec ses objectifs, ses difficultés et son rythme d’apprentissage. C’est pourquoi nos enseignants prennent le temps d’accompagner chacun tout au long de son parcours.",
     },
   ];
 
   return (
-    <section className="py-12 sm:py-16 md:py-24 bg-surface">
+    <section className="py-12 sm:py-16 md:py-24 bg-[#f4f5f0]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          {/* Colonne texte */}
           <div>
-            <Badge className="mb-4 bg-secondary/10 text-secondary border-secondary/20">
-              Notre approche
+            <Badge className="mb-4 bg-primary/10 text-primary border-transparent hover:bg-primary/10">
+              Pourquoi nous choisir
             </Badge>
-            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4 sm:mb-6">
-              Un parcours sérieux, sans effet d’annonce
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-[2.75rem] font-bold text-primary leading-tight mb-5">
+              Pourquoi choisir
+              <br />
+              Arabe Simplement&nbsp;?
             </h2>
-            <p className="text-gray-600 mb-8 leading-relaxed">
-              Nous misons sur la régularité, des supports clairs et des
-              enseignants impliqués. Notre différence : l’expérience d’un
-              partenaire en Égypte, des méthodes inspirées de là-bas, et un
-              matériel pédagogique cohérent jusqu’au niveau 11 — pas de
-              superlatifs vides, plutôt du concret et du suivi.
+            <p className="text-gray-600 mb-8 leading-relaxed max-w-xl">
+              Depuis plusieurs années, nous accompagnons des francophones dans
+              leur apprentissage de l’arabe en nous appuyant sur une expérience
+              acquise en Égypte, des supports sélectionnés avec soin et une
+              progression pensée étape par étape.
             </p>
 
             <div className="space-y-6">
               {features.map((feature, index) => (
                 <div key={index} className="flex gap-4">
-                  <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <feature.icon className="h-6 w-6 text-secondary" />
+                  <div className="w-12 h-12 bg-secondary/25 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <feature.icon className="h-6 w-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-primary mb-1">
                       {feature.title}
                     </h3>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-gray-600 text-sm leading-relaxed">
                       {feature.description}
                     </p>
                   </div>
@@ -85,18 +137,63 @@ function FeaturesSection() {
             </Link>
           </div>
 
-          <div className="relative">
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
-              <Image
-                src="https://images.unsplash.com/photo-1622228862102-d691d3e2a334?w=800&q=80"
-                alt="Apprentissage de l'arabe"
-                fill
-                className="object-cover"
-              />
+          {/* Colonne image + trajet Égypte → France */}
+          <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl">
+            <Image
+              src="/images/home/experience-egypte.png"
+              alt="Vue sur une mosquée du Caire avec des livres d'apprentissage de l'arabe"
+              fill
+              className="object-cover object-right"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+            {/* Voile clair en haut pour la lisibilité du texte */}
+            <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-white/85 via-white/45 to-transparent" />
+
+            <div className="absolute inset-x-0 top-0 p-6 sm:p-8">
+              <p className="text-center font-serif text-lg sm:text-xl font-bold text-primary">
+                Une expérience acquise
+                <br />
+                en Égypte
+              </p>
+              <p className="mt-1 text-center text-sm text-primary/70">
+                au service des francophones
+              </p>
+
+              {/* Trajet Égypte → France (pointillés en courbe) */}
+              <div className="mx-auto mt-5 flex max-w-[300px] items-start justify-between gap-2">
+                <div className="flex shrink-0 flex-col items-center">
+                  <MapPin className="h-5 w-5 fill-primary text-primary" />
+                  <span className="mt-1 text-xs font-medium text-primary/80">
+                    Égypte
+                  </span>
+                </div>
+                <div className="relative mt-1 flex-1">
+                  <svg
+                    viewBox="0 0 180 26"
+                    className="w-full"
+                    fill="none"
+                    preserveAspectRatio="xMidYMid meet"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M4 18 Q 90 -4 176 18"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      strokeDasharray="2 5"
+                      strokeLinecap="round"
+                      className="text-primary/45"
+                    />
+                  </svg>
+                  <Plane className="absolute left-1/2 top-[15%] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 fill-primary text-primary" />
+                </div>
+                <div className="flex shrink-0 flex-col items-center">
+                  <MapPin className="h-5 w-5 fill-primary text-primary" />
+                  <span className="mt-1 text-xs font-medium text-primary/80">
+                    France
+                  </span>
+                </div>
+              </div>
             </div>
-            {/* Decorative element (masqué en mobile pour éviter le débordement latéral) */}
-            <div className="hidden sm:block absolute -bottom-6 -left-6 w-24 h-24 bg-secondary rounded-2xl -z-10" />
-            <div className="hidden sm:block absolute -top-6 -right-6 w-32 h-32 border-4 border-primary rounded-2xl -z-10" />
           </div>
         </div>
       </div>
