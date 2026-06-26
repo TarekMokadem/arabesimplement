@@ -33,7 +33,7 @@ const footerLinks = {
       label: "Les invocations matin et soir",
     },
     {
-      href: "/boutique/apprends-a-lire-le-coran",
+      href: boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.tajwid),
       label: "Tajwid",
     },
   ],

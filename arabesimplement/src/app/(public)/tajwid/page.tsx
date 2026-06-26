@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/PageHeader";
+import {
+  MARKETING_BOUTIQUE_SLUGS,
+  boutiqueFormationHref,
+} from "@/lib/content/marketing-boutique-links";
 
 const tajwidRules = [
   {
@@ -134,7 +138,7 @@ export default function TajwidPage() {
           <h2 className="font-serif text-3xl font-bold text-white mb-6">
             Prêt à perfectionner votre récitation ?
           </h2>
-          <Link href="/boutique/formation-tajwid">
+          <Link href={boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.tajwid)}>
             <Button className="bg-secondary text-secondary-foreground hover:bg-white hover:text-primary px-8 py-6 text-lg">
               Découvrir la formation Tajwid
               <ArrowRight className="ml-2 h-5 w-5" />

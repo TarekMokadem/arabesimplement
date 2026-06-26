@@ -67,6 +67,53 @@ function UsersFilledIcon({ className }: { className?: string }) {
   );
 }
 
+// Bloc "expérience Égypte" + trajet Égypte → France (partagé desktop/mobile)
+function ExperienceEgypteContent() {
+  return (
+    <>
+      <p className="text-center font-serif text-lg sm:text-xl font-bold text-primary">
+        Une expérience acquise
+        <br />
+        en Égypte
+      </p>
+      <p className="mt-1 text-center text-sm text-primary/70">
+        au service des francophones
+      </p>
+
+      {/* Trajet Égypte → France (pointillés en courbe) */}
+      <div className="mx-auto mt-5 flex max-w-[300px] items-start justify-between gap-2">
+        <div className="flex shrink-0 flex-col items-center">
+          <MapPin className="h-5 w-5 fill-primary text-primary" />
+          <span className="mt-1 text-xs font-medium text-primary/80">Égypte</span>
+        </div>
+        <div className="relative mt-1 flex-1">
+          <svg
+            viewBox="0 0 180 26"
+            className="w-full"
+            fill="none"
+            preserveAspectRatio="xMidYMid meet"
+            aria-hidden="true"
+          >
+            <path
+              d="M4 18 Q 90 -4 176 18"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeDasharray="2 5"
+              strokeLinecap="round"
+              className="text-primary/45"
+            />
+          </svg>
+          <Plane className="absolute left-1/2 top-[15%] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 fill-primary text-primary" />
+        </div>
+        <div className="flex shrink-0 flex-col items-center">
+          <MapPin className="h-5 w-5 fill-primary text-primary" />
+          <span className="mt-1 text-xs font-medium text-primary/80">France</span>
+        </div>
+      </div>
+    </>
+  );
+}
+
 // Section "Pourquoi nous choisir"
 function FeaturesSection() {
   const features = [
@@ -137,63 +184,26 @@ function FeaturesSection() {
             </Link>
           </div>
 
-          {/* Colonne image + trajet Égypte → France */}
-          <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl">
+          {/* Colonne droite — Desktop & tablette : photo cadrée à droite + overlay */}
+          <div className="relative hidden aspect-square overflow-hidden rounded-3xl shadow-2xl md:block">
             <Image
               src="/images/home/experience-egypte.png"
               alt="Vue sur une mosquée du Caire avec des livres d'apprentissage de l'arabe"
               fill
               className="object-cover object-right"
-              sizes="(max-width: 1024px) 100vw, 50vw"
+              sizes="50vw"
             />
             {/* Voile clair en haut pour la lisibilité du texte */}
             <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-white/85 via-white/45 to-transparent" />
 
             <div className="absolute inset-x-0 top-0 p-6 sm:p-8">
-              <p className="text-center font-serif text-lg sm:text-xl font-bold text-primary">
-                Une expérience acquise
-                <br />
-                en Égypte
-              </p>
-              <p className="mt-1 text-center text-sm text-primary/70">
-                au service des francophones
-              </p>
-
-              {/* Trajet Égypte → France (pointillés en courbe) */}
-              <div className="mx-auto mt-5 flex max-w-[300px] items-start justify-between gap-2">
-                <div className="flex shrink-0 flex-col items-center">
-                  <MapPin className="h-5 w-5 fill-primary text-primary" />
-                  <span className="mt-1 text-xs font-medium text-primary/80">
-                    Égypte
-                  </span>
-                </div>
-                <div className="relative mt-1 flex-1">
-                  <svg
-                    viewBox="0 0 180 26"
-                    className="w-full"
-                    fill="none"
-                    preserveAspectRatio="xMidYMid meet"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M4 18 Q 90 -4 176 18"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      strokeDasharray="2 5"
-                      strokeLinecap="round"
-                      className="text-primary/45"
-                    />
-                  </svg>
-                  <Plane className="absolute left-1/2 top-[15%] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 fill-primary text-primary" />
-                </div>
-                <div className="flex shrink-0 flex-col items-center">
-                  <MapPin className="h-5 w-5 fill-primary text-primary" />
-                  <span className="mt-1 text-xs font-medium text-primary/80">
-                    France
-                  </span>
-                </div>
-              </div>
+              <ExperienceEgypteContent />
             </div>
+          </div>
+
+          {/* Colonne droite — Mobile : carte épurée sans photo (plus lisible) */}
+          <div className="rounded-3xl border border-[#d8e2cf] bg-gradient-to-b from-[#eef3e8] to-[#e3ecd9] p-6 md:hidden">
+            <ExperienceEgypteContent />
           </div>
         </div>
       </div>

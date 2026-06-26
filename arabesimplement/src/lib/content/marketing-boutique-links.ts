@@ -7,8 +7,12 @@ export const MARKETING_BOUTIQUE_SLUGS = {
   lectureArabe: "apprendre-a-lire-l-arabe-en-10-lecons",
   /** Invocations matin & soir (fiche boutique en production). */
   invocationsMatinSoir: "les-invocations-matin-et-soir",
-  /** Fiche Tajwid en boutique (la page contenu `/tajwid` reste disponible séparément). */
-  tajwid: "formation-tajwid",
+  /**
+   * Parcours Tajwid / récitation : la fiche dédiée n'est pas publiée en
+   * production, on redirige vers la fiche « Lire le Coran en 10 leçons »
+   * (la page contenu `/tajwid` reste disponible séparément).
+   */
+  tajwid: "apprends-a-lire-le-coran",
 } as const;
 
 export function boutiqueFormationHref(slug: string): string {

@@ -5,7 +5,6 @@ import {
   BookOpen,
   Box,
   CheckCircle2,
-  ChevronDown,
   Clock,
   Users,
 } from "lucide-react";
@@ -170,82 +169,84 @@ export function HeroLireArabeSection({
         </div>
       </div>
 
-      {/* ===== Mobile : version empilée, parcours vertical lisible ===== */}
-      <div className="overflow-x-hidden px-4 md:hidden">
-        <div className="mx-auto max-w-md text-center">
-          <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-[#e7efe0] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#3f6b3a]">
-            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" style={{ color: HERO_GREEN }} />
-            Méthode progressive &amp; approuvée
-          </span>
+      {/* ===== Mobile : version épurée, parcours en timeline verticale ===== */}
+      <div className="px-5 md:hidden">
+        <div className="mx-auto max-w-md">
+          <div className="flex justify-center">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e7efe0] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#3f6b3a]">
+              <CheckCircle2 className="h-3.5 w-3.5 shrink-0" style={{ color: HERO_GREEN }} />
+              Méthode progressive &amp; approuvée
+            </span>
+          </div>
 
-          <h1 className="mt-4 font-serif text-[1.75rem] font-bold leading-tight text-[#20291b]">
+          <h1 className="mt-4 text-center font-serif text-[2rem] font-bold leading-[1.12] text-[#20291b]">
             Apprenez à lire l’arabe{" "}
             <span style={{ color: HERO_GREEN }}>en 10 leçons</span>
           </h1>
 
-          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-[#5b6353]">
+          <p className="mx-auto mt-3 max-w-sm text-center text-[15px] leading-relaxed text-[#5b6353]">
             Passez progressivement de la découverte de l’alphabet à la lecture de
-            vos premiers mots et textes arabes.
+            vos premiers mots et textes.
           </p>
 
-          <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-2xl shadow-sm">
-            <Image
-              src={HERO_BG}
-              alt="Bureau avec deux carnets : alphabet arabe et premiers textes"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
-          </div>
-
-          {/* Parcours : Aujourd'hui → 10 leçons → Après */}
-          <div className="mt-6 flex flex-col items-center gap-2">
-            <div className="w-full rounded-xl border border-[#e4e2d7] bg-white/80 p-4 text-center">
-              <span className="inline-flex rounded-md bg-[#6f6f64] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-white">
+          {/* Timeline : Aujourd'hui → 10 leçons → Après */}
+          <ol className="relative mt-8 space-y-6 border-l-2 border-dashed border-[#cdd8c2] pl-7">
+            <li className="relative">
+              <span
+                className="absolute -left-[37px] flex h-7 w-7 items-center justify-center rounded-full bg-[#6f6f64] ring-4 ring-[#f4f2ea]"
+                aria-hidden
+              >
+                <span className="h-2 w-2 rounded-full bg-white" />
+              </span>
+              <span className="inline-flex rounded-md bg-[#6f6f64]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#5f5f55]">
                 Aujourd’hui
               </span>
-              <p className="mt-2 text-sm font-semibold text-[#2b3326]">
+              <p className="mt-1.5 text-[15px] font-semibold leading-snug text-[#2b3326]">
                 Vous ne connaissez{" "}
                 <span style={{ color: HERO_GREEN }}>pas encore</span> l’alphabet
               </p>
-            </div>
+            </li>
 
-            <ChevronDown className="h-5 w-5 shrink-0" style={{ color: HERO_GREEN }} aria-hidden />
-
-            <div className="flex flex-col items-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e7efe0]">
-                <BookOpen className="h-6 w-6" style={{ color: HERO_GREEN }} />
+            <li className="relative">
+              <span
+                className="absolute -left-[39px] flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-[#f4f2ea]"
+                style={{ backgroundColor: HERO_GREEN }}
+                aria-hidden
+              >
+                <BookOpen className="h-4 w-4 text-white" />
               </span>
-              <p className="mt-2 text-xl font-bold" style={{ color: HERO_GREEN }}>
-                10 leçons
+              <p className="text-lg font-bold leading-tight" style={{ color: HERO_GREEN }}>
+                10 leçons progressives
               </p>
-              <p className="text-lg font-bold text-[#243019]">progressives</p>
-              <p className="mx-auto mt-1 max-w-xs text-xs leading-snug text-[#6a7160]">
+              <p className="mt-1.5 text-[13px] leading-snug text-[#6a7160]">
                 Une méthode claire, étape par étape, pour des bases solides et
                 durables.
               </p>
-            </div>
+            </li>
 
-            <ChevronDown className="h-5 w-5 shrink-0" style={{ color: HERO_GREEN }} aria-hidden />
-
-            <div className="w-full rounded-xl border border-[#e4e2d7] bg-white/80 p-4 text-center">
-              <span className="inline-flex rounded-md bg-[#7d9a70] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-white">
+            <li className="relative">
+              <span
+                className="absolute -left-[37px] flex h-7 w-7 items-center justify-center rounded-full bg-[#7d9a70] ring-4 ring-[#f4f2ea]"
+                aria-hidden
+              >
+                <span className="h-2 w-2 rounded-full bg-white" />
+              </span>
+              <span className="inline-flex rounded-md bg-[#7d9a70]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#5d7a50]">
                 Après 10 leçons
               </span>
-              <p className="mt-2 text-sm font-semibold text-[#2b3326]">
+              <p className="mt-1.5 text-[15px] font-semibold leading-snug text-[#2b3326]">
                 Vous commencez à lire{" "}
                 <span style={{ color: HERO_GREEN }}>
                   vos premiers mots et textes
                 </span>
               </p>
-            </div>
-          </div>
+            </li>
+          </ol>
 
-          <div className="mt-6 flex flex-col gap-3">
+          <div className="mt-8 flex flex-col gap-3">
             <Link
               href={decouvrirHref}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3 text-base font-semibold text-white shadow-md"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-base font-semibold text-white shadow-md"
               style={{ backgroundColor: HERO_GREEN }}
             >
               Découvrir la méthode
@@ -253,20 +254,20 @@ export function HeroLireArabeSection({
             </Link>
             <Link
               href={programmeHref}
-              className="inline-flex w-full items-center justify-center rounded-lg border border-[#cdd8c2] bg-white px-6 py-3 text-base font-semibold text-[#2b3326] shadow-sm"
+              className="inline-flex w-full items-center justify-center rounded-xl border border-[#cdd8c2] bg-white px-6 py-3.5 text-base font-semibold text-[#2b3326] shadow-sm"
             >
               Voir le programme
             </Link>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-[#e4e2d7] bg-white/80 p-4">
+          <div className="mt-8 rounded-2xl border border-[#e4e2d7] bg-white/70 p-4">
             <div className="grid grid-cols-2 gap-x-3 gap-y-4">
               {TRUST_ITEMS.map((item) => (
-                <div key={item.lines[0]} className="flex items-center gap-2 text-left">
+                <div key={item.lines[0]} className="flex items-center gap-2.5 text-left">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#e7efe0]">
                     <item.icon className="h-4 w-4" style={{ color: HERO_GREEN }} />
                   </span>
-                  <p className="text-[12px] leading-snug text-[#3a4233]">
+                  <p className="text-[12px] font-medium leading-snug text-[#3a4233]">
                     {item.lines[0]} {item.lines[1]}
                   </p>
                 </div>
