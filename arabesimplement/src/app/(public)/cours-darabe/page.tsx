@@ -1,8 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { buttonVariants } from "@/components/ui/button-variants";
@@ -11,6 +8,7 @@ import {
   MARKETING_BOUTIQUE_SLUGS,
   boutiqueFormationHref,
 } from "@/lib/content/marketing-boutique-links";
+import { NotreMethodeSection } from "@/components/home/NotreMethodeSection";
 
 const sessionHighlights = [
   {
@@ -58,43 +56,6 @@ const sessionHighlights = [
       "object-contain object-center mix-blend-screen p-3 md:p-4 contrast-[1.02]",
   },
 ] as const;
-
-const methodSteps = [
-  {
-    number: "01",
-    title: "Les lettres isolées",
-    description: "Apprenez à reconnaître et prononcer chaque lettre de l'alphabet arabe.",
-  },
-  {
-    number: "02",
-    title: "Les voyelles courtes",
-    description: "Maîtrisez les trois voyelles de base : fatha, kasra et damma.",
-  },
-  {
-    number: "03",
-    title: "Les lettres attachées",
-    description: "Découvrez comment les lettres se transforment selon leur position.",
-  },
-  {
-    number: "04",
-    title: "Les voyelles longues",
-    description: "Perfectionnez votre lecture avec les prolongations.",
-  },
-  {
-    number: "05",
-    title: "La lecture fluide",
-    description: "Lisez vos premiers textes en arabe avec confiance.",
-  },
-];
-
-const benefits = [
-  "Méthode progressive adaptée aux débutants",
-  "Vidéos HD avec sous-titres français",
-  "Exercices pratiques après chaque leçon",
-  "Support PDF téléchargeable",
-  "Accès illimité à vie",
-  "Groupe WhatsApp pour les questions",
-];
 
 export default function CoursDarabePage() {
   return (
@@ -163,86 +124,7 @@ export default function CoursDarabePage() {
         </div>
       </section>
 
-      {/* Method Section */}
-      <section className="py-12 sm:py-16 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-            <div>
-              <Badge className="mb-4 bg-secondary/10 text-secondary border-secondary/20">
-                Notre méthode
-              </Badge>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-6">
-                Apprendre à lire l&apos;arabe, étape par étape
-              </h2>
-              <p className="text-gray-600 mb-8 leading-relaxed">
-                Notre programme a été conçu spécifiquement pour les francophones qui partent de zéro. Chaque leçon s&apos;appuie sur la précédente, vous permettant de progresser naturellement sans jamais vous sentir submergé.
-              </p>
-
-              <div className="space-y-4">
-                {methodSteps.map((step, index) => (
-                  <div key={index} className="flex gap-4 items-start">
-                    <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                      <span className="text-secondary font-bold text-sm">{step.number}</span>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-primary">{step.title}</h3>
-                      <p className="text-gray-600 text-sm">{step.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
-                <Image
-                  src="https://images.unsplash.com/photo-1622228862102-d691d3e2a334?w=800&q=80"
-                  alt="Apprentissage de l'arabe"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-secondary rounded-2xl -z-10" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits Section */}
-      <section className="py-12 sm:py-16 md:py-20 bg-surface">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
-            <h2 className="font-serif text-3xl font-bold text-primary mb-4">
-              Ce qui est inclus
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Tout ce dont vous avez besoin pour réussir votre apprentissage.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {benefits.map((benefit, index) => (
-              <Card key={index} className="bg-white">
-                <CardContent className="p-6 flex items-center gap-4">
-                  <CheckCircle className="h-6 w-6 text-accent flex-shrink-0" />
-                  <span className="text-primary">{benefit}</span>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link
-              href={boutiqueFormationHref(MARKETING_BOUTIQUE_SLUGS.lectureArabe)}
-            >
-              <Button className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg">
-                Commencer maintenant
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <NotreMethodeSection />
     </div>
   );
 }
