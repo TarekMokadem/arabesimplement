@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Star, Pencil } from "lucide-react";
+import { Star, Pencil, Mic } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
+import { TestimonialAudioPlayer } from "@/components/testimonials/TestimonialAudioPlayer";
 import { getTestimonialsForAdmin } from "@/lib/data/testimonials.service";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { TestimonialModerationButtons } from "./TestimonialModerationButtons";
@@ -88,7 +89,20 @@ export default async function TemoignagesPage() {
                     {t.approuve ? "Approuvé" : "En attente"}
                   </Badge>
                 </div>
-                <p className="text-gray-600 mb-4">&ldquo;{t.texte}&rdquo;</p>
+                {t.kind === "AUDIO" && t.audioUrl ? (
+                  <div className="mb-4 space-y-2">
+                    <Badge className="bg-primary/10 text-primary">
+                      <Mic className="h-3 w-3 mr-1" />
+                      Audio
+                    </Badge>
+                    <TestimonialAudioPlayer src={t.audioUrl} />
+                    {t.texte.trim() ? (
+                      <p className="text-gray-600 text-sm">{t.texte}</p>
+                    ) : null}
+                  </div>
+                ) : (
+                  <p className="text-gray-600 mb-4">&ldquo;{t.texte}&rdquo;</p>
+                )}
                 <div className="flex flex-wrap gap-2 pt-2 border-t">
                   <Link
                     href={`/admin/temoignages/${t.id}/modifier`}

@@ -166,6 +166,18 @@
     background-size: 200% 200%;
     animation: brandShimmer 3s ease-in-out infinite;
   }
+
+  .animate-offer-cta {
+    animation: offerCtaPulse 2.4s ease-in-out infinite;
+  }
+
+  .animate-offer-countdown {
+    animation: offerCountdownPop 1s ease-out;
+  }
+
+  .animate-offer-badge {
+    animation: offerBadgeGlow 2.2s ease-in-out infinite;
+  }
 }
 
 @keyframes fadeIn {
@@ -187,6 +199,30 @@
 @keyframes brandShimmer {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+}
+
+@keyframes offerCtaPulse {
+  0%, 100% { box-shadow: 0 8px 20px rgba(50, 69, 48, 0.18); transform: translateY(0); }
+  50% { box-shadow: 0 12px 28px rgba(50, 69, 48, 0.32); transform: translateY(-1px); }
+}
+
+@keyframes offerCountdownPop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes offerBadgeGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(168, 198, 148, 0.45); }
+  50% { box-shadow: 0 0 0 6px rgba(168, 198, 148, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-offer-cta,
+  .animate-offer-countdown,
+  .animate-offer-badge {
+    animation: none !important;
+  }
 }
 
 /* Custom scrollbar */

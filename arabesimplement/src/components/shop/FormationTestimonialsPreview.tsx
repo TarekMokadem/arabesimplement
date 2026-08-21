@@ -3,8 +3,12 @@ import { Star } from "lucide-react";
 import type { Testimonial } from "@prisma/client";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
+import { TestimonialAudioPlayer } from "@/components/testimonials/TestimonialAudioPlayer";
 
-type Row = Pick<Testimonial, "id" | "nom" | "texte" | "note">;
+type Row = Pick<
+  Testimonial,
+  "id" | "nom" | "texte" | "note" | "kind" | "audioUrl"
+>;
 
 export function FormationTestimonialsPreview({ rows }: { rows: Row[] }) {
   if (rows.length === 0) return null;
@@ -56,9 +60,20 @@ export function FormationTestimonialsPreview({ rows }: { rows: Row[] }) {
                 />
               ))}
             </div>
-            <p className="text-gray-700 text-sm leading-relaxed line-clamp-5">
-              « {t.texte} »
-            </p>
+            {t.kind === "AUDIO" && t.audioUrl ? (
+              <div className="space-y-2">
+                <TestimonialAudioPlayer src={t.audioUrl} />
+                {t.texte.trim() ? (
+                  <p className="text-gray-700 text-sm leading-relaxed line-clamp-3">
+                    {t.texte}
+                  </p>
+                ) : null}
+              </div>
+            ) : (
+              <p className="text-gray-700 text-sm leading-relaxed line-clamp-5">
+                « {t.texte} »
+              </p>
+            )}
             <p className="mt-3 text-sm font-medium text-primary">— {t.nom}</p>
           </li>
         ))}

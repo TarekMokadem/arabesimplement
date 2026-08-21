@@ -44,3 +44,33 @@ export async function uploadFormationImageToCloudinary(
   });
   return { url: result.secure_url };
 }
+
+/**
+ * Envoie un fichier audio vers Cloudinary (resource_type video : MP3, WAV, WebM, M4A).
+ */
+export async function uploadTestimonialAudioToCloudinary(
+  buffer: Buffer,
+  mimeType: string
+): Promise<{ url: string }> {
+  const cloudName = envTrim("CLOUDINARY_CLOUD_NAME");
+  const apiKey = envTrim("CLOUDINARY_API_KEY");
+  const apiSecret = envTrim("CLOUDINARY_API_SECRET");
+  if (!cloudName || !apiKey || !apiSecret) {
+    throw new Error("Cloudinary non configuré");
+  }
+  cloudinary.config({
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
+    secure: true,
+  });
+  const b64 = buffer.toString("base64");
+  const dataUri = `data:${mimeType};base64,${b64}`;
+  const result = await cloudinary.uploader.upload(dataUri, {
+    folder: "arabesimplement/testimonials",
+    resource_type: "video",
+    overwrite: false,
+    unique_filename: true,
+  });
+  return { url: result.secure_url };
+}

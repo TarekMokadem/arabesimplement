@@ -41,7 +41,7 @@ function MethodStepsList({ variant }: { variant: "mobile" | "desktop" }) {
     <ol
       className={
         isMobile
-          ? "relative space-y-0 border-l-2 border-dashed border-primary/25 pl-5"
+          ? "relative space-y-0 border-l-2 border-dashed border-primary/25 pl-6"
           : "space-y-5"
       }
     >
@@ -56,7 +56,7 @@ function MethodStepsList({ variant }: { variant: "mobile" | "desktop" }) {
         >
           {isMobile ? (
             <>
-              <span className="absolute -left-[calc(1.25rem+1px)] top-0 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-md bg-primary text-[11px] font-bold text-white">
+              <span className="absolute -left-[calc(1.5rem+1px)] top-0 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-md bg-primary text-[11px] font-bold text-white">
                 {step.number}
               </span>
               <div className="rounded-xl border border-[#d8e2cf] bg-[#f4f5f0]/80 px-4 py-3">
@@ -97,7 +97,7 @@ export function NotreMethodeSection() {
       id="notre-methode"
       className="scroll-mt-24 bg-white py-10 sm:py-16 md:py-24"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6">
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
           {/* Colonne texte */}
           <div>

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 
 export async function getApprovedTestimonials(): Promise<
-  Pick<Testimonial, "id" | "nom" | "texte" | "note">[]
+  Pick<Testimonial, "id" | "nom" | "texte" | "note" | "kind" | "audioUrl">[]
 > {
   if (!isDatabaseConfigured()) {
     return [];
@@ -12,7 +12,14 @@ export async function getApprovedTestimonials(): Promise<
     return await prisma.testimonial.findMany({
       where: { approuve: true },
       orderBy: { createdAt: "desc" },
-      select: { id: true, nom: true, texte: true, note: true },
+      select: {
+        id: true,
+        nom: true,
+        texte: true,
+        note: true,
+        kind: true,
+        audioUrl: true,
+      },
     });
   } catch (e) {
     console.error("[getApprovedTestimonials]", e);
@@ -23,7 +30,9 @@ export async function getApprovedTestimonials(): Promise<
 /** Avis approuvés les plus récents (aperçu boutique / fiches). */
 export async function getApprovedTestimonialsPreview(
   limit: number
-): Promise<Pick<Testimonial, "id" | "nom" | "texte" | "note">[]> {
+): Promise<
+  Pick<Testimonial, "id" | "nom" | "texte" | "note" | "kind" | "audioUrl">[]
+> {
   const cap = Math.min(Math.max(1, limit), 10);
   if (!isDatabaseConfigured()) {
     return [];
@@ -33,7 +42,14 @@ export async function getApprovedTestimonialsPreview(
       where: { approuve: true },
       orderBy: { createdAt: "desc" },
       take: cap,
-      select: { id: true, nom: true, texte: true, note: true },
+      select: {
+        id: true,
+        nom: true,
+        texte: true,
+        note: true,
+        kind: true,
+        audioUrl: true,
+      },
     });
   } catch (e) {
     console.error("[getApprovedTestimonialsPreview]", e);

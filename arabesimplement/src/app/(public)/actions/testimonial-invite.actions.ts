@@ -51,6 +51,7 @@ export async function submitStudentTestimonial(
       data: {
         nom: parsed.data.nom,
         texte: parsed.data.texte,
+        kind: "TEXT",
         note: parsed.data.note,
         approuve: false,
       },

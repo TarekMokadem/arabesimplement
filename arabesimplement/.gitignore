@@ -44,4 +44,8 @@ next-env.d.ts
 /public/uploads/formations/*
 !/public/uploads/formations/.gitkeep
 
+# Audios témoignages uploadés en local (gardez .gitkeep)
+/public/uploads/testimonials/*
+!/public/uploads/testimonials/.gitkeep
+
 /src/generated/prisma

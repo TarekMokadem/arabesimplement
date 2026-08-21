@@ -47,6 +47,11 @@ enum FormationSchedulingMode {
   FIXED_SLOTS
 }
 
+enum TestimonialKind {
+  TEXT
+  AUDIO
+}
+
 enum CreneauStatus {
   OPEN
   FULL
@@ -183,6 +188,8 @@ model Order {
   reglementVersion      String?     @map("reglement_version")
   /** Évite l’envoi en double de l’e-mail de bienvenue ou du guide « prochaines étapes ». */
   purchaseFollowupEmailSentAt DateTime? @map("purchase_followup_email_sent_at")
+  /** Évite l’envoi en double de la notification admin (nouvelle inscription). */
+  adminEnrollmentEmailSentAt DateTime? @map("admin_enrollment_email_sent_at")
   createdAt             DateTime    @default(now()) @map("created_at")
 
   user                     User?                     @relation(fields: [userId], references: [id])
@@ -268,12 +275,15 @@ model ReglementInterieur {
 }
 
 model Testimonial {
-  id        String   @id @default(uuid())
+  id        String          @id @default(uuid())
   nom       String
-  texte     String   @db.Text
+  /** Légende / transcription ; peut être vide pour un avis audio. */
+  texte     String          @db.Text
+  kind      TestimonialKind @default(TEXT)
+  audioUrl  String?         @map("audio_url") @db.Text
   note      Int
-  approuve  Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
+  approuve  Boolean         @default(false)
+  createdAt DateTime        @default(now()) @map("created_at")
 
   invite TestimonialInvite?
 

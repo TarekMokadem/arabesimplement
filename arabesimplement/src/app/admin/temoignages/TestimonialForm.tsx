@@ -1,18 +1,19 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Resolver } from "react-hook-form";
 import { toast } from "sonner";
-import { Save } from "lucide-react";
+import { Mic, Save, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { TestimonialAudioPlayer } from "@/components/testimonials/TestimonialAudioPlayer";
 import {
   adminTestimonialWriteSchema,
   type AdminTestimonialWriteInput,
@@ -28,6 +29,7 @@ export function TestimonialForm(
 ) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [uploading, setUploading] = useState(false);
 
   const form = useForm<AdminTestimonialWriteInput>({
     resolver: zodResolver(
@@ -36,7 +38,37 @@ export function TestimonialForm(
     defaultValues: props.defaultValues,
   });
 
-  const { register, control, handleSubmit } = form;
+  const { register, control, handleSubmit, watch, setValue } = form;
+  const kind = watch("kind");
+  const audioUrl = watch("audioUrl");
+
+  const onAudioFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setUploading(true);
+    try {
+      const body = new FormData();
+      body.set("file", file);
+      const res = await fetch("/api/admin/temoignages/upload-audio", {
+        method: "POST",
+        body,
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok) {
+        toast.error(data.error ?? "Échec du téléversement");
+        return;
+      }
+      if (data.url) {
+        setValue("audioUrl", data.url, { shouldValidate: true });
+        toast.success("Audio ajouté");
+      }
+    } catch {
+      toast.error("Échec du téléversement");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const onSubmit = handleSubmit((data) => {
     startTransition(async () => {
@@ -46,7 +78,9 @@ export function TestimonialForm(
           toast.success("Témoignage créé");
           form.reset({
             nom: "",
+            kind: "TEXT",
             texte: "",
+            audioUrl: "",
             note: 5,
             approuve: false,
           });
@@ -82,6 +116,43 @@ export function TestimonialForm(
           </Link>
         )}
       </div>
+
+      <div className="space-y-2">
+        <Label>Type de témoignage</Label>
+        <Controller
+          name="kind"
+          control={control}
+          render={({ field }) => (
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => field.onChange("TEXT")}
+                className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
+                  field.value === "TEXT"
+                    ? "border-primary bg-primary text-white"
+                    : "border-gray-200 bg-white text-primary hover:bg-muted"
+                }`}
+              >
+                <Type className="h-4 w-4" />
+                Textuel
+              </button>
+              <button
+                type="button"
+                onClick={() => field.onChange("AUDIO")}
+                className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
+                  field.value === "AUDIO"
+                    ? "border-primary bg-primary text-white"
+                    : "border-gray-200 bg-white text-primary hover:bg-muted"
+                }`}
+              >
+                <Mic className="h-4 w-4" />
+                Audio
+              </button>
+            </div>
+          )}
+        />
+      </div>
+
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="t-nom">Nom affiché</Label>
@@ -103,15 +174,43 @@ export function TestimonialForm(
           />
         </div>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="t-texte">Texte</Label>
-        <Textarea id="t-texte" rows={5} {...register("texte")} />
-        {form.formState.errors.texte && (
-          <p className="text-sm text-red-600">
-            {form.formState.errors.texte.message}
+
+      {kind === "AUDIO" ? (
+        <div className="space-y-2">
+          <Label htmlFor="t-audio">Fichier audio</Label>
+          <Input
+            id="t-audio"
+            type="file"
+            accept="audio/mpeg,audio/mp3,audio/wav,audio/webm,audio/ogg,audio/mp4,audio/x-m4a,audio/aac"
+            onChange={onAudioFile}
+            disabled={uploading}
+          />
+          <p className="text-xs text-gray-500">
+            MP3, WAV, WebM, OGG ou M4A — 4 Mo max.
           </p>
-        )}
-      </div>
+          {audioUrl ? <TestimonialAudioPlayer src={audioUrl} /> : null}
+          {form.formState.errors.audioUrl && (
+            <p className="text-sm text-red-600">
+              {form.formState.errors.audioUrl.message}
+            </p>
+          )}
+          <div className="space-y-2 pt-2">
+            <Label htmlFor="t-texte">Légende (optionnel)</Label>
+            <Textarea id="t-texte" rows={3} {...register("texte")} />
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <Label htmlFor="t-texte">Texte</Label>
+          <Textarea id="t-texte" rows={5} {...register("texte")} />
+          {form.formState.errors.texte && (
+            <p className="text-sm text-red-600">
+              {form.formState.errors.texte.message}
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="flex items-center gap-2">
         <Controller
           name="approuve"
@@ -129,7 +228,7 @@ export function TestimonialForm(
       </div>
       <Button
         type="submit"
-        disabled={pending}
+        disabled={pending || uploading}
         className="bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
       >
         <Save className="h-4 w-4 mr-2" />

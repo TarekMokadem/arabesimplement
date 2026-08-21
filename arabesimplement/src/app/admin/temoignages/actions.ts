@@ -107,6 +107,11 @@ export async function createTestimonial(
       data: {
         nom: parsed.data.nom.trim(),
         texte: parsed.data.texte.trim(),
+        kind: parsed.data.kind,
+        audioUrl:
+          parsed.data.kind === "AUDIO"
+            ? parsed.data.audioUrl?.trim() || null
+            : null,
         note: parsed.data.note,
         approuve: parsed.data.approuve,
       },
@@ -137,6 +142,11 @@ export async function updateTestimonial(
       data: {
         nom: parsed.data.nom.trim(),
         texte: parsed.data.texte.trim(),
+        kind: parsed.data.kind,
+        audioUrl:
+          parsed.data.kind === "AUDIO"
+            ? parsed.data.audioUrl?.trim() || null
+            : null,
         note: parsed.data.note,
         approuve: parsed.data.approuve,
       },

@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { randomBytes } from "crypto";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -53,13 +54,15 @@ export async function attachUserToPaidGuestOrder(
   });
 
   if (credsEmail) {
-    const ok = await sendWelcomeCredentialsEmail(credsEmail);
-    if (ok) {
-      await prisma.order.update({
-        where: { id: orderId },
-        data: { purchaseFollowupEmailSentAt: new Date() },
-      });
-    }
+    after(async () => {
+      const ok = await sendWelcomeCredentialsEmail(credsEmail);
+      if (ok) {
+        await prisma.order.update({
+          where: { id: orderId },
+          data: { purchaseFollowupEmailSentAt: new Date() },
+        });
+      }
+    });
   }
 
   if (userId && order.stripeCustomerId) {

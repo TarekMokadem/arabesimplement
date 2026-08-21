@@ -38,6 +38,7 @@ export function SessionDuMoment({
     seconds: 0,
   });
   const [isExpired, setIsExpired] = useState(false);
+  const [tickKey, setTickKey] = useState(0);
 
   const showCountdown = expiresAt != null;
 
@@ -45,7 +46,7 @@ export function SessionDuMoment({
     if (!expiresAt) return;
 
     const calculateTimeLeft = () => {
-      const now = new Date().getTime();
+      const now = Date.now();
       const target = new Date(expiresAt).getTime();
       const difference = target - now;
 
@@ -60,6 +61,7 @@ export function SessionDuMoment({
         minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
         seconds: Math.floor((difference % (1000 * 60)) / 1000),
       });
+      setTickKey((k) => k + 1);
     };
 
     calculateTimeLeft();
@@ -74,64 +76,81 @@ export function SessionDuMoment({
     !hourly && prix > 0 && prixPromo > 0 && prixPromo < prix;
   const discount =
     showPromo ? Math.round(((prix - prixPromo) / prix) * 100) : 0;
+  const displayPrice = hourly
+    ? hourlyMinPriceEuros()
+    : showPromo
+      ? prixPromo
+      : prix;
 
   return (
     <section
-      className="py-16 bg-gradient-to-r from-brand-mint-100 to-brand-mint-50 border-y-4 border-secondary"
+      className="relative overflow-hidden border-y-4 border-secondary bg-gradient-to-br from-brand-mint-100 via-brand-mint-50 to-white py-12 sm:py-16"
       data-testid="session-du-moment"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div
-          className={`flex flex-col items-center gap-6 sm:gap-8 lg:gap-16 ${
-            showCountdown ? "lg:flex-row" : ""
-          }`}
-        >
-          {/* Left Content */}
+      <div
+        className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-secondary/25 blur-3xl"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -bottom-20 -left-10 h-48 w-48 rounded-full bg-primary/10 blur-3xl"
+        aria-hidden
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-stretch lg:gap-14">
           <div className="flex-1 text-center lg:text-left">
-            <div className="flex items-center gap-2 justify-center lg:justify-start mb-4">
+            <div className="mb-4 flex items-center justify-center gap-2 lg:justify-start">
               <Flame className="h-5 w-5 text-secondary animate-pulse" />
-              <Badge className="bg-secondary text-secondary-foreground hover:bg-secondary text-sm px-4 py-1">
+              <Badge className="animate-offer-badge bg-secondary px-4 py-1 text-sm text-secondary-foreground hover:bg-secondary">
                 {badge}
               </Badge>
             </div>
 
-            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 sm:mb-4">
+            <h2 className="mb-3 font-serif text-2xl font-bold leading-tight text-primary sm:mb-4 sm:text-3xl md:text-4xl">
               {titre}
             </h2>
 
-            <p className="text-gray-600 mb-4 sm:mb-6 max-w-xl text-sm sm:text-base">
+            <p className="mx-auto mb-5 max-w-xl text-sm leading-relaxed text-gray-600 sm:mb-6 sm:text-base lg:mx-0">
               {description}
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 justify-center lg:justify-start mb-6">
+            <div className="mb-6 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 lg:justify-start">
               {hourly ? (
                 <>
-                  <span className="text-2xl sm:text-4xl font-bold text-accent">
-                    Dès {formatPrice(hourlyMinPriceEuros())}
+                  <span className="text-3xl font-bold tracking-tight text-primary sm:text-5xl">
+                    Dès {formatPrice(displayPrice)}
                   </span>
                   <span className="text-sm text-gray-600">
                     par séance (durée au choix sur la fiche)
                   </span>
                 </>
-              ) : showPromo ? (
-                <>
-                  <span className="text-2xl sm:text-4xl font-bold text-accent">
-                    {prixPromo}€
-                  </span>
-                  <span className="text-xl text-gray-400 line-through">
-                    {prix}€
-                  </span>
-                  <Badge className="bg-red-500 text-white hover:bg-red-500">
-                    -{discount}%
-                  </Badge>
-                </>
               ) : (
-                <span className="text-2xl sm:text-4xl font-bold text-accent">{prix}€</span>
+                <>
+                  <span className="text-3xl font-bold tracking-tight text-primary sm:text-5xl">
+                    {displayPrice}€
+                  </span>
+                  {showPromo ? (
+                    <>
+                      <span className="text-lg text-gray-400 line-through sm:text-xl">
+                        {prix}€
+                      </span>
+                      <Badge className="bg-red-500 text-white hover:bg-red-500">
+                        -{discount}%
+                      </Badge>
+                    </>
+                  ) : null}
+                </>
               )}
             </div>
 
-            <Link href={`/boutique/${slug}#achat`}>
-              <Button className="w-full sm:w-auto bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all">
+            {showCountdown ? (
+              <div className="mb-6 lg:hidden">
+                <CountdownPanel timeLeft={timeLeft} tickKey={tickKey} />
+              </div>
+            ) : null}
+
+            <Link href={`/boutique/${slug}#achat`} className="inline-flex w-full sm:w-auto">
+              <Button className="animate-offer-cta w-full bg-primary px-6 py-6 text-base text-primary-foreground shadow-lg hover:bg-secondary hover:text-secondary-foreground sm:w-auto sm:px-8 sm:text-lg">
                 Rejoindre le programme
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -139,20 +158,8 @@ export function SessionDuMoment({
           </div>
 
           {showCountdown ? (
-            <div className="flex-shrink-0">
-              <div className="bg-primary rounded-2xl p-4 sm:p-6 text-white text-center w-full lg:w-auto">
-                <div className="flex items-center gap-2 justify-center mb-4">
-                  <Clock className="h-5 w-5 text-secondary" />
-                  <span className="text-sm text-gray-300">Offre expire dans</span>
-                </div>
-
-                <div className="flex gap-3">
-                  <TimeBlock value={timeLeft.days} label="Jours" />
-                  <TimeBlock value={timeLeft.hours} label="Heures" />
-                  <TimeBlock value={timeLeft.minutes} label="Min" />
-                  <TimeBlock value={timeLeft.seconds} label="Sec" />
-                </div>
-              </div>
+            <div className="hidden flex-shrink-0 lg:flex lg:items-center">
+              <CountdownPanel timeLeft={timeLeft} tickKey={tickKey} />
             </div>
           ) : null}
         </div>
@@ -161,13 +168,57 @@ export function SessionDuMoment({
   );
 }
 
-function TimeBlock({ value, label }: { value: number; label: string }) {
+function CountdownPanel({
+  timeLeft,
+  tickKey,
+}: {
+  timeLeft: { days: number; hours: number; minutes: number; seconds: number };
+  tickKey: number;
+}) {
   return (
-    <div className="bg-primary-light rounded-lg p-2 sm:p-3 min-w-[52px] sm:min-w-[60px]">
-      <div className="text-xl sm:text-3xl font-bold text-white font-mono">
+    <div className="w-full rounded-2xl bg-primary px-4 py-4 text-center text-white shadow-xl sm:px-6 sm:py-5 lg:w-auto">
+      <div className="mb-3 flex items-center justify-center gap-2">
+        <Clock className="h-4 w-4 text-secondary" />
+        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-secondary">
+          Offre expire dans
+        </span>
+      </div>
+      <div className="flex justify-center gap-2 sm:gap-3">
+        <TimeBlock value={timeLeft.days} label="Jours" />
+        <TimeBlock value={timeLeft.hours} label="Heures" />
+        <TimeBlock value={timeLeft.minutes} label="Min" />
+        <TimeBlock
+          value={timeLeft.seconds}
+          label="Sec"
+          highlightKey={tickKey}
+        />
+      </div>
+    </div>
+  );
+}
+
+function TimeBlock({
+  value,
+  label,
+  highlightKey,
+}: {
+  value: number;
+  label: string;
+  highlightKey?: number;
+}) {
+  return (
+    <div className="min-w-[52px] rounded-lg bg-primary-light p-2 sm:min-w-[64px] sm:p-3">
+      <div
+        key={highlightKey != null ? `${label}-${value}` : undefined}
+        className={`font-mono text-xl font-bold text-white sm:text-3xl ${
+          highlightKey != null ? "animate-offer-countdown" : ""
+        }`}
+      >
         {value.toString().padStart(2, "0")}
       </div>
-      <div className="text-xs text-gray-300 uppercase tracking-wide">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-gray-300 sm:text-xs">
+        {label}
+      </div>
     </div>
   );
 }

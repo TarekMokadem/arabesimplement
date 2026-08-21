@@ -1,6 +1,7 @@
 import { Star, Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { TestimonialAudioPlayer } from "@/components/testimonials/TestimonialAudioPlayer";
 import { getApprovedTestimonials } from "@/lib/data/testimonials.service";
 
 export default async function TemoignagesPage() {
@@ -60,9 +61,20 @@ export default async function TemoignagesPage() {
                     <CardContent className="p-6">
                       <Quote className="h-8 w-8 text-secondary/20 mb-4" />
 
-                      <p className="text-gray-600 leading-relaxed mb-6">
-                        &ldquo;{testimonial.texte}&rdquo;
-                      </p>
+                      {testimonial.kind === "AUDIO" && testimonial.audioUrl ? (
+                        <div className="mb-6 space-y-3">
+                          <TestimonialAudioPlayer src={testimonial.audioUrl} />
+                          {testimonial.texte.trim() ? (
+                            <p className="text-gray-600 leading-relaxed text-sm">
+                              {testimonial.texte}
+                            </p>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <p className="text-gray-600 leading-relaxed mb-6">
+                          &ldquo;{testimonial.texte}&rdquo;
+                        </p>
+                      )}
 
                       <div className="flex items-center justify-between pt-4 border-t">
                         <div>

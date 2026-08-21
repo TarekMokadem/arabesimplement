@@ -30,15 +30,15 @@ Le seed (**`npm run db:seed`**) est pour dev / recréation d’environnement, pa
 ## Stripe
 
 - Clés API dans les variables d’environnement Vercel (`STRIPE_*`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`).
-- **Webhook** : URL du type `https://www.<domaine>/api/webhooks/stripe`, secret **`STRIPE_WEBHOOK_SECRET`** aligné sur l’endpoint du dashboard Stripe.
-
-Sans webhook ou avec secret incorrect, les commandes peuvent rester **en attente** jusqu’à une synchro manuelle ou une action serveur prévue dans le code.
+- **Webhook** : URL **exacte** `https://www.arabesimplement.fr/api/webhooks/stripe` (avec `www`, sans redirection). Le secret **`STRIPE_WEBHOOK_SECRET`** doit correspondre à cet endpoint dans le dashboard Stripe.
+- Si Stripe signale des **échecs de livraison** : vérifier (1) l’URL n’est pas l’apex `arabesimplement.fr` (une redirection 301/308 casse le POST), (2) `STRIPE_WEBHOOK_SECRET` est bien défini en Production Vercel, (3) renvoyer les événements échoués depuis Stripe → Developers → Webhooks.
 
 ---
 
 ## Domaine et URLs canoniques
 
 - **`NEXT_PUBLIC_SITE_URL`** sur Vercel doit refléter le domaine public (ex. `https://www.arabesimplement.fr`) pour Open Graph, certains liens e-mail et cohérence générale.
+- **`ADMIN_NOTIFY_EMAIL`** (optionnel) : destinataire de l’alerte « nouvelle inscription ». Défaut : `arabeen10@gmail.com`.
 
 ---
 

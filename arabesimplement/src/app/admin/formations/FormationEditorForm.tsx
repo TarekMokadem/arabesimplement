@@ -397,12 +397,50 @@ export function FormationEditorForm(
               <Textarea id="featuredContent" rows={3} {...register("featuredContent")} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="featuredExpiresAt">Fin de l’offre (optionnel)</Label>
+              <Label htmlFor="featuredExpiresAt">Fin de l’offre (compte à rebours)</Label>
               <Input
                 id="featuredExpiresAt"
                 type="datetime-local"
                 {...register("featuredExpiresAt")}
               />
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { days: 3, label: "3 jours" },
+                  { days: 7, label: "7 jours" },
+                  { days: 14, label: "14 jours" },
+                  { days: 30, label: "30 jours" },
+                ].map((preset) => (
+                  <button
+                    key={preset.days}
+                    type="button"
+                    className="rounded-md border border-gray-200 bg-white px-2.5 py-1 text-xs text-primary hover:bg-muted"
+                    onClick={() => {
+                      const d = new Date();
+                      d.setDate(d.getDate() + preset.days);
+                      const pad = (n: number) => String(n).padStart(2, "0");
+                      const value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                      setValue("featuredExpiresAt", value, {
+                        shouldDirty: true,
+                      });
+                    }}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className="rounded-md border border-gray-200 bg-white px-2.5 py-1 text-xs text-gray-500 hover:bg-muted"
+                  onClick={() =>
+                    setValue("featuredExpiresAt", "", { shouldDirty: true })
+                  }
+                >
+                  Aucun
+                </button>
+              </div>
+              <p className="text-xs text-gray-500">
+                Choisissez une date ou un raccourci : le compte à rebours
+                s’affiche sur l’accueil tant que l’offre n’est pas expirée.
+              </p>
             </div>
           </div>
         </div>

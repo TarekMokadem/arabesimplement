@@ -147,6 +147,8 @@ export interface Testimonial {
   id: string;
   nom: string;
   texte: string;
+  kind: "TEXT" | "AUDIO";
+  audioUrl?: string | null;
   note: number;
   approuve: boolean;
   createdAt: Date;

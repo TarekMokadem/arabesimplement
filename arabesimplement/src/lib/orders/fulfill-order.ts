@@ -1,7 +1,9 @@
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import type { CreneauStatus } from "@prisma/client";
 import { attachUserToPaidGuestOrder } from "@/lib/orders/provision-guest-after-payment";
 import { sendPurchaseFollowupIfNeeded } from "@/lib/orders/send-purchase-followup";
+import { sendAdminEnrollmentEmailIfNeeded } from "@/lib/email/send-admin-enrollment";
 import { ensureCourseWeeklySubscriptionsForPaidOrder } from "@/lib/orders/sync-course-weekly-subscriptions";
 
 const ENROLLMENT_DAYS_AFTER_PAYMENT = 30;
@@ -104,5 +106,9 @@ export async function ensureEnrollmentsForPaidOrder(
   }
 
   await ensureCourseWeeklySubscriptionsForPaidOrder(orderId);
-  await sendPurchaseFollowupIfNeeded(orderId);
+
+  after(async () => {
+    await sendPurchaseFollowupIfNeeded(orderId);
+    await sendAdminEnrollmentEmailIfNeeded(orderId);
+  });
 }

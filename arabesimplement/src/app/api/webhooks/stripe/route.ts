@@ -14,6 +14,9 @@ import {
 } from "@/lib/stripe/stripe-payment-method-type";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+/** Stripe abandonne après ~20 s ; on laisse de la marge pour la BDD. */
+export const maxDuration = 30;
 
 async function persistStripePaymentMethodTypeForOrders(
   paymentIntentId: string,
@@ -68,31 +71,10 @@ async function cancelStripeSubscriptionIfAny(
   }
 }
 
-export async function POST(req: NextRequest) {
-  const rawBody = await req.text();
-  const signature = req.headers.get("stripe-signature");
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
-
-  if (!secret || !signature) {
-    return NextResponse.json({ error: "Configuration webhook manquante" }, {
-      status: 400,
-    });
-  }
-
-  let event: Stripe.Event;
-  try {
-    const stripe = getServerStripe();
-    event = stripe.webhooks.constructEvent(rawBody, signature, secret);
-  } catch (err) {
-    console.error("[webhook stripe] Signature", err);
-    return NextResponse.json({ error: "Signature invalide" }, { status: 400 });
-  }
-
+async function handleStripeEvent(event: Stripe.Event): Promise<void> {
   if (event.type === "payment_intent.succeeded") {
     const pi = event.data.object as Stripe.PaymentIntent;
-    if (pi.status !== "succeeded") {
-      return NextResponse.json({ received: true });
-    }
+    if (pi.status !== "succeeded") return;
     const orderIdMeta = pi.metadata?.orderId;
     const matching = await prisma.order.findMany({
       where: {
@@ -115,14 +97,13 @@ export async function POST(req: NextRequest) {
     if (orderIdsForPm.length > 0) {
       await persistStripePaymentMethodTypeForOrders(pi.id, orderIdsForPm);
     }
+    return;
   }
 
   if (event.type === "invoice.paid") {
     const invoice = event.data.object as Stripe.Invoice;
     const subId = getSubscriptionIdFromInvoice(invoice);
-    if (!subId || subId.startsWith("mock_sub_")) {
-      return NextResponse.json({ received: true });
-    }
+    if (!subId || subId.startsWith("mock_sub_")) return;
 
     const order = await prisma.order.findFirst({
       where: { stripeSubscriptionId: subId },
@@ -149,6 +130,7 @@ export async function POST(req: NextRequest) {
         await extendWeeklyAccessAfterRenewal(subId, end);
       }
     }
+    return;
   }
 
   if (event.type === "customer.subscription.updated") {
@@ -156,6 +138,7 @@ export async function POST(req: NextRequest) {
     if (!sub.id.startsWith("mock_sub_")) {
       await syncWeeklyRowsFromStripeSubscription(sub);
     }
+    return;
   }
 
   if (event.type === "customer.subscription.deleted") {
@@ -164,6 +147,7 @@ export async function POST(req: NextRequest) {
       where: { stripeSubscriptionId: sub.id },
       data: { status: "CANCELED" },
     });
+    return;
   }
 
   if (event.type === "payment_intent.payment_failed") {
@@ -188,6 +172,41 @@ export async function POST(req: NextRequest) {
         });
       }
     }
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const rawBody = await req.text();
+  const signature = req.headers.get("stripe-signature");
+  const secret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
+
+  if (!secret) {
+    console.error(
+      "[webhook stripe] STRIPE_WEBHOOK_SECRET manquant — les paiements resteront en attente."
+    );
+    return NextResponse.json({ error: "Configuration webhook manquante" }, {
+      status: 500,
+    });
+  }
+
+  if (!signature) {
+    return NextResponse.json({ error: "Signature manquante" }, { status: 400 });
+  }
+
+  let event: Stripe.Event;
+  try {
+    const stripe = getServerStripe();
+    event = stripe.webhooks.constructEvent(rawBody, signature, secret);
+  } catch (err) {
+    console.error("[webhook stripe] Signature", err);
+    return NextResponse.json({ error: "Signature invalide" }, { status: 400 });
+  }
+
+  try {
+    await handleStripeEvent(event);
+  } catch (err) {
+    console.error("[webhook stripe] Traitement", event.type, err);
+    return NextResponse.json({ error: "Traitement échoué" }, { status: 500 });
   }
 
   return NextResponse.json({ received: true });

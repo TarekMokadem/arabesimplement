@@ -21,7 +21,9 @@ export default async function ModifierTemoignagePage({
         id={t.id}
         defaultValues={{
           nom: t.nom,
+          kind: t.kind,
           texte: t.texte,
+          audioUrl: t.audioUrl ?? "",
           note: t.note,
           approuve: t.approuve,
         }}
