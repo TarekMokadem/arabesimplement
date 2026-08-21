@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Clock, Compass, Users, Calendar } from "lucide-react";
+import { ArrowLeft, Clock, Users, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PurchaseFormationPanel } from "@/components/shop/PurchaseFormationPanel";
 import { SchedulingModeExplainer } from "@/components/shop/SchedulingModeExplainer";
@@ -217,38 +217,6 @@ export default async function FormationPage({ params }: PageProps) {
                 <span>
                   {schedulingModeBoutiqueCalendarHint(formation.schedulingMode)}
                 </span>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-secondary/30 bg-gradient-to-br from-primary/[0.07] via-white to-secondary/[0.06] p-5 md:p-6 shadow-sm">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                <div
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-primary/10"
-                  aria-hidden
-                >
-                  <Compass className="h-5 w-5 text-secondary" />
-                </div>
-                <div className="min-w-0 flex-1 space-y-2">
-                  <p className="font-serif text-lg font-semibold text-primary leading-snug">
-                    Vous hésitez entre ce cours et un autre parcours ?
-                  </p>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Avant de vous inscrire, le guide{" "}
-                    <span className="font-medium text-primary">
-                      Par où commencer
-                    </span>{" "}
-                    pose quelques questions sur votre objectif (lecture du Coran,
-                    tajwid, invocations, niveau…) et vous propose une orientation
-                    adaptée — pour éviter de vous tromper de formation.
-                  </p>
-                  <Link
-                    href="/par-ou-commencer"
-                    className="inline-flex items-center gap-2 pt-1 text-sm font-semibold text-secondary hover:text-primary transition-colors"
-                  >
-                    Ouvrir le guide d&apos;orientation
-                    <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
-                  </Link>
-                </div>
               </div>
             </div>
 

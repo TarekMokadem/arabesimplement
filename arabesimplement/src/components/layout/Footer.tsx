@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Instagram, Mail, MapPin, MessageCircle, Send } from "lucide-react";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
-import { FinancialAidCta } from "@/components/shared/FinancialAidCta";
 import { SITE_CONTACT } from "@/lib/site-contact";
 import {
   MARKETING_BOUTIQUE_SLUGS,
@@ -192,10 +191,6 @@ export function Footer() {
                 <span>Partenaire — Égypte</span>
               </li>
             </ul>
-
-            <div className="mt-8">
-              <FinancialAidCta tone="dark" />
-            </div>
 
             <div className="mt-8">
               <h4 className="text-sm font-medium mb-4">Légal</h4>

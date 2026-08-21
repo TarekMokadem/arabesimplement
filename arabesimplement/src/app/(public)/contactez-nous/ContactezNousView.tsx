@@ -19,7 +19,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { FinancialAidCta } from "@/components/shared/FinancialAidCta";
 import {
   contactSchema,
   type ContactInput,
@@ -199,8 +198,6 @@ export function ContactezNousView({
                   </div>
                 </div>
               </div>
-
-              <FinancialAidCta className="bg-white" />
 
               <div className="bg-white rounded-xl p-6">
                 <h3 className="font-serif font-bold text-primary mb-4">
