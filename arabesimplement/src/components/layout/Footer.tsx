@@ -140,18 +140,11 @@ export function Footer() {
                 <MessageCircle className="h-4 w-4 text-secondary shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <a
-                    href={SITE_CONTACT.whatsappHommes.href}
+                    href={SITE_CONTACT.whatsapp.href}
                     className="block hover:text-white transition-colors"
                   >
-                    {SITE_CONTACT.whatsappHommes.label} —{" "}
-                    {SITE_CONTACT.whatsappHommes.display}
-                  </a>
-                  <a
-                    href={SITE_CONTACT.whatsappFemmes.href}
-                    className="block hover:text-white transition-colors"
-                  >
-                    {SITE_CONTACT.whatsappFemmes.label} —{" "}
-                    {SITE_CONTACT.whatsappFemmes.display}
+                    {SITE_CONTACT.whatsapp.label} —{" "}
+                    {SITE_CONTACT.whatsapp.display}
                   </a>
                 </div>
               </li>

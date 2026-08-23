@@ -130,16 +130,10 @@ export function ContactezNousView({
                     <div className="space-y-2">
                       <p className="font-medium text-primary">WhatsApp</p>
                       <a
-                        href={SITE_CONTACT.whatsappHommes.href}
+                        href={SITE_CONTACT.whatsapp.href}
                         className="block text-gray-600 hover:text-secondary"
                       >
-                        Hommes — {SITE_CONTACT.whatsappHommes.display}
-                      </a>
-                      <a
-                        href={SITE_CONTACT.whatsappFemmes.href}
-                        className="block text-gray-600 hover:text-secondary"
-                      >
-                        Femmes — {SITE_CONTACT.whatsappFemmes.display}
+                        {SITE_CONTACT.whatsapp.display}
                       </a>
                     </div>
                   </div>

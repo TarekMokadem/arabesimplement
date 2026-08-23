@@ -2,15 +2,10 @@
 
 export const SITE_CONTACT = {
   email: "arabeen10@gmail.com",
-  whatsappHommes: {
-    label: "WhatsApp (hommes)",
+  whatsapp: {
+    label: "WhatsApp",
     display: "+33 6 13 20 45 52",
     href: "https://wa.me/33613204552",
-  },
-  whatsappFemmes: {
-    label: "WhatsApp (femmes)",
-    display: "+33 6 29 84 70 42",
-    href: "https://wa.me/33629847042",
   },
   telegram: {
     label: "Telegram",

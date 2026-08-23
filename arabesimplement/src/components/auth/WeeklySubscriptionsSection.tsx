@@ -2,7 +2,6 @@
 
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import type { StudentSex } from "@prisma/client";
 import { MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -129,13 +128,11 @@ function statusLabel(s: WeeklyPanelRow["status"]): string {
 
 export function WeeklySubscriptionsSection({
   rows,
-  learnerSexe,
   readOnly = false,
   adminMode = false,
   showAdminLineEditors = false,
 }: {
   rows: WeeklyPanelRow[];
-  learnerSexe: StudentSex | null;
   /** Élève : affichage informatif uniquement (pas de pause / résiliation). */
   readOnly?: boolean;
   /** Admin : affiche les actions Stripe (pause, etc.). */
@@ -264,8 +261,8 @@ export function WeeklySubscriptionsSection({
           const totalMin = weeklyLinesTotalMinutes(lines);
           const detail = weeklyLinesDetailLabel(lines);
           const periodEnd = maxPeriodEndIso(lines);
-          const waUrl = learnerFormationWhatsAppUrl(learnerSexe, titre);
-          const waLabel = learnerWhatsAppCoachLabel(learnerSexe);
+          const waUrl = learnerFormationWhatsAppUrl(titre);
+          const waLabel = learnerWhatsAppCoachLabel();
           const toPause = activeStripeIds(lines);
           const toResume = pausedStripeIds(lines);
           const toCancel = cancellableStripeIds(lines);
@@ -324,23 +321,11 @@ export function WeeklySubscriptionsSection({
                     <MessageCircle className="h-3.5 w-3.5 shrink-0" />
                     WhatsApp — {waLabel}
                   </Link>
-                ) : learnerSexe ? (
+                ) : (
                   <span className="text-xs text-amber-800">
                     WhatsApp : configuration à compléter ou{" "}
                     <Link href="/contactez-nous" className="underline">
                       contact
-                    </Link>
-                    .
-                  </span>
-                ) : (
-                  <span className="text-xs text-gray-600">
-                    Indiquez votre sexe (prochain achat) pour le lien WhatsApp
-                    adapté, ou{" "}
-                    <Link
-                      href="/contactez-nous"
-                      className="underline text-secondary"
-                    >
-                      contactez-nous
                     </Link>
                     .
                   </span>

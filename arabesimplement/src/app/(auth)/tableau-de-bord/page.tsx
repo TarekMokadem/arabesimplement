@@ -113,7 +113,6 @@ export default async function TableauDeBordPage() {
           {weeklyPanel.length > 0 ? (
             <WeeklySubscriptionsSection
               rows={weeklyPanel}
-              learnerSexe={learnerSexe}
               readOnly
             />
           ) : (
@@ -161,11 +160,8 @@ export default async function TableauDeBordPage() {
               <CardContent className="space-y-4">
                 {courseGroups.map((group) => {
                   const titre = group.formationTitre;
-                  const coachWaUrl = learnerFormationWhatsAppUrl(
-                    learnerSexe,
-                    titre
-                  );
-                  const coachWaLabel = learnerWhatsAppCoachLabel(learnerSexe);
+                  const coachWaUrl = learnerFormationWhatsAppUrl(titre);
+                  const coachWaLabel = learnerWhatsAppCoachLabel();
                   const coursWaHref = group.assignedWhatsappUrl
                     ? normalizeWhatsappHref(group.assignedWhatsappUrl)
                     : null;
@@ -258,29 +254,15 @@ export default async function TableauDeBordPage() {
                               WhatsApp — {coachWaLabel}
                             </Link>
                           ) : null}
-                          {!coursWaHref && !coachWaUrl && learnerSexe ? (
+                          {!coursWaHref && !coachWaUrl ? (
                             <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
-                              Le lien WhatsApp de votre équipe n’est pas encore
-                              configuré. Utilisez{" "}
+                              Le lien WhatsApp n’est pas encore configuré.
+                              Utilisez{" "}
                               <Link
                                 href="/contactez-nous"
                                 className="underline font-medium"
                               >
                                 la page contact
-                              </Link>
-                              .
-                            </p>
-                          ) : null}
-                          {!coursWaHref && !coachWaUrl && !learnerSexe ? (
-                            <p className="text-xs text-gray-600">
-                              Pour afficher le bon numéro WhatsApp (équipe
-                              féminine ou masculine), indiquez votre sexe dans
-                              « Mes informations » ou{" "}
-                              <Link
-                                href="/contactez-nous"
-                                className="text-secondary underline font-medium"
-                              >
-                                contactez-nous
                               </Link>
                               .
                             </p>

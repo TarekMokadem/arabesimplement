@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Pencil } from "lucide-react";
-import type { StudentSex } from "@prisma/client";
 import { getUserForAdminById } from "@/lib/data/admin.service";
 import { getGroupedLearnerCoursesForAdmin } from "@/lib/data/learner-courses.service";
 import { getWeeklySubscriptionsForLearner } from "@/lib/data/weekly-subscriptions.service";
@@ -109,8 +108,6 @@ export default async function AdminLearnerDetailPage({
     formation: { titre: r.formation.titre },
   }));
 
-  const learnerSexe: StudentSex | null = user.sexe ?? null;
-
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-3xl">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -164,7 +161,6 @@ export default async function AdminLearnerDetailPage({
             </h2>
             <WeeklySubscriptionsSection
               rows={weeklyPanel}
-              learnerSexe={learnerSexe}
               readOnly={false}
               adminMode
               showAdminLineEditors
