@@ -5,15 +5,8 @@ import { ArrowLeft, Clock, Users, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PurchaseFormationPanel } from "@/components/shop/PurchaseFormationPanel";
 import { SchedulingModeExplainer } from "@/components/shop/SchedulingModeExplainer";
-import {
-  schedulingModeBoutiqueCalendarHint,
-  schedulingModeBoutiqueCreneauxHeading,
-} from "@/lib/scheduling-mode";
+import { schedulingModeBoutiqueCalendarHint } from "@/lib/scheduling-mode";
 import { sanitizeHtml } from "@/lib/utils/sanitize";
-import {
-  formatCreneauSlotLine,
-  normalizeJourneeSlots,
-} from "@/lib/creneau-display";
 import {
   getFormationBySlug,
   getFormationSlugsForStaticParams,
@@ -44,6 +37,7 @@ function creneauxForPurchasePanel(
   | "dureeMinutes"
   | "statut"
   | "placesMax"
+  | "schedulingMode"
   | "_count"
 >[] {
   return creneaux.map((c) => ({
@@ -55,6 +49,7 @@ function creneauxForPurchasePanel(
     dureeMinutes: c.dureeMinutes,
     statut: c.statut,
     placesMax: c.placesMax,
+    schedulingMode: c.schedulingMode,
     _count: c._count,
   }));
 }
@@ -222,58 +217,13 @@ export default async function FormationPage({ params }: PageProps) {
 
             <PurchaseFormationPanel
               formation={cartFormation}
-              creneaux={creneauxForPurchasePanel(formation.creneaux ?? [])}
+              creneaux={creneauxForPurchasePanel(
+                formation.schedulingMode === "FIXED_SLOTS"
+                  ? (formation.creneaux ?? [])
+                  : []
+              )}
               formationPurchasable={purchasable}
             />
-
-            {formation.schedulingMode === "FLEXIBLE_FORMATION" &&
-              (formation.creneaux ?? []).length > 0 && (
-                <div>
-                  <h3 className="font-serif text-xl font-bold text-primary mb-4">
-                    {schedulingModeBoutiqueCreneauxHeading(
-                      formation.schedulingMode
-                    )}
-                  </h3>
-                  <div className="space-y-3">
-                    {(formation.creneaux ?? []).map((creneau) => (
-                      <div
-                        key={creneau.id}
-                        className="p-4 bg-white rounded-lg border border-gray-100 flex items-center justify-between"
-                      >
-                        <div>
-                          <p className="font-medium text-primary">
-                            {creneau.nom}
-                          </p>
-                          <div className="text-sm text-gray-500 space-y-0.5">
-                            {normalizeJourneeSlots(creneau.journeeSlots, {
-                              jours: creneau.jours,
-                              heureDebut: creneau.heureDebut,
-                              dureeMinutes: creneau.dureeMinutes,
-                            }).map((slot) => (
-                              <p
-                                key={`${creneau.id}-${slot.jour}-${slot.heureDebut}`}
-                              >
-                                {formatCreneauSlotLine(slot)}
-                              </p>
-                            ))}
-                          </div>
-                        </div>
-                        <Badge
-                          className={
-                            creneau.statut === "OPEN"
-                              ? "bg-accent/10 text-accent"
-                              : "bg-red-100 text-red-600"
-                          }
-                        >
-                          {creneau.statut === "OPEN"
-                            ? `${creneau.placesMax} places`
-                            : "Complet"}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
           </div>
         </div>
 

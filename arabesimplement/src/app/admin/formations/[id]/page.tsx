@@ -16,6 +16,7 @@ export default async function ModifierFormationPage({
 
   const creneaux: CreneauListeItem[] = f.creneaux.map((c) => ({
     id: c.id,
+    schedulingMode: c.schedulingMode,
     nom: c.nom,
     jours: c.jours,
     heureDebut: c.heureDebut,

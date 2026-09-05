@@ -34,6 +34,7 @@ const selectClass =
 
 export type CreneauListeItem = {
   id: string;
+  schedulingMode?: FormationSchedulingMode;
   nom: string;
   jours: string[];
   heureDebut: string;
@@ -79,8 +80,9 @@ function creneauDefaults(
 function CreneauFormBloc(props: {
   formationId: string;
   creneau?: CreneauListeItem | null;
+  schedulingMode: FormationSchedulingMode;
 }) {
-  const { formationId, creneau } = props;
+  const { formationId, creneau, schedulingMode } = props;
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const isEdit = !!creneau;
@@ -106,7 +108,7 @@ function CreneauFormBloc(props: {
     startTransition(async () => {
       const res = isEdit
         ? await updateCreneau(creneau!.id, data)
-        : await createCreneau(formationId, data);
+        : await createCreneau(formationId, data, schedulingMode);
       if (res.success) {
         toast.success(isEdit ? "Créneau mis à jour" : "Créneau ajouté");
         if (!isEdit) reset(creneauDefaults(null));
@@ -340,6 +342,9 @@ export function CreneauManager({
 
       <p className="text-sm text-gray-600">{schedulingModeAdminCreneauxIntro(schedulingMode)}</p>
       <p className="text-sm text-gray-500">
+        Ces créneaux appartiennent uniquement à ce format d’organisation. Changer de format les masque côté élèves (ils restent enregistrés si vous revenez à ce format).
+      </p>
+      <p className="text-sm text-gray-500">
         {schedulingMode === "FIXED_SLOTS"
           ? "Chaque fiche = une session récurrente : ajoutez une ligne par jour (jour, heure de début, durée de la séance ce jour-là)."
           : schedulingMode === "FLEXIBLE_FORMATION"
@@ -352,9 +357,13 @@ export function CreneauManager({
             key={c.id}
             formationId={formationId}
             creneau={c}
+            schedulingMode={schedulingMode}
           />
         ))}
-        <CreneauFormBloc formationId={formationId} />
+        <CreneauFormBloc
+          formationId={formationId}
+          schedulingMode={schedulingMode}
+        />
       </div>
     </div>
   );

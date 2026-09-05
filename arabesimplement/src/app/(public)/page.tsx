@@ -12,6 +12,8 @@ import { getHomeHeroTrust } from "@/lib/data/home.service";
 import { AfterPurchaseJourneySection } from "@/components/home/AfterPurchaseJourneySection";
 import { HeroLireArabeSection } from "@/components/home/HeroLireArabeSection";
 import { HomeFaqTeaser } from "@/components/home/HomeFaqTeaser";
+import { DiscoveryLessonPopup } from "@/components/home/DiscoveryLessonPopup";
+import { calendlyDiscoveryUrl } from "@/lib/calendly";
 
 function SessionDuMomentSection(props: FeaturedSessionHome) {
   return <SessionDuMoment {...props} />;
@@ -286,6 +288,7 @@ export default async function HomePage() {
       <HomeFaqTeaser />
       <AfterPurchaseJourneySection />
       <SEOContentSection />
+      <DiscoveryLessonPopup calendlyUrl={calendlyDiscoveryUrl()} />
     </div>
   );
 }

@@ -77,6 +77,7 @@ async function main() {
         create: {
           id: c.id,
           formationId: formation.id,
+          schedulingMode: c.schedulingMode ?? formation.schedulingMode,
           nom: c.nom,
           jours: c.jours,
           journeeSlots,
@@ -88,6 +89,7 @@ async function main() {
         },
         update: {
           formationId: formation.id,
+          schedulingMode: c.schedulingMode ?? formation.schedulingMode,
           nom: c.nom,
           jours: c.jours,
           journeeSlots,

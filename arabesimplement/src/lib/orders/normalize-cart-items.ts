@@ -6,6 +6,7 @@ import {
   isValidHourlyMinutes,
   sumHourlyBundleEuros,
   formatHourlyBundleForDisplay,
+  creneauxForSchedulingMode,
   type HourlyDurationBundle,
 } from "@/lib/scheduling-mode";
 import type { FormationSchedulingMode } from "@/types/domain.types";
@@ -92,7 +93,8 @@ export async function normalizeCartItemsForCheckout(
     }
 
     const mode = f.schedulingMode as FormationSchedulingMode;
-    const openCreneaux = f.creneaux.filter((c) => c.statut === "OPEN");
+    const modeCreneaux = creneauxForSchedulingMode(f.creneaux, mode);
+    const openCreneaux = modeCreneaux.filter((c) => c.statut === "OPEN");
 
     if (mode === "FIXED_SLOTS" && openCreneaux.length === 0) {
       return {
@@ -101,9 +103,7 @@ export async function normalizeCartItemsForCheckout(
       };
     }
 
-    const needsCreneau =
-      mode === "FIXED_SLOTS" ||
-      (mode === "HOURLY_PURCHASE" && openCreneaux.length > 0);
+    const needsCreneau = mode === "FIXED_SLOTS";
 
     const effectiveCreneauId = needsCreneau ? line.creneauId : undefined;
 
@@ -111,7 +111,7 @@ export async function normalizeCartItemsForCheckout(
       if (!effectiveCreneauId) {
         return { success: false, error: "Créneau manquant pour une ligne du panier." };
       }
-      const c = f.creneaux.find((x) => x.id === effectiveCreneauId);
+      const c = modeCreneaux.find((x) => x.id === effectiveCreneauId);
       if (
         !c ||
         !creneauBookableFromCounts(
@@ -141,7 +141,7 @@ export async function normalizeCartItemsForCheckout(
         return { success: false, error: "Montant d’abonnement mensuel invalide." };
       }
       const creneau = effectiveCreneauId
-        ? f.creneaux.find((x) => x.id === effectiveCreneauId)
+        ? modeCreneaux.find((x) => x.id === effectiveCreneauId)
         : undefined;
       const bundleLine = formatHourlyBundleForDisplay(bundle);
       const summaryParts = [
@@ -176,7 +176,7 @@ export async function normalizeCartItemsForCheckout(
     }
     const unit = promo != null && promo > 0 ? promo : prix;
     const creneau = effectiveCreneauId
-      ? f.creneaux.find((x) => x.id === effectiveCreneauId)
+      ? modeCreneaux.find((x) => x.id === effectiveCreneauId)
       : undefined;
     const choiceSummary =
       creneau != null

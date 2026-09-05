@@ -3,6 +3,7 @@ import type {
   Formation,
   FormationSchedulingMode,
 } from "@/types/domain.types";
+import { creneauxForSchedulingMode } from "@/lib/scheduling-mode";
 
 const LIMITED_CAPACITY_THRESHOLD = 4;
 
@@ -42,10 +43,14 @@ export function sumCreneauxPlacesMax(creneaux: Pick<Creneau, "placesMax">[]): nu
 /** Badge « Limité » : uniquement créneaux proposés, capacité totale &lt; 4. */
 export function shouldShowLimitedBadgeForFixedSlots(
   mode: FormationSchedulingMode,
-  creneaux: Pick<Creneau, "placesMax">[]
+  creneaux: (Pick<Creneau, "placesMax"> & {
+    schedulingMode?: FormationSchedulingMode | null;
+  })[]
 ): boolean {
-  if (mode !== "FIXED_SLOTS" || creneaux.length === 0) return false;
-  const sum = sumCreneauxPlacesMax(creneaux);
+  if (mode !== "FIXED_SLOTS") return false;
+  const modeSlots = creneauxForSchedulingMode(creneaux, "FIXED_SLOTS");
+  if (modeSlots.length === 0) return false;
+  const sum = sumCreneauxPlacesMax(modeSlots);
   return sum > 0 && sum < LIMITED_CAPACITY_THRESHOLD;
 }
 
@@ -74,10 +79,9 @@ export function isFormationPurchasable(
 
   const mode = f.schedulingMode;
   if (mode === "FIXED_SLOTS") {
-    return creneaux.some(creneauIsBookable);
-  }
-  if (mode === "HOURLY_PURCHASE" && creneaux.length > 0) {
-    return creneaux.some(creneauIsBookable);
+    return creneauxForSchedulingMode(creneaux, "FIXED_SLOTS").some(
+      creneauIsBookable
+    );
   }
   return true;
 }

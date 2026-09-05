@@ -15,6 +15,7 @@ import {
   emptyHourlyBundle,
   formatHourlyBundleForDisplay,
   sumHourlyBundleEuros,
+  creneauxForSchedulingMode,
   type HourlyDurationBundle,
 } from "@/lib/scheduling-mode";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,7 @@ type CreneauLite = Pick<
   | "dureeMinutes"
   | "statut"
   | "placesMax"
+  | "schedulingMode"
   | "_count"
 >;
 
@@ -59,9 +61,14 @@ export function PurchaseFormationPanel({
   formationPurchasable = true,
 }: Props) {
   const { addItem } = useCart();
+  const mode = formation.schedulingMode;
+  const modeCreneaux = useMemo(
+    () => creneauxForSchedulingMode(creneaux, mode),
+    [creneaux, mode]
+  );
   const bookableCreneaux = useMemo(
-    () => creneaux.filter(creneauIsBookable),
-    [creneaux]
+    () => modeCreneaux.filter(creneauIsBookable),
+    [modeCreneaux]
   );
 
   const [creneauId, setCreneauId] = useState<string | null>(null);
@@ -69,11 +76,7 @@ export function PurchaseFormationPanel({
     emptyHourlyBundle()
   );
 
-  const mode = formation.schedulingMode;
-
-  const needsCreneau =
-    mode === "FIXED_SLOTS" ||
-    (mode === "HOURLY_PURCHASE" && bookableCreneaux.length > 0);
+  const needsCreneau = mode === "FIXED_SLOTS";
 
   const needsHourly = mode === "HOURLY_PURCHASE";
 

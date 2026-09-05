@@ -81,6 +81,7 @@ export type FormationCartInput = Pick<
 export interface Creneau {
   id: string;
   formationId: string;
+  schedulingMode?: FormationSchedulingMode;
   nom: string;
   jours: string[];
   /** Horaire détaillé par jour (prioritaire pour l’affichage si présent). */

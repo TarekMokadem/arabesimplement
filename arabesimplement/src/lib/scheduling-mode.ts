@@ -4,6 +4,15 @@ export type FormationSchedulingMode =
   | "FLEXIBLE_FORMATION"
   | "FIXED_SLOTS";
 
+/** Créneaux rattachés au format d’organisation courant uniquement. */
+export function creneauxForSchedulingMode<
+  T extends { schedulingMode?: FormationSchedulingMode | null },
+>(creneaux: T[], formationMode: FormationSchedulingMode): T[] {
+  return creneaux.filter(
+    (c) => (c.schedulingMode ?? "FIXED_SLOTS") === formationMode
+  );
+}
+
 /** Grille indicative cours particuliers / din (affichage boutique). */
 export const HOURLY_SLOTS_PRICING = [
   { durationLabel: "1 heure", priceEuros: 10, minutes: 60 },
@@ -245,7 +254,7 @@ export function schedulingModeAdminCreneauxTitle(
   }
 }
 
-/**court encadré d’aide sous le titre admin. */
+/** Court encadré d’aide sous le titre admin. */
 export function schedulingModeAdminCreneauxIntro(
   mode: FormationSchedulingMode
 ): string {

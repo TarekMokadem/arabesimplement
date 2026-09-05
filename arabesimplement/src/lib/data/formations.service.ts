@@ -17,15 +17,17 @@ import {
   type BoutiqueThemeFilterTab,
 } from "@/lib/content/formation-theme";
 import { parseJourneeSlotsFromJson } from "@/lib/creneau-display";
+import { creneauxForSchedulingMode } from "@/lib/scheduling-mode";
 
 export function toBoutiqueCard(
   f: Formation,
   creneaux: Creneau[],
   formationEnrollmentCount: number
 ): FormationBoutiqueCard {
+  const modeCreneaux = creneauxForSchedulingMode(creneaux, f.schedulingMode);
   const boutiquePurchasable = isFormationPurchasable(
     f,
-    creneaux,
+    modeCreneaux,
     formationEnrollmentCount
   );
   return {
@@ -44,7 +46,7 @@ export function toBoutiqueCard(
     boutiquePurchasable,
     showLimitedBadge:
       boutiquePurchasable &&
-      shouldShowLimitedBadgeForFixedSlots(f.schedulingMode, creneaux),
+      shouldShowLimitedBadgeForFixedSlots(f.schedulingMode, modeCreneaux),
   };
 }
 
@@ -81,6 +83,7 @@ function mapCreneau(
   return {
     id: c.id,
     formationId: c.formationId,
+    schedulingMode: c.schedulingMode,
     nom: c.nom,
     jours: c.jours,
     journeeSlots,
@@ -128,7 +131,10 @@ function toFormationDetail(
   return {
     ...toFormationListItem(f),
     description: f.description ?? undefined,
-    creneaux: creneaux.map(mapCreneau),
+    creneaux: creneauxForSchedulingMode(
+      creneaux.map(mapCreneau),
+      f.schedulingMode
+    ),
   };
 }
 
@@ -136,7 +142,10 @@ export async function getFormationsForBoutique(): Promise<FormationBoutiqueCard[
   if (!isDatabaseConfigured()) {
     return MOCK_FORMATIONS.map((f) => {
       const detail = MOCK_FORMATIONS_BY_SLUG[f.slug];
-      const creneaux = detail?.creneaux ?? [];
+      const creneaux = creneauxForSchedulingMode(
+        detail?.creneaux ?? [],
+        f.schedulingMode
+      );
       return toBoutiqueCard(f, creneaux, 0);
     });
   }
@@ -167,7 +176,12 @@ export async function getFormationBySlug(
   slug: string
 ): Promise<(Formation & { creneaux: Creneau[] }) | null> {
   if (!isDatabaseConfigured()) {
-    return MOCK_FORMATIONS_BY_SLUG[slug] ?? null;
+    const mock = MOCK_FORMATIONS_BY_SLUG[slug];
+    if (!mock) return null;
+    return {
+      ...mock,
+      creneaux: creneauxForSchedulingMode(mock.creneaux, mock.schedulingMode),
+    };
   }
   try {
     const row = await prisma.formation.findFirst({

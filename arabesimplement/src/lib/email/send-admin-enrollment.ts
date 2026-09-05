@@ -2,21 +2,11 @@ import { Resend } from "resend";
 import { prisma } from "@/lib/prisma";
 import { toAbsoluteUrl } from "@/lib/site-url";
 import { parseBillingSnapshot } from "@/lib/orders/billing-snapshot";
-
-const DEFAULT_ADMIN_NOTIFY_EMAIL = "arabeen10@gmail.com";
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-function adminNotifyEmail(): string {
-  const fromEnv = process.env.ADMIN_NOTIFY_EMAIL?.trim();
-  return fromEnv && fromEnv.length > 0 ? fromEnv : DEFAULT_ADMIN_NOTIFY_EMAIL;
-}
+import {
+  adminNotifyEmail,
+  escapeHtml,
+  resendFromHeader,
+} from "@/lib/email/admin-notify";
 
 /**
  * Préviens l’admin qu’un élève vient de s’inscrire (commande payée).
@@ -79,8 +69,6 @@ async function sendAdminEnrollmentEmail(params: {
   adminOrderUrl: string;
 }): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
-  const from =
-    process.env.RESEND_FROM ?? "ArabeSimplement <onboarding@resend.dev>";
   const to = adminNotifyEmail();
 
   const liste = params.formations
@@ -103,13 +91,9 @@ async function sendAdminEnrollmentEmail(params: {
   }
 
   const resend = new Resend(key);
-  const fromHeader =
-    from.includes("<") && from.includes(">")
-      ? from
-      : `ArabeSimplement <${from}>`;
 
   const { data, error } = await resend.emails.send({
-    from: fromHeader,
+    from: resendFromHeader(),
     to,
     subject: `Nouvelle inscription — ${params.studentName}`,
     html: `

@@ -18,6 +18,7 @@ import {
   type FormationEditorDefaults,
 } from "@/lib/validations/admin-formations.schema";
 import { slugify } from "@/lib/utils/format";
+import { creneauxForSchedulingMode } from "@/lib/scheduling-mode";
 import {
   createFormation,
   updateFormation,
@@ -253,7 +254,8 @@ export function FormationEditorForm(
                 calendrier.{" "}
                 <strong className="font-medium text-gray-700">À la carte</strong> : même
                 logique d’organisation qu’avec le prof, mais chaque séance se paie et a une
-                durée définie. La section « Créneaux » plus bas s’adapte au mode choisi.
+                durée définie. La section « Créneaux » n’apparaît que pour le mode
+                « Créneaux proposés ».
               </p>
             </div>
             {schedulingMode === "HOURLY_PURCHASE" ? (
@@ -451,8 +453,8 @@ export function FormationEditorForm(
           <hr className="border-gray-200 my-10" />
           <CreneauManager
             formationId={props.formationId}
-            creneaux={props.creneaux}
-            schedulingMode={schedulingMode}
+            creneaux={creneauxForSchedulingMode(props.creneaux, "FIXED_SLOTS")}
+            schedulingMode="FIXED_SLOTS"
           />
         </>
       )}

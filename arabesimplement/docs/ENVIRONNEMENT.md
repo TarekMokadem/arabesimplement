@@ -39,7 +39,8 @@ Sans ces deux-là, l’app ne peut pas gérer correctement comptes et données p
 | Domaine | Variables (voir `.env.example`) |
 |---------|-----------------------------------|
 | Paiement | `STRIPE_*`, prix récurrents mensuels si cours à la carte |
-| E-mails | `RESEND_API_KEY`, `RESEND_FROM` |
+| E-mails | `RESEND_API_KEY`, `RESEND_FROM`, `ADMIN_NOTIFY_EMAIL` |
+| Cours découverte (popup accueil) | `NEXT_PUBLIC_CALENDLY_DISCOVERY_URL` (lien public Calendly) |
 | Site public | `NEXT_PUBLIC_SITE_URL` |
 | Images | `CLOUDINARY_*` (recommandé sur Vercel) |
 

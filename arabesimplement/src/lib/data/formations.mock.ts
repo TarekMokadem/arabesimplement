@@ -41,6 +41,7 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
       {
         id: "c1",
         formationId: "1",
+        schedulingMode: "FIXED_SLOTS",
         nom: "Session Matin",
         jours: ["Lundi", "Mercredi"],
         journeeSlots: [
@@ -56,6 +57,7 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
       {
         id: "c2",
         formationId: "1",
+        schedulingMode: "FIXED_SLOTS",
         nom: "Session Soir",
         jours: ["Mardi", "Jeudi"],
         journeeSlots: [
@@ -103,6 +105,7 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
       {
         id: "c3",
         formationId: "2",
+        schedulingMode: "FLEXIBLE_FORMATION",
         nom: "Session Weekend",
         jours: ["Samedi"],
         heureDebut: "14:00",
@@ -151,6 +154,7 @@ export const MOCK_FORMATIONS_BY_SLUG: Record<
       {
         id: "c4",
         formationId: "3",
+        schedulingMode: "HOURLY_PURCHASE",
         nom: "Groupe Intensif",
         jours: ["Lundi", "Mercredi", "Vendredi"],
         heureDebut: "19:00",

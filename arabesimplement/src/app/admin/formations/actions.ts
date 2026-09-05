@@ -12,6 +12,7 @@ import {
   type CreneauAdminInput,
 } from "@/lib/validations/admin-formations.schema";
 import { sanitizeHtml } from "@/lib/utils/sanitize";
+import type { FormationSchedulingMode } from "@/types/domain.types";
 
 export type AdminMutationResult =
   | { success: true; id?: string }
@@ -175,9 +176,24 @@ export async function deleteFormation(id: string): Promise<AdminMutationResult> 
   }
 }
 
+function resolveCreneauSchedulingMode(
+  requested: FormationSchedulingMode | undefined,
+  formationMode: FormationSchedulingMode
+): FormationSchedulingMode {
+  if (
+    requested === "HOURLY_PURCHASE" ||
+    requested === "FLEXIBLE_FORMATION" ||
+    requested === "FIXED_SLOTS"
+  ) {
+    return requested;
+  }
+  return formationMode;
+}
+
 export async function createCreneau(
   formationId: string,
-  data: CreneauAdminInput
+  data: CreneauAdminInput,
+  schedulingMode?: FormationSchedulingMode
 ): Promise<AdminMutationResult> {
   const admin = await requireAdminSession();
   if (!admin) return { success: false, error: "Non autorisé." };
@@ -189,9 +205,13 @@ export async function createCreneau(
 
   const formation = await prisma.formation.findUnique({
     where: { id: formationId },
-    select: { id: true },
+    select: { id: true, schedulingMode: true },
   });
   if (!formation) return { success: false, error: "Formation introuvable." };
+  const creneauMode = resolveCreneauSchedulingMode(
+    schedulingMode,
+    formation.schedulingMode
+  );
 
   const slots = parsed.data.journeeSlots.map((s) => ({
     jour: s.jour.trim(),
@@ -204,6 +224,7 @@ export async function createCreneau(
     const row = await prisma.creneau.create({
       data: {
         formationId,
+        schedulingMode: creneauMode,
         nom: parsed.data.nom.trim(),
         jours,
         journeeSlots: slots as unknown as Prisma.InputJsonValue,

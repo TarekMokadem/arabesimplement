@@ -149,6 +149,8 @@ model Formation {
 model Creneau {
   id            String        @id @default(uuid())
   formationId   String        @map("formation_id")
+  /** Format d’organisation auquel ce créneau appartient (isolé des autres modes). */
+  schedulingMode FormationSchedulingMode @default(FIXED_SLOTS) @map("scheduling_mode")
   nom           String
   jours         String[]
   /** Détail par jour : heure et durée propres à chaque jour (JSON). Les champs jours/heureDebut/dureeMinutes restent pour compatibilité et requêtes simples. */
