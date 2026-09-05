@@ -9,9 +9,9 @@ type Variant = "header" | "headerCompact" | "menu" | "footer";
 
 const styles: Record<Variant, string> = {
   header:
-    "hidden lg:inline-flex h-9 bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
+    "hidden h-9 shrink-0 px-3.5 xl:inline-flex bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
   headerCompact:
-    "lg:hidden h-8 px-2.5 text-xs bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
+    "xl:hidden h-8 shrink-0 px-2 text-xs bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
   menu: "w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
   footer:
     "mt-4 w-full sm:w-auto bg-secondary text-secondary-foreground hover:bg-white hover:text-primary",

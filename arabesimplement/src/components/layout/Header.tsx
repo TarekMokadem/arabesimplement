@@ -23,6 +23,8 @@ const mainNavLinks = [
   { href: "/contactez-nous", label: "Contact" },
 ] as const;
 
+const desktopNavLinks = mainNavLinks.filter((link) => link.href !== "/");
+
 interface HeaderProps {
   isLoggedIn?: boolean;
   isAdmin?: boolean;
@@ -57,36 +59,36 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
           : "bg-transparent"
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+      <div className="w-full px-4 sm:px-6 lg:px-8 2xl:px-12">
+        <div className="flex h-16 items-center justify-between gap-6 sm:h-20 xl:gap-10 2xl:gap-14">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <Link href="/" className="flex shrink-0 items-center gap-2 sm:gap-3">
             <BrandLogoMark size={44} priority />
-            <span className="font-serif font-bold text-base sm:text-xl transition-colors duration-300 text-primary">
+            <span className="hidden font-serif text-base font-bold text-primary transition-colors duration-300 sm:inline sm:text-xl">
               ArabeSimplement
             </span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav
-            className="hidden lg:flex items-center gap-6 xl:gap-8"
+            className="hidden min-w-0 flex-1 items-center justify-center gap-x-5 xl:flex 2xl:gap-x-8"
             aria-label="Navigation principale"
           >
-            {mainNavLinks.slice(0, 2).map((link) => (
+            {desktopNavLinks.slice(0, 1).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium transition-colors duration-200 text-primary hover:text-secondary"
+                className="shrink-0 whitespace-nowrap text-sm font-medium text-primary transition-colors duration-200 hover:text-secondary"
               >
                 {link.label}
               </Link>
             ))}
-            <HeaderAideMenu />
-            {mainNavLinks.slice(2).map((link) => (
+            <HeaderAideMenu triggerClassName="shrink-0 whitespace-nowrap" />
+            {desktopNavLinks.slice(1).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium transition-colors duration-200 text-primary hover:text-secondary"
+                className="shrink-0 whitespace-nowrap text-sm font-medium text-primary transition-colors duration-200 hover:text-secondary"
               >
                 {link.label}
               </Link>
@@ -94,7 +96,7 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3 xl:gap-5">
             <DiscoveryLessonButton variant="header" />
             <DiscoveryLessonButton variant="headerCompact" />
             {/* Cart */}
@@ -131,7 +133,7 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
 
             {/* Mobile Menu */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger className="lg:hidden p-1.5 sm:p-2 hover:bg-gray-100 rounded-md">
+              <SheetTrigger className="xl:hidden p-1.5 sm:p-2 hover:bg-gray-100 rounded-md">
                 <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </SheetTrigger>
               <SheetContent side="right" className="w-[85vw] max-w-80 bg-white p-0">
