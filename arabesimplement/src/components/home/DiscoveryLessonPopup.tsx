@@ -305,7 +305,7 @@ export function DiscoveryLessonPopup({
             <iframe
               title="Choisir un horaire — Calendly"
               src={embedSrc}
-              className="w-full overflow-hidden rounded-lg border-0"
+              className="w-full overflow-hidden rounded-lg border-0 [color-scheme:light]"
               style={{ minWidth: 320, height: 700 }}
             />
             <p className="text-xs text-gray-500">

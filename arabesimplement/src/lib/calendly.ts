@@ -2,6 +2,17 @@
 export const CALENDLY_DISCOVERY_EVENT_URL =
   "https://calendly.com/arabeen10/cours-decouverte-conseil";
 
+/**
+ * Thème embed Calendly — mêmes teintes que `globals.css`.
+ * `primary` = boutons / liens / jour sélectionné (texte blanc dessus).
+ * Un primaire trop clair (ex. mint) rend ce texte illisible.
+ */
+const CALENDLY_THEME = {
+  primary: "324530",
+  text: "121212",
+  background: "ffffff",
+} as const;
+
 export function calendlyDiscoveryUrl(): string {
   return (
     process.env.NEXT_PUBLIC_CALENDLY_DISCOVERY_URL?.trim() ||
@@ -22,7 +33,9 @@ export function calendlyInlineEmbedUrl(params: {
   url.searchParams.set("embed_type", "Inline");
   url.searchParams.set("hide_event_type_details", "1");
   url.searchParams.set("hide_gdpr_banner", "1");
-  url.searchParams.set("primary_color", "eef3e7");
+  url.searchParams.set("background_color", CALENDLY_THEME.background);
+  url.searchParams.set("text_color", CALENDLY_THEME.text);
+  url.searchParams.set("primary_color", CALENDLY_THEME.primary);
   url.searchParams.set("name", params.name);
   url.searchParams.set("email", params.email);
   return url.toString();
