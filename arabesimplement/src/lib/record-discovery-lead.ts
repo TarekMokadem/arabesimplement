@@ -1,17 +1,12 @@
-"use server";
-
-import {
-  discoveryLeadSchema,
-  type DiscoveryLeadInput,
-} from "@/lib/validations/discovery-lead.schema";
+import { discoveryLeadSchema } from "@/lib/validations/discovery-lead.schema";
 import { sendDiscoveryLeadEmail } from "@/lib/email/send-discovery-lead";
 
 export type DiscoveryLeadResult =
   | { success: true }
   | { success: false; error: string };
 
-export async function submitDiscoveryLead(
-  data: DiscoveryLeadInput
+export async function recordDiscoveryLead(
+  data: unknown
 ): Promise<DiscoveryLeadResult> {
   const parsed = discoveryLeadSchema.safeParse(data);
   if (!parsed.success) {

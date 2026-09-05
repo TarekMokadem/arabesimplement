@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,18 +21,22 @@ import {
   discoveryLeadSchema,
   type DiscoveryLeadInput,
 } from "@/lib/validations/discovery-lead.schema";
-import { submitDiscoveryLead } from "@/app/(public)/actions/discovery-lead.actions";
 import {
   calendlyInlineEmbedUrl,
   calendlyScheduledEventUri,
   isCalendlyOrigin,
 } from "@/lib/calendly";
-import { DISCOVERY_LESSON_OPEN_EVENT } from "@/lib/discovery-lesson";
+import {
+  DISCOVERY_LESSON_OPEN_EVENT,
+  notifyDiscoveryLead,
+} from "@/lib/discovery-lesson";
+import { DiscoveryCalendlyFrame } from "@/components/home/DiscoveryCalendlyFrame";
 
 const SESSION_SEEN_KEY = "as.discoveryLesson.seen";
 const SUBMITTED_KEY = "as.discoveryLesson.submitted";
 
 type Step = "form" | "calendly" | "done";
+type Lead = Omit<DiscoveryLeadInput, "calendlyEventUri" | "website">;
 
 function markSessionSeen() {
   try {
@@ -67,6 +71,16 @@ function alreadySeenThisSession(): boolean {
   }
 }
 
+function notifyAdmin(data: DiscoveryLeadInput) {
+  void notifyDiscoveryLead(data).then((result) => {
+    if (result.success) {
+      markSubmitted();
+      return;
+    }
+    toast.error(result.error);
+  });
+}
+
 export function DiscoveryLessonPopup({
   calendlyUrl = "",
 }: {
@@ -74,11 +88,7 @@ export function DiscoveryLessonPopup({
 }) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("form");
-  const [lead, setLead] = useState<Omit<
-    DiscoveryLeadInput,
-    "calendlyEventUri" | "website"
-  > | null>(null);
-  const [pending, startTransition] = useTransition();
+  const [lead, setLead] = useState<Lead | null>(null);
   const calendlyBookedRef = useRef(false);
   const pathname = usePathname();
 
@@ -96,32 +106,58 @@ export function DiscoveryLessonPopup({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    reset,
+    formState: { errors, isSubmitting },
   } = form;
 
-  const openForm = () => {
+  const openForm = useCallback(() => {
     calendlyBookedRef.current = false;
     setLead(null);
     setStep("form");
-    form.reset();
+    reset();
     setOpen(true);
-  };
+  }, [reset]);
 
   useEffect(() => {
-    const onOpen = () => openForm();
-    window.addEventListener(DISCOVERY_LESSON_OPEN_EVENT, onOpen);
-    return () => window.removeEventListener(DISCOVERY_LESSON_OPEN_EVENT, onOpen);
-  }, [form]);
+    window.addEventListener(DISCOVERY_LESSON_OPEN_EVENT, openForm);
+    return () => window.removeEventListener(DISCOVERY_LESSON_OPEN_EVENT, openForm);
+  }, [openForm]);
 
   useEffect(() => {
     if (pathname !== "/") return;
     if (alreadySubmitted() || alreadySeenThisSession()) return;
-    const timer = window.setTimeout(() => {
+
+    const show = () => {
       markSessionSeen();
       setOpen(true);
+    };
+
+    let idleId = 0;
+    const timer = window.setTimeout(() => {
+      if ("requestIdleCallback" in window) {
+        idleId = window.requestIdleCallback(show, { timeout: 400 });
+        return;
+      }
+      show();
     }, 1400);
-    return () => window.clearTimeout(timer);
+
+    return () => {
+      window.clearTimeout(timer);
+      if (idleId && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleId);
+      }
+    };
   }, [pathname]);
+
+  useEffect(() => {
+    if (!open || !calendlyUrl || typeof document === "undefined") return;
+    const link = document.createElement("link");
+    link.rel = "prefetch";
+    link.as = "document";
+    link.href = calendlyUrl.split("?")[0] ?? calendlyUrl;
+    document.head.appendChild(link);
+    return () => link.remove();
+  }, [open, calendlyUrl]);
 
   const embedSrc = useMemo(() => {
     if (!calendlyUrl || !lead || typeof window === "undefined") return "";
@@ -141,18 +177,8 @@ export function DiscoveryLessonPopup({
       const uri = calendlyScheduledEventUri(event.data);
       if (!uri || calendlyBookedRef.current) return;
       calendlyBookedRef.current = true;
-      startTransition(async () => {
-        const result = await submitDiscoveryLead({
-          ...lead,
-          calendlyEventUri: uri,
-        });
-        if (result.success) {
-          markSubmitted();
-          setStep("done");
-        } else {
-          toast.error(result.error);
-        }
-      });
+      setStep("done");
+      notifyAdmin({ ...lead, calendlyEventUri: uri });
     };
 
     window.addEventListener("message", onMessage);
@@ -160,43 +186,32 @@ export function DiscoveryLessonPopup({
   }, [lead, step]);
 
   const onSubmit = handleSubmit((data) => {
-    startTransition(async () => {
-      const result = await submitDiscoveryLead({
-        prenom: data.prenom,
-        nom: data.nom,
-        email: data.email,
-        whatsapp: data.whatsapp,
-        website: data.website,
-      });
-      if (!result.success) {
-        toast.error(result.error);
-        return;
-      }
-      setLead({
-        prenom: data.prenom.trim(),
-        nom: data.nom.trim(),
-        email: data.email.trim(),
-        whatsapp: data.whatsapp.trim(),
-      });
-      markSubmitted();
-      if (calendlyUrl) {
-        setStep("calendly");
-        return;
-      }
-      setStep("done");
+    const nextLead: Lead = {
+      prenom: data.prenom.trim(),
+      nom: data.nom.trim(),
+      email: data.email.trim(),
+      whatsapp: data.whatsapp.trim(),
+    };
+    setLead(nextLead);
+    notifyAdmin({
+      ...nextLead,
+      website: data.website,
     });
+    setStep(calendlyUrl ? "calendly" : "done");
   });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         className={cn(
-          "max-h-[min(92vh,880px)] w-full overflow-y-auto",
-          step === "calendly" ? "sm:max-w-2xl" : "sm:max-w-lg"
+          "flex w-full flex-col",
+          step === "calendly"
+            ? "h-[min(92dvh,840px)] max-h-[min(92dvh,840px)] overflow-hidden sm:max-w-2xl"
+            : "max-h-[min(92dvh,880px)] overflow-y-auto sm:max-w-lg"
         )}
         aria-describedby="discovery-lesson-desc"
       >
-        <DialogHeader>
+        <DialogHeader className="shrink-0">
           <div className="mb-1 flex items-center gap-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-secondary/20 px-2.5 py-0.5 text-xs font-medium text-primary">
               <Sparkles className="h-3 w-3" />
@@ -288,32 +303,25 @@ export function DiscoveryLessonPopup({
             </div>
             <Button
               type="submit"
-              disabled={pending}
+              disabled={isSubmitting}
               className="w-full bg-primary text-primary-foreground hover:bg-secondary hover:text-secondary-foreground"
             >
-              {pending
-                ? "Envoi…"
-                : calendlyUrl
-                  ? "Continuer vers le calendrier"
-                  : "Réserver mon cours découverte"}
+              {calendlyUrl
+                ? "Continuer vers le calendrier"
+                : "Réserver mon cours découverte"}
             </Button>
           </form>
         )}
 
-        {step === "calendly" && embedSrc && (
-          <div className="space-y-3">
-            <iframe
-              title="Choisir un horaire — Calendly"
-              src={embedSrc}
-              className="w-full overflow-hidden rounded-lg border-0 [color-scheme:light]"
-              style={{ minWidth: 320, height: 700 }}
-            />
-            <p className="text-xs text-gray-500">
+        {step === "calendly" && embedSrc ? (
+          <div className="flex min-h-0 flex-1 flex-col gap-3">
+            <DiscoveryCalendlyFrame src={embedSrc} />
+            <p className="shrink-0 text-xs text-gray-500">
               Après confirmation, un e-mail part à l’équipe avec vos coordonnées
               et le créneau choisi.
             </p>
           </div>
-        )}
+        ) : null}
 
         {step === "done" && (
           <div className="space-y-4">
