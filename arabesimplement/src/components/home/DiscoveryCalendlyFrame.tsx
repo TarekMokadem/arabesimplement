@@ -8,7 +8,7 @@ export function DiscoveryCalendlyFrame({ src }: { src: string }) {
   const [ready, setReady] = useState(false);
 
   return (
-    <div className="relative min-h-0 min-w-[320px] flex-1 overflow-hidden rounded-lg bg-[#f4f5f0]">
+    <div className="relative min-h-0 min-w-[320px] flex-1 overflow-hidden rounded-lg bg-white">
       {!ready ? (
         <p className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-muted-foreground">
           Chargement du calendrier…
@@ -20,8 +20,9 @@ export function DiscoveryCalendlyFrame({ src }: { src: string }) {
         loading="eager"
         referrerPolicy="no-referrer-when-downgrade"
         onLoad={() => setReady(true)}
+        style={{ colorScheme: "only light" }}
         className={cn(
-          "absolute inset-0 h-full w-full border-0 [color-scheme:light]",
+          "absolute inset-0 h-full w-full border-0",
           ready ? "opacity-100" : "opacity-0"
         )}
       />

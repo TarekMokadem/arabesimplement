@@ -206,13 +206,13 @@ export function DiscoveryLessonPopup({
         className={cn(
           "flex w-full flex-col",
           step === "calendly"
-            ? "h-[min(92dvh,840px)] max-h-[min(92dvh,840px)] overflow-hidden sm:max-w-2xl"
+            ? "h-[min(92dvh,780px)] max-h-[min(92dvh,780px)] gap-2 overflow-hidden p-3 sm:max-w-2xl"
             : "max-h-[min(92dvh,880px)] overflow-y-auto sm:max-w-lg"
         )}
         aria-describedby="discovery-lesson-desc"
       >
-        <DialogHeader className="shrink-0">
-          <div className="mb-1 flex items-center gap-2">
+        <DialogHeader className={cn("shrink-0", step === "calendly" && "gap-1")}>
+          <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-secondary/20 px-2.5 py-0.5 text-xs font-medium text-primary">
               <Sparkles className="h-3 w-3" />
               Offert
@@ -222,7 +222,12 @@ export function DiscoveryLessonPopup({
               30 minutes
             </span>
           </div>
-          <DialogTitle className="font-serif text-xl font-bold text-primary">
+          <DialogTitle
+            className={cn(
+              "font-serif font-bold text-primary",
+              step === "calendly" ? "text-lg" : "text-xl"
+            )}
+          >
             Cours de découverte
           </DialogTitle>
           <DialogDescription id="discovery-lesson-desc">
@@ -314,7 +319,7 @@ export function DiscoveryLessonPopup({
         )}
 
         {step === "calendly" && embedSrc ? (
-          <div className="flex min-h-0 flex-1 flex-col gap-3">
+          <div className="flex min-h-0 flex-1 flex-col gap-2">
             <DiscoveryCalendlyFrame src={embedSrc} />
             <p className="shrink-0 text-xs text-gray-500">
               Après confirmation, un e-mail part à l’équipe avec vos coordonnées

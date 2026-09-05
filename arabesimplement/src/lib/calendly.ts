@@ -3,13 +3,14 @@ export const CALENDLY_DISCOVERY_EVENT_URL =
   "https://calendly.com/arabeen10/cours-decouverte-conseil";
 
 /**
- * Thème embed Calendly — mêmes teintes que `globals.css`.
- * `primary` = boutons / liens / jour sélectionné (texte blanc dessus).
- * Un primaire trop clair (ex. mint) rend ce texte illisible.
+ * Thème embed Calendly — teintes `globals.css`.
+ * Un primaire trop foncé (#324530) pousse Calendly à écrire en blanc
+ * sur les jours disponibles et les créneaux (fond encore clair → illisible).
+ * Le sauge secondaire reste assez clair pour du texte foncé.
  */
 const CALENDLY_THEME = {
-  primary: "324530",
-  text: "121212",
+  primary: "5d7a50",
+  text: "1b2418",
   background: "ffffff",
 } as const;
 
