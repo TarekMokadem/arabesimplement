@@ -2,6 +2,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawerLoader } from "@/components/shop/CartDrawerLoader";
 import { getSession } from "@/app/(auth)/actions";
+import { DiscoveryLessonPopup } from "@/components/home/DiscoveryLessonPopup";
+import { calendlyDiscoveryUrl } from "@/lib/calendly";
 
 export default async function PublicLayout({
   children,
@@ -15,6 +17,7 @@ export default async function PublicLayout({
       <main className="min-h-screen">{children}</main>
       <Footer />
       <CartDrawerLoader />
+      <DiscoveryLessonPopup calendlyUrl={calendlyDiscoveryUrl()} />
     </>
   );
 }

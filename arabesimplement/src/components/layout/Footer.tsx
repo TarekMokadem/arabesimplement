@@ -6,6 +6,7 @@ import {
   MARKETING_BOUTIQUE_SLUGS,
   boutiqueFormationHref,
 } from "@/lib/content/marketing-boutique-links";
+import { DiscoveryLessonButton } from "@/components/home/DiscoveryLessonButton";
 
 const footerLinks = {
   navigation: [
@@ -184,6 +185,7 @@ export function Footer() {
                 <span>Partenaire — Égypte</span>
               </li>
             </ul>
+            <DiscoveryLessonButton variant="footer" />
 
             <div className="mt-8">
               <h4 className="text-sm font-medium mb-4">Légal</h4>

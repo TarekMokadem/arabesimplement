@@ -2,16 +2,6 @@
 export const CALENDLY_DISCOVERY_EVENT_URL =
   "https://calendly.com/arabeen10/cours-decouverte-conseil";
 
-const CALENDLY_WIDGET_SCRIPT =
-  "https://assets.calendly.com/assets/external/widget.js";
-
-type CalendlyApi = {
-  initInlineWidget: (options: {
-    url: string;
-    parentElement: HTMLElement;
-  }) => void;
-};
-
 export function calendlyDiscoveryUrl(): string {
   return (
     process.env.NEXT_PUBLIC_CALENDLY_DISCOVERY_URL?.trim() ||
@@ -19,49 +9,23 @@ export function calendlyDiscoveryUrl(): string {
   );
 }
 
+/** Iframe inline (évite widget.js qui plante si `.calendly-inline-widget` n’a pas de `data-url`). */
 export function calendlyInlineEmbedUrl(params: {
   baseUrl: string;
   name: string;
   email: string;
+  host: string;
 }): string {
-  const url = new URL(params.baseUrl);
+  const eventUrl = params.baseUrl.split("?")[0] || CALENDLY_DISCOVERY_EVENT_URL;
+  const url = new URL(eventUrl);
+  url.searchParams.set("embed_domain", params.host);
+  url.searchParams.set("embed_type", "Inline");
   url.searchParams.set("hide_event_type_details", "1");
   url.searchParams.set("hide_gdpr_banner", "1");
   url.searchParams.set("primary_color", "eef3e7");
   url.searchParams.set("name", params.name);
   url.searchParams.set("email", params.email);
   return url.toString();
-}
-
-export function loadCalendlyWidgetScript(): Promise<CalendlyApi> {
-  const existing = (window as Window & { Calendly?: CalendlyApi }).Calendly;
-  if (existing) return Promise.resolve(existing);
-
-  return new Promise((resolve, reject) => {
-    const already = document.querySelector<HTMLScriptElement>(
-      `script[src="${CALENDLY_WIDGET_SCRIPT}"]`
-    );
-    const onReady = () => {
-      const api = (window as Window & { Calendly?: CalendlyApi }).Calendly;
-      if (api) resolve(api);
-      else reject(new Error("Calendly widget indisponible"));
-    };
-    if (already) {
-      const api = (window as Window & { Calendly?: CalendlyApi }).Calendly;
-      if (api) {
-        resolve(api);
-        return;
-      }
-      already.addEventListener("load", onReady, { once: true });
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = CALENDLY_WIDGET_SCRIPT;
-    script.async = true;
-    script.onload = onReady;
-    script.onerror = () => reject(new Error("Calendly widget non chargé"));
-    document.body.appendChild(script);
-  });
 }
 
 export function isCalendlyOrigin(origin: string): boolean {

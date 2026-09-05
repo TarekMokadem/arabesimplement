@@ -12,6 +12,7 @@ import {
   HEADER_AIDE_LINKS,
   HeaderAideMenu,
 } from "@/components/layout/HeaderAideMenu";
+import { DiscoveryLessonButton } from "@/components/home/DiscoveryLessonButton";
 
 const mainNavLinks = [
   { href: "/", label: "Accueil" },
@@ -94,6 +95,8 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
 
           {/* Actions */}
           <div className="flex items-center gap-2 sm:gap-4">
+            <DiscoveryLessonButton variant="header" />
+            <DiscoveryLessonButton variant="headerCompact" />
             {/* Cart */}
             <Link href="/panier" className="relative">
               <Button
@@ -173,7 +176,11 @@ export function Header({ isLoggedIn, isAdmin }: HeaderProps = {}) {
                     </div>
                   </nav>
 
-                  <div className="pt-5 border-t border-gray-100 mt-auto">
+                  <div className="pt-5 border-t border-gray-100 mt-auto space-y-2">
+                    <DiscoveryLessonButton
+                      variant="menu"
+                      onOpened={() => setIsMobileMenuOpen(false)}
+                    />
                     <Link href={accountHref} onClick={() => setIsMobileMenuOpen(false)}>
                       <Button className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground text-sm py-5">
                         <User className="h-4 w-4 mr-2" />

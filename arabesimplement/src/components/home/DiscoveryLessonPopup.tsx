@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { usePathname } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Clock, Sparkles } from "lucide-react";
@@ -25,8 +26,8 @@ import {
   calendlyInlineEmbedUrl,
   calendlyScheduledEventUri,
   isCalendlyOrigin,
-  loadCalendlyWidgetScript,
 } from "@/lib/calendly";
+import { DISCOVERY_LESSON_OPEN_EVENT } from "@/lib/discovery-lesson";
 
 const SESSION_SEEN_KEY = "as.discoveryLesson.seen";
 const SUBMITTED_KEY = "as.discoveryLesson.submitted";
@@ -79,6 +80,7 @@ export function DiscoveryLessonPopup({
   > | null>(null);
   const [pending, startTransition] = useTransition();
   const calendlyBookedRef = useRef(false);
+  const pathname = usePathname();
 
   const form = useForm<DiscoveryLeadInput>({
     resolver: zodResolver(discoveryLeadSchema),
@@ -97,49 +99,39 @@ export function DiscoveryLessonPopup({
     formState: { errors },
   } = form;
 
+  const openForm = () => {
+    calendlyBookedRef.current = false;
+    setLead(null);
+    setStep("form");
+    form.reset();
+    setOpen(true);
+  };
+
   useEffect(() => {
+    const onOpen = () => openForm();
+    window.addEventListener(DISCOVERY_LESSON_OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(DISCOVERY_LESSON_OPEN_EVENT, onOpen);
+  }, [form]);
+
+  useEffect(() => {
+    if (pathname !== "/") return;
     if (alreadySubmitted() || alreadySeenThisSession()) return;
     const timer = window.setTimeout(() => {
       markSessionSeen();
       setOpen(true);
     }, 1400);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [pathname]);
 
   const embedSrc = useMemo(() => {
-    if (!calendlyUrl || !lead) return "";
+    if (!calendlyUrl || !lead || typeof window === "undefined") return "";
     return calendlyInlineEmbedUrl({
       baseUrl: calendlyUrl,
       name: `${lead.prenom} ${lead.nom}`.trim(),
       email: lead.email,
+      host: window.location.host,
     });
   }, [calendlyUrl, lead]);
-
-  const calendlyParentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (step !== "calendly" || !embedSrc) return;
-    const parent = calendlyParentRef.current;
-    if (!parent) return;
-    let cancelled = false;
-    parent.replaceChildren();
-    void loadCalendlyWidgetScript()
-      .then((Calendly) => {
-        if (cancelled || !calendlyParentRef.current) return;
-        Calendly.initInlineWidget({
-          url: embedSrc,
-          parentElement: calendlyParentRef.current,
-        });
-      })
-      .catch(() => {
-        if (!cancelled) {
-          toast.error("Le calendrier n’a pas pu s’afficher. Réessayez.");
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [embedSrc, step]);
 
   useEffect(() => {
     if (step !== "calendly" || !lead) return;
@@ -310,11 +302,11 @@ export function DiscoveryLessonPopup({
 
         {step === "calendly" && embedSrc && (
           <div className="space-y-3">
-            <div
-              ref={calendlyParentRef}
-              className="calendly-inline-widget w-full overflow-hidden rounded-lg"
+            <iframe
+              title="Choisir un horaire — Calendly"
+              src={embedSrc}
+              className="w-full overflow-hidden rounded-lg border-0"
               style={{ minWidth: 320, height: 700 }}
-              aria-label="Choisir un horaire — Calendly"
             />
             <p className="text-xs text-gray-500">
               Après confirmation, un e-mail part à l’équipe avec vos coordonnées
