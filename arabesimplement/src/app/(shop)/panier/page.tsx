@@ -11,9 +11,18 @@ import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { formatPrice } from "@/lib/utils/format";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { PromoCodeField } from "@/components/shop/PromoCodeField";
+import { CheckoutTotals } from "@/components/shop/CheckoutTotals";
+import { useCheckoutPromo } from "@/hooks/useCheckoutPromo";
+import { classifyCheckoutCart } from "@/lib/orders/cart-hourly";
 
 export default function PanierPage() {
   const { items, removeItem, getTotal, isHydrated } = useCart();
+  const subtotal = getTotal();
+  const checkoutKind =
+    classifyCheckoutCart(items) === "hourly_only" ? "hourly_only" : "standard";
+  const { applied, setApplied } = useCheckoutPromo(subtotal, checkoutKind);
+  const payable = applied?.payableEuros ?? subtotal;
 
   if (!isHydrated) {
     return (
@@ -138,24 +147,23 @@ export default function PanierPage() {
                   Récapitulatif
                 </h2>
 
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between text-gray-600">
-                    <span>Sous-total</span>
-                    <span>{formatPrice(getTotal())}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span>Frais</span>
-                    <span className="text-accent">Gratuit</span>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4 mb-6">
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold text-primary">Total</span>
-                    <span className="text-2xl font-bold text-primary">
-                      {formatPrice(getTotal())}
-                    </span>
-                  </div>
+                <div className="space-y-4 mb-6">
+                  <PromoCodeField
+                    subtotalEuros={subtotal}
+                    checkoutKind={checkoutKind}
+                    applied={applied}
+                    onApplied={setApplied}
+                  />
+                  <CheckoutTotals
+                    subtotalEuros={subtotal}
+                    discountEuros={applied?.discountEuros ?? 0}
+                    payableEuros={payable}
+                    promoCode={applied?.code}
+                    firstPeriodOnly={
+                      checkoutKind === "hourly_only" &&
+                      (applied?.discountEuros ?? 0) > 0
+                    }
+                  />
                 </div>
 
                 <Link href="/commande/informations">

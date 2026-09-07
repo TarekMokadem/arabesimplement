@@ -17,6 +17,9 @@ export type OrderConfirmationView = {
   orderId: string;
   statut: "PAID" | "PENDING";
   totalEuros: number;
+  subtotalEuros: number;
+  discountEuros: number;
+  promoCode: string | null;
   createdAt: string;
   billing: { prenom: string; nom: string; email: string };
   lines: OrderConfirmationLine[];
@@ -102,6 +105,13 @@ export async function getOrderConfirmationView(
     orderId: order.id,
     statut,
     totalEuros: Number(order.total),
+    subtotalEuros:
+      order.subtotalEuros != null
+        ? Number(order.subtotalEuros)
+        : Number(order.total),
+    discountEuros:
+      order.discountEuros != null ? Number(order.discountEuros) : 0,
+    promoCode: order.promoCodeSnapshot,
     createdAt: order.createdAt.toISOString(),
     billing: {
       prenom: snap.prenom,

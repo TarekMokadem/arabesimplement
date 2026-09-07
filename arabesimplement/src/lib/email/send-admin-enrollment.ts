@@ -41,6 +41,14 @@ export async function sendAdminEnrollmentEmailIfNeeded(
     return `${item.formation.titre}${creneau}`;
   });
   const total = Number(order.total).toFixed(2);
+  const discount =
+    order.discountEuros != null ? Number(order.discountEuros) : 0;
+  const promoNote =
+    discount > 0
+      ? order.promoCodeSnapshot
+        ? `Code ${order.promoCodeSnapshot} : −${discount.toFixed(2)} €`
+        : `Réduction : −${discount.toFixed(2)} €`
+      : null;
   const adminOrderUrl = toAbsoluteUrl("/admin/paiements");
 
   const ok = await sendAdminEnrollmentEmail({
@@ -49,6 +57,7 @@ export async function sendAdminEnrollmentEmailIfNeeded(
     studentPhone: telephone,
     formations,
     totalEuros: total,
+    promoNote,
     adminOrderUrl,
   });
 
@@ -66,6 +75,7 @@ async function sendAdminEnrollmentEmail(params: {
   studentPhone: string;
   formations: string[];
   totalEuros: string;
+  promoNote: string | null;
   adminOrderUrl: string;
 }): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
@@ -106,7 +116,11 @@ async function sendAdminEnrollmentEmail(params: {
         </p>
         <p><strong>Formation(s) :</strong></p>
         <ul>${liste}</ul>
-        <p><strong>Montant :</strong> ${escapeHtml(params.totalEuros)} €</p>
+        <p><strong>Montant :</strong> ${escapeHtml(params.totalEuros)} €${
+          params.promoNote
+            ? `<br /><strong>Promo :</strong> ${escapeHtml(params.promoNote)}`
+            : ""
+        }</p>
         <p>
           <a href="${escapeHtml(params.adminOrderUrl)}" style="display:inline-block;margin:8px 0;padding:10px 18px;background:#1e3a2f;color:#fff;text-decoration:none;border-radius:6px">Voir les paiements</a>
         </p>

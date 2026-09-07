@@ -12,6 +12,7 @@ import {
   Star,
   FileText,
   Settings,
+  Tag,
   LogOut,
   Menu,
 } from "lucide-react";
@@ -25,6 +26,7 @@ const sidebarLinks = [
   { href: "/admin/formations", label: "Formations", icon: BookOpen },
   { href: "/admin/utilisateurs", label: "Utilisateurs", icon: Users },
   { href: "/admin/paiements", label: "Paiements", icon: CreditCard },
+  { href: "/admin/codes-promo", label: "Codes promo", icon: Tag },
   { href: "/admin/messages", label: "Messages", icon: MessageSquare },
   { href: "/admin/temoignages", label: "Témoignages", icon: Star },
   { href: "/admin/blog", label: "Blog", icon: FileText },

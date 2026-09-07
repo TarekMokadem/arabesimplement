@@ -15,11 +15,20 @@ import {
   classifyCheckoutCart,
   MIXED_CART_CHECKOUT_ERROR,
 } from "@/lib/orders/cart-hourly";
+import { resolvePromoForCheckout } from "@/lib/promo/resolve-promo-for-checkout";
 
 export type CheckoutOrderKind = "hourly_only" | "standard";
 
 export type CreatePendingOrderResult =
-  | { success: true; orderId: string; totalEuros: number; checkoutKind: CheckoutOrderKind }
+  | {
+      success: true;
+      orderId: string;
+      totalEuros: number;
+      subtotalEuros: number;
+      discountEuros: number;
+      promoCode: string | null;
+      checkoutKind: CheckoutOrderKind;
+    }
   | { success: false; error: string };
 
 export type CheckoutActor =
@@ -73,13 +82,14 @@ export async function createPendingOrderWithItems(
   data: OrderFormInput,
   items: CartItem[],
   clientIp: string | null,
-  actor: CheckoutActor
+  actor: CheckoutActor,
+  promoCodeRaw?: string | null
 ): Promise<CreatePendingOrderResult> {
   const normalized = await normalizeCartItemsForCheckout(items);
   if (!normalized.success) {
     return { success: false, error: normalized.error };
   }
-  const { items: safeItems, totalEuros } = normalized;
+  const { items: safeItems, totalEuros: subtotalEuros } = normalized;
 
   const classified = classifyCheckoutCart(safeItems);
   if (classified === "mixed") {
@@ -87,6 +97,18 @@ export async function createPendingOrderWithItems(
   }
   const checkoutKind: CheckoutOrderKind =
     classified === "hourly_only" ? "hourly_only" : "standard";
+
+  const promo = await resolvePromoForCheckout({
+    rawCode: promoCodeRaw,
+    subtotalEuros,
+    checkoutKind,
+    stripeConfigured: isStripeConfigured(),
+  });
+  if (!promo.success) {
+    return { success: false, error: promo.error };
+  }
+  const { applied, promo: promoRef } = promo.resolution;
+  const totalEuros = applied.payableEuros;
 
   const email = normalizeEmail(data.email);
   const billingSnapshot = orderFormToBillingSnapshot(data);
@@ -115,6 +137,13 @@ export async function createPendingOrderWithItems(
           userId,
           billingSnapshot: billingSnapshot as unknown as Prisma.InputJsonValue,
           total: new Prisma.Decimal(totalEuros.toFixed(2)),
+          subtotalEuros: new Prisma.Decimal(applied.subtotalEuros.toFixed(2)),
+          discountEuros:
+            applied.discountEuros > 0
+              ? new Prisma.Decimal(applied.discountEuros.toFixed(2))
+              : null,
+          promoCodeId: promoRef?.id ?? null,
+          promoCodeSnapshot: promoRef?.code ?? null,
           statut: "PENDING",
           reglementSigneAt: new Date(),
           reglementIp: clientIp,
@@ -129,7 +158,15 @@ export async function createPendingOrderWithItems(
       return order.id;
     });
 
-    return { success: true, orderId, totalEuros, checkoutKind };
+    return {
+      success: true,
+      orderId,
+      totalEuros,
+      subtotalEuros: applied.subtotalEuros,
+      discountEuros: applied.discountEuros,
+      promoCode: promoRef?.code ?? null,
+      checkoutKind,
+    };
   } catch (e) {
     console.error("[createPendingOrderWithItems]", e);
     const msg = e instanceof Error ? e.message : "";

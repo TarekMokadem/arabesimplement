@@ -14,4 +14,7 @@ export type StoredCheckoutOrder = {
   stripePublishableKey?: string | null;
   /** Panier 100 % cours à la carte (abonnement Stripe mensuel). */
   checkoutKind?: "hourly_only" | "standard";
+  subtotalEuros?: number;
+  discountEuros?: number;
+  promoCode?: string | null;
 };

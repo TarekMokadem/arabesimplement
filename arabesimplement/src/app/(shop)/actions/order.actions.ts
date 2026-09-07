@@ -30,6 +30,7 @@ import {
 import { ensureEnrollmentsForPaidOrder } from "@/lib/orders/fulfill-order";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/app/(auth)/actions";
+import { createStripeOnceAmountOffCoupon } from "@/lib/stripe/promo-coupon";
 
 export type CreateOrderResult =
   | {
@@ -40,6 +41,9 @@ export type CreateOrderResult =
       paymentMode: "stripe" | "mock";
       checkoutKind: "hourly_only" | "standard";
       totalEuros: number;
+      subtotalEuros: number;
+      discountEuros: number;
+      promoCode: string | null;
     }
   | { success: false; error: string };
 
@@ -53,7 +57,8 @@ async function getClientIp(): Promise<string | null> {
 
 export async function createOrder(
   data: OrderFormInput,
-  items: CartItem[]
+  items: CartItem[],
+  promoCode?: string | null
 ): Promise<CreateOrderResult> {
   if (items.length === 0) {
     return { success: false, error: "Le panier est vide" };
@@ -78,6 +83,9 @@ export async function createOrder(
       paymentMode: "mock",
       checkoutKind,
       totalEuros,
+      subtotalEuros: totalEuros,
+      discountEuros: 0,
+      promoCode: null,
     };
   }
 
@@ -92,13 +100,14 @@ export async function createOrder(
     data,
     items,
     clientIp,
-    actor
+    actor,
+    promoCode
   );
   if (!pending.success) {
     return { success: false, error: pending.error };
   }
 
-  const { orderId, totalEuros, checkoutKind } = pending;
+  const { orderId, totalEuros, checkoutKind, subtotalEuros, discountEuros, promoCode: appliedPromo } = pending;
   const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? null;
 
   if (!isStripeConfigured()) {
@@ -110,6 +119,9 @@ export async function createOrder(
       paymentMode: "mock",
       checkoutKind,
       totalEuros,
+      subtotalEuros,
+      discountEuros,
+      promoCode: appliedPromo,
     };
   }
 
@@ -184,6 +196,19 @@ export async function createOrder(
         payment_behavior: "default_incomplete",
         payment_settings: { save_default_payment_method: "on_subscription" },
         expand: ["latest_invoice"],
+        ...(discountEuros > 0 && appliedPromo
+          ? {
+              discounts: [
+                {
+                  coupon: await createStripeOnceAmountOffCoupon(stripe, {
+                    discountEuros,
+                    orderId,
+                    promoCode: appliedPromo,
+                  }),
+                },
+              ],
+            }
+          : {}),
       });
       createdSubscriptionId = subscription.id;
 
@@ -206,6 +231,9 @@ export async function createOrder(
         paymentMode: "stripe",
         checkoutKind,
         totalEuros,
+        subtotalEuros,
+        discountEuros,
+        promoCode: appliedPromo,
       };
     } catch (e) {
       console.error("[createOrder] Stripe abonnement", e);
@@ -230,7 +258,10 @@ export async function createOrder(
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
       currency: "eur",
-      metadata: { orderId },
+      metadata: {
+        orderId,
+        ...(appliedPromo ? { promoCode: appliedPromo } : {}),
+      },
       automatic_payment_methods: { enabled: true },
     });
 
@@ -248,6 +279,9 @@ export async function createOrder(
       paymentMode: "stripe",
       checkoutKind,
       totalEuros,
+      subtotalEuros,
+      discountEuros,
+      promoCode: appliedPromo,
     };
   } catch (e) {
     console.error("[createOrder] Stripe", e);

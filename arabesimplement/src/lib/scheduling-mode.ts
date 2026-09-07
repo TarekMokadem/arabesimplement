@@ -63,7 +63,7 @@ export function totalMinutesInHourlyBundle(bundle: HourlyDurationBundle): number
   return t;
 }
 
-/** Texte court : « 2×1 h + 1×30 min (25 € / mois) » — sans montant si omitPrice. */
+/** Texte court : « 2×1 h + 1×30 min — 25 € / mois » — sans montant si omitPrice. */
 export function formatHourlyBundleForDisplay(
   bundle: HourlyDurationBundle,
   options?: { omitPrice?: boolean }
@@ -80,7 +80,7 @@ export function formatHourlyBundleForDisplay(
   const core = parts.join(" + ");
   if (options?.omitPrice) return core;
   const euros = sumHourlyBundleEuros(bundle);
-  return `${core} (${euros} € / mois)`;
+  return `${core} — ${euros} € / mois`;
 }
 
 export function mergeHourlyBundles(
@@ -101,10 +101,23 @@ export function emptyHourlyBundle(): Record<HourlyBundleMinutes, number> {
   return { 60: 0, 40: 0, 30: 0 };
 }
 
+/** Ligne principale sous le titre produit (panier, checkout) — source unique pour toutes les formations. */
+export function schedulingModeCartHeadline(mode: FormationSchedulingMode): string {
+  switch (mode) {
+    case "HOURLY_PURCHASE":
+      return "Abonnement mensuel — séances récurrentes chaque semaine";
+    case "FLEXIBLE_FORMATION":
+      return "Forfait unique — horaires à organiser avec le professeur";
+    case "FIXED_SLOTS":
+    default:
+      return "Forfait unique — créneau parmi les sessions proposées";
+  }
+}
+
 export function schedulingModeTitle(mode: FormationSchedulingMode): string {
   switch (mode) {
     case "HOURLY_PURCHASE":
-      return "Cours à la carte — créneau récurrent chaque semaine, prélèvement mensuel";
+      return "Cours à la carte — abonnement mensuel, séances chaque semaine (volume au choix)";
     case "FLEXIBLE_FORMATION":
       return "Paiement forfaitaire — organisation avec le professeur";
     case "FIXED_SLOTS":
@@ -135,7 +148,7 @@ export function schedulingModeBoutiquePriceShort(
     case "FLEXIBLE_FORMATION":
       return "Un seul paiement · horaires libres avec le prof";
     case "HOURLY_PURCHASE":
-      return "Prélèvement chaque mois · une séance récurrente (durée au choix, voir grille)";
+      return "Abonnement mensuel · séances chaque semaine (durée et volume au choix)";
     default:
       return "";
   }
@@ -147,9 +160,9 @@ export function schedulingModeDescription(
   switch (mode) {
     case "HOURLY_PURCHASE":
       return (
-        "Vous réservez une durée par séance (ex. 1 h) : c’est le même créneau chaque semaine, " +
-        "avec le même montant prélevé chaque mois tant que vous suivez ce cours. " +
-        "Les horaires se finalisent avec l’équipe comme pour un forfait flexible."
+        "Vous choisissez un volume d’heures par semaine (ex. 4 × 1 h) : les séances sont " +
+        "récurrentes chaque semaine, et le montant correspondant est prélevé une fois par mois " +
+        "tant que l’abonnement est actif. Les horaires se finalisent avec l’équipe."
       );
     case "FLEXIBLE_FORMATION":
       return (
@@ -183,8 +196,9 @@ export function schedulingModePaymentExplanation(
       );
     case "HOURLY_PURCHASE":
       return (
-        "Paiement : chaque mois, selon la durée et le volume choisis (grille indicative 10 € / 8 € / 5 € par unité). " +
-        "Ex. 1 h par semaine au créneau : rythme hebdomadaire, montant mensuel aligné sur votre sélection. L’horaire exact se confirme avec l’équipe."
+        "Paiement : abonnement mensuel selon la durée et le volume choisis (grille 10 € / 8 € / 5 € par unité). " +
+        "Les séances ont lieu chaque semaine ; le montant affiché est le prélèvement du mois, pas un paiement à chaque cours. " +
+        "L’horaire exact se confirme avec l’équipe."
       );
     default:
       return "";
@@ -199,7 +213,7 @@ export function schedulingModePaymentBrief(mode: FormationSchedulingMode): strin
     case "FLEXIBLE_FORMATION":
       return "Paiement unique. Les séances s’organisent avec le professeur après l’achat.";
     case "HOURLY_PURCHASE":
-      return "Prélèvement chaque mois selon le nombre d’heures choisies au créneau. Les séances s’organisent avec le professeur après l’achat.";
+      return "Abonnement mensuel selon le volume d’heures choisi. Séances chaque semaine ; organisation des horaires avec le professeur après l’achat.";
     default:
       return "";
   }

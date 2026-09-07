@@ -10,6 +10,7 @@ import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
 import { StripePaymentSection } from "@/components/shop/StripePaymentSection";
 import { PaypalMeCheckoutBlock } from "@/components/shop/PaypalMeCheckoutBlock";
 import { PaymentExperiencePreface } from "@/components/shop/PaymentExperiencePreface";
+import { CheckoutTotals } from "@/components/shop/CheckoutTotals";
 import { useCart } from "@/hooks/useCart";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { formatPrice } from "@/lib/utils/format";
@@ -60,6 +61,10 @@ export default function PaiementPage() {
     if (orderInfo?.total != null) return orderInfo.total;
     return getTotal();
   }, [orderInfo, getTotal]);
+
+  const subtotal = orderInfo?.subtotalEuros ?? total;
+  const discountEuros = orderInfo?.discountEuros ?? 0;
+  const promoCode = orderInfo?.promoCode ?? null;
 
   const amountLabel = formatPrice(total);
 
@@ -223,7 +228,8 @@ export default function PaiementPage() {
 
                 {orderInfo?.orderId &&
                 orderInfo.paymentMode === "stripe" &&
-                !orderInfo.orderId.startsWith("ORD-MOCK") ? (
+                !orderInfo.orderId.startsWith("ORD-MOCK") &&
+                total > 0 ? (
                   <>
                     <div className="relative py-2">
                       <div
@@ -296,14 +302,15 @@ export default function PaiementPage() {
                   ))}
                 </div>
 
-                <div className="border-t pt-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold text-primary">Total</span>
-                    <span className="text-2xl font-bold text-primary">
-                      {amountLabel}
-                    </span>
-                  </div>
-                </div>
+                <CheckoutTotals
+                  subtotalEuros={subtotal}
+                  discountEuros={discountEuros}
+                  payableEuros={total}
+                  promoCode={promoCode}
+                  firstPeriodOnly={
+                    orderInfo?.checkoutKind === "hourly_only" && discountEuros > 0
+                  }
+                />
               </CardContent>
             </Card>
           </div>

@@ -244,7 +244,7 @@ export function FormationEditorForm(
                   Paiement forfaitaire — forfait unique, organisation libre avec le prof
                 </option>
                 <option value="HOURLY_PURCHASE">
-                  Cours à la carte — paiement à chaque cours, durée par séance (grille tarifs)
+                  Cours à la carte — abonnement mensuel selon le volume d’heures (grille tarifs)
                 </option>
               </select>
               <p className="text-xs text-gray-500 leading-relaxed">
@@ -252,18 +252,19 @@ export function FormationEditorForm(
                 <strong className="font-medium text-gray-700">forfaitaire</strong> : un seul
                 paiement à l’achat — la différence est que les créneaux imposent un
                 calendrier.{" "}
-                <strong className="font-medium text-gray-700">À la carte</strong> : même
-                logique d’organisation qu’avec le prof, mais chaque séance se paie et a une
-                durée définie. La section « Créneaux » n’apparaît que pour le mode
+                <strong className="font-medium text-gray-700">À la carte</strong> : abonnement
+                mensuel selon le volume d’heures choisi (séances chaque semaine), pas un
+                paiement à chaque cours. La section « Créneaux » n’apparaît que pour le mode
                 « Créneaux proposés ».
               </p>
             </div>
             {schedulingMode === "HOURLY_PURCHASE" ? (
               <div className="space-y-2 sm:col-span-2 rounded-lg border border-secondary/25 bg-secondary/5 px-3 py-3 text-sm text-gray-700">
-                <p className="font-medium text-primary">Tarification à la séance</p>
+                <p className="font-medium text-primary">Tarification mensuelle (volume hebdo)</p>
                 <p>
-                  Pas de prix forfaitaire : sur la boutique, l’élève choisit la durée
-                  (1 h / 40 min / 30 min) et éventuellement un créneau. Grille 10 € / 8 € / 5 €.
+                  Pas de prix forfaitaire unique : sur la boutique, l’élève choisit le volume
+                  (1 h / 40 min / 30 min, plusieurs unités possibles). Grille 10 € / 8 € / 5 €
+                  par unité, prélevée chaque mois.
                 </p>
               </div>
             ) : (

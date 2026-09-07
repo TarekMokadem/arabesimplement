@@ -27,6 +27,11 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { orderFormSchema, type OrderFormInput } from "@/lib/validations/order.schema";
 import { formatPrice } from "@/lib/utils/format";
 import { toast } from "sonner";
+import { PromoCodeField } from "@/components/shop/PromoCodeField";
+import { CheckoutTotals } from "@/components/shop/CheckoutTotals";
+import { useCheckoutPromo } from "@/hooks/useCheckoutPromo";
+import { classifyCheckoutCart } from "@/lib/orders/cart-hourly";
+import { readStoredCheckoutPromoCode } from "@/lib/promo/checkout-promo-storage";
 
 const countries = [
   "France",
@@ -52,6 +57,11 @@ export default function InformationsPage() {
   const router = useRouter();
   const { items, getTotal, isHydrated: cartHydrated } = useCart();
   const [isLoading, setIsLoading] = useState(false);
+  const subtotal = getTotal();
+  const checkoutKind =
+    classifyCheckoutCart(items) === "hourly_only" ? "hourly_only" : "standard";
+  const { applied, setApplied } = useCheckoutPromo(subtotal, checkoutKind);
+  const payable = applied?.payableEuros ?? subtotal;
 
   const {
     register,
@@ -112,7 +122,11 @@ export default function InformationsPage() {
     setIsLoading(true);
 
     try {
-      const result = await createOrder(data, items);
+      const result = await createOrder(
+        data,
+        items,
+        readStoredCheckoutPromoCode() || applied?.code
+      );
 
       if (!result.success) {
         toast.error(result.error ?? "Une erreur est survenue.");
@@ -127,6 +141,9 @@ export default function InformationsPage() {
           email: data.email,
           items,
           total: result.totalEuros ?? getTotal(),
+          subtotalEuros: result.subtotalEuros,
+          discountEuros: result.discountEuros,
+          promoCode: result.promoCode,
           orderId: result.orderId,
           paymentMode: result.paymentMode,
           clientSecret: result.clientSecret,
@@ -437,13 +454,23 @@ export default function InformationsPage() {
                     ))}
                   </div>
 
-                  <div className="border-t pt-4 mb-6">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-primary">Total</span>
-                      <span className="text-2xl font-bold text-primary">
-                        {formatPrice(getTotal())}
-                      </span>
-                    </div>
+                  <div className="border-t pt-4 mb-6 space-y-4">
+                    <PromoCodeField
+                      subtotalEuros={subtotal}
+                      checkoutKind={checkoutKind}
+                      applied={applied}
+                      onApplied={setApplied}
+                    />
+                    <CheckoutTotals
+                      subtotalEuros={subtotal}
+                      discountEuros={applied?.discountEuros ?? 0}
+                      payableEuros={payable}
+                      promoCode={applied?.code}
+                      firstPeriodOnly={
+                        checkoutKind === "hourly_only" &&
+                        (applied?.discountEuros ?? 0) > 0
+                      }
+                    />
                   </div>
 
                   <Button

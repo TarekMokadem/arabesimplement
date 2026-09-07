@@ -192,13 +192,38 @@ model Order {
   purchaseFollowupEmailSentAt DateTime? @map("purchase_followup_email_sent_at")
   /** Évite l’envoi en double de la notification admin (nouvelle inscription). */
   adminEnrollmentEmailSentAt DateTime? @map("admin_enrollment_email_sent_at")
+  /** Code promo appliqué au checkout (montant fixe). */
+  promoCodeId           String?     @map("promo_code_id")
+  promoCodeSnapshot     String?     @map("promo_code_snapshot") @db.VarChar(32)
+  subtotalEuros         Decimal?    @map("subtotal_euros") @db.Decimal(10, 2)
+  discountEuros         Decimal?    @map("discount_euros") @db.Decimal(10, 2)
+  /** Compteur d’utilisation incrémenté une seule fois au passage en payé. */
+  promoRedeemedAt       DateTime?   @map("promo_redeemed_at")
   createdAt             DateTime    @default(now()) @map("created_at")
 
   user                     User?                     @relation(fields: [userId], references: [id])
+  promoCode                PromoCode?                @relation(fields: [promoCodeId], references: [id], onDelete: SetNull)
   orderItems               OrderItem[]
   courseWeeklySubscriptions CourseWeeklySubscription[]
 
   @@map("orders")
+}
+
+/** Réduction fixe (€) saisie par l’admin, appliquée au premier paiement. */
+model PromoCode {
+  id              String    @id @default(uuid())
+  code            String    @unique
+  amountOffEuros  Decimal   @map("amount_off_euros") @db.Decimal(10, 2)
+  active          Boolean   @default(true)
+  expiresAt       DateTime? @map("expires_at")
+  maxRedemptions  Int?      @map("max_redemptions")
+  redemptionCount Int       @default(0) @map("redemption_count")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  orders Order[]
+
+  @@map("promo_codes")
 }
 
 model OrderItem {

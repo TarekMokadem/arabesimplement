@@ -2,7 +2,31 @@ import type { CartItem } from "@/store/cart.store";
 import {
   HOURLY_SLOTS_PRICING,
   formatHourlyBundleForDisplay,
+  schedulingModeCartHeadline,
+  type FormationSchedulingMode,
 } from "@/lib/scheduling-mode";
+
+/** Anciens libellés panier encore présents dans `choiceSummary` (localStorage). */
+function isStaleSchedulingHeadline(
+  segment: string,
+  mode: FormationSchedulingMode
+): boolean {
+  const headline = schedulingModeCartHeadline(mode);
+  if (segment === headline) return true;
+  if (mode !== "HOURLY_PURCHASE") return false;
+  const stale = [
+    "cours à la carte",
+    "cours a la carte",
+    "créneau récurrent",
+    "creneau recurrent",
+    "prélevé chaque mois",
+    "preleve chaque mois",
+    "montant total prélevé",
+    "montant total preleve",
+  ];
+  const lower = segment.toLowerCase();
+  return stale.some((s) => lower.includes(s));
+}
 
 function hourlyLine(minutes: number): string | null {
   const row = HOURLY_SLOTS_PRICING.find((r) => r.minutes === minutes);
@@ -10,12 +34,25 @@ function hourlyLine(minutes: number): string | null {
   return `Durée : ${row.durationLabel} — ${row.priceEuros} € / mois`;
 }
 
+function foldForCompare(s: string): string {
+  return s.replace(/×/g, "x").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
 /** True if ce extrait du choiceSummary duplique déjà le bloc bundle / durée. */
 function isRedundantHourlySegment(segment: string, item: CartItem): boolean {
   if (item.hourlyBundle && Object.keys(item.hourlyBundle).length > 0) {
     const bl = formatHourlyBundleForDisplay(item.hourlyBundle);
-    if (bl && (segment === bl || segment.startsWith(bl.split("(")[0].trim()))) {
-      return true;
+    if (bl) {
+      const foldedSeg = foldForCompare(segment);
+      const foldedBl = foldForCompare(bl);
+      const blCore = foldForCompare(bl.split("—")[0] ?? bl.split("(")[0] ?? bl);
+      if (
+        foldedSeg === foldedBl ||
+        foldedSeg.startsWith(blCore) ||
+        foldedSeg.includes(blCore)
+      ) {
+        return true;
+      }
     }
   }
   if (item.hourlyMinutes == null) return false;
@@ -38,9 +75,7 @@ export function getCartItemDetailLines(item: CartItem): string[] {
 
   switch (item.schedulingMode) {
     case "HOURLY_PURCHASE":
-      lines.push(
-        "Cours à la carte — créneau récurrent chaque semaine, montant total prélevé chaque mois"
-      );
+      lines.push(schedulingModeCartHeadline("HOURLY_PURCHASE"));
       if (item.hourlyBundle && Object.keys(item.hourlyBundle).length > 0) {
         const t = formatHourlyBundleForDisplay(item.hourlyBundle);
         if (t) lines.push(t);
@@ -50,10 +85,10 @@ export function getCartItemDetailLines(item: CartItem): string[] {
       }
       break;
     case "FLEXIBLE_FORMATION":
-      lines.push("Forfait unique — horaires à organiser avec le professeur");
+      lines.push(schedulingModeCartHeadline("FLEXIBLE_FORMATION"));
       break;
     case "FIXED_SLOTS":
-      lines.push("Forfait unique — créneau parmi les sessions proposées");
+      lines.push(schedulingModeCartHeadline("FIXED_SLOTS"));
       break;
     default:
       break;
@@ -71,6 +106,7 @@ export function getCartItemDetailLines(item: CartItem): string[] {
       ) {
         continue;
       }
+      if (isStaleSchedulingHeadline(part, item.schedulingMode)) continue;
       if (lines.includes(part)) continue;
       lines.push(part);
     }

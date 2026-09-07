@@ -5,6 +5,7 @@ import { attachUserToPaidGuestOrder } from "@/lib/orders/provision-guest-after-p
 import { sendPurchaseFollowupIfNeeded } from "@/lib/orders/send-purchase-followup";
 import { sendAdminEnrollmentEmailIfNeeded } from "@/lib/email/send-admin-enrollment";
 import { ensureCourseWeeklySubscriptionsForPaidOrder } from "@/lib/orders/sync-course-weekly-subscriptions";
+import { redeemPromoForPaidOrder } from "@/lib/promo/redeem-promo-for-paid-order";
 
 const ENROLLMENT_DAYS_AFTER_PAYMENT = 30;
 
@@ -106,6 +107,8 @@ export async function ensureEnrollmentsForPaidOrder(
   }
 
   await ensureCourseWeeklySubscriptionsForPaidOrder(orderId);
+
+  await redeemPromoForPaidOrder(orderId);
 
   after(async () => {
     await sendPurchaseFollowupIfNeeded(orderId);
