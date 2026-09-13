@@ -20,6 +20,7 @@ import {
   groupWeeklyRowsByFormationId,
 } from "@/lib/data/learner-purchase-history.service";
 import { cn } from "@/lib/utils";
+import { paymentChannelLabel } from "@/lib/stripe/stripe-payment-method-type";
 
 export const metadata: Metadata = {
   title: "Historique d'achats",
@@ -202,11 +203,18 @@ export default async function HistoriqueAchatsPage() {
                       <span className="font-semibold text-primary">
                         {formatPrice(Number(order.total))}
                       </span>
-                      {order.stripeSubscriptionId ? (
-                        <span className="block mt-1 text-xs">
-                          Paiement récurrent (cours à la carte)
-                        </span>
-                      ) : null}
+                      <span className="block mt-1 text-xs">
+                        {paymentChannelLabel({
+                          statut: order.statut,
+                          stripePaymentIntentId: order.stripePaymentIntentId,
+                          stripeSubscriptionId: order.stripeSubscriptionId,
+                          stripePaymentMethodType:
+                            order.stripePaymentMethodType,
+                        })}
+                        {order.stripeSubscriptionId
+                          ? " · Paiement récurrent (cours à la carte)"
+                          : null}
+                      </span>
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pt-0">

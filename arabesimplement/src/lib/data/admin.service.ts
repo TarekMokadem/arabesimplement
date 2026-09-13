@@ -6,9 +6,7 @@ import type {
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { parseBillingSnapshot } from "@/lib/orders/billing-snapshot";
-import {
-  stripeTunnelChannelLabel,
-} from "@/lib/stripe/stripe-payment-method-type";
+import { paymentChannelLabel } from "@/lib/stripe/stripe-payment-method-type";
 
 export type AdminStats = {
   revenusThisMois: number;
@@ -26,6 +24,7 @@ export type AdminRecentOrder = {
   amount: number;
   dateIso: string;
   status: OrderStatus;
+  paymentChannelLabel: string;
 };
 
 export type AdminCreneauOccupancy = {
@@ -70,40 +69,13 @@ export type AdminPaymentRow = {
   montant: number;
   statut: OrderStatus;
   date: Date;
-  /** Si renseigné, la commande est un abonnement Stripe — ne pas utiliser le marquage manuel. */
+  /** Si renseigné, la commande est un abonnement Stripe. */
   stripeSubscriptionId: string | null;
-  /** Tunnel Stripe actif : passage en payé géré par Stripe / webhook (pas « Marquer payé »). */
-  stripeTunnelCompletesAutomatically: boolean;
-  /** Stripe (PI / abonnement réel) vs validation manuelle (ex. PayPal.me). */
+  /** Stripe, PayPal via Stripe, ou PayPal.me. */
   paymentChannelLabel: string;
   /** Résumé des lignes d’abonnement cours à la carte liées à la commande. */
   weeklySubscriptionHint: string | null;
 };
-
-function orderStripeTunnelPresent(o: {
-  stripePaymentIntentId: string | null;
-  stripeSubscriptionId: string | null;
-}): boolean {
-  if (o.stripePaymentIntentId != null && o.stripePaymentIntentId !== "") {
-    return true;
-  }
-  const sid = o.stripeSubscriptionId;
-  return sid != null && sid !== "" && !sid.startsWith("mock_sub_");
-}
-
-function paymentChannelLabelForOrder(o: {
-  statut: OrderStatus;
-  stripePaymentIntentId: string | null;
-  stripeSubscriptionId: string | null;
-  stripePaymentMethodType: string | null;
-}): string {
-  if (orderStripeTunnelPresent(o)) {
-    return stripeTunnelChannelLabel(o.stripePaymentMethodType);
-  }
-  if (o.statut === "PAID") return "PayPal.me / hors Stripe (confirmé)";
-  if (o.statut === "PENDING") return "En attente de paiement";
-  return "—";
-}
 
 function weeklySubscriptionHintFromRows(
   statuses: WeeklySubscriptionStatus[]
@@ -225,7 +197,6 @@ export async function getAdminRecentOrders(
 ): Promise<AdminRecentOrder[]> {
   if (!isDatabaseConfigured()) return [];
   const orders = await prisma.order.findMany({
-    where: { statut: { in: ["PAID", "REFUNDED", "FAILED"] } },
     orderBy: { createdAt: "desc" },
     take: limit,
     include: {
@@ -243,6 +214,12 @@ export async function getAdminRecentOrders(
     amount: Number(o.total),
     dateIso: o.createdAt.toISOString().slice(0, 10),
     status: o.statut,
+    paymentChannelLabel: paymentChannelLabel({
+      statut: o.statut,
+      stripePaymentIntentId: o.stripePaymentIntentId,
+      stripeSubscriptionId: o.stripeSubscriptionId,
+      stripePaymentMethodType: o.stripePaymentMethodType,
+    }),
   }));
 }
 
@@ -402,11 +379,7 @@ export async function getAdminOrdersList(): Promise<AdminPaymentRow[]> {
     statut: o.statut,
     date: o.createdAt,
     stripeSubscriptionId: o.stripeSubscriptionId,
-    stripeTunnelCompletesAutomatically: orderStripeTunnelPresent({
-      stripePaymentIntentId: o.stripePaymentIntentId,
-      stripeSubscriptionId: o.stripeSubscriptionId,
-    }),
-    paymentChannelLabel: paymentChannelLabelForOrder({
+    paymentChannelLabel: paymentChannelLabel({
       statut: o.statut,
       stripePaymentIntentId: o.stripePaymentIntentId,
       stripeSubscriptionId: o.stripeSubscriptionId,

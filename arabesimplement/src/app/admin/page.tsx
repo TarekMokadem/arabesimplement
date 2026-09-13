@@ -176,6 +176,9 @@ export default async function AdminDashboardPage() {
                           <p className="text-sm text-gray-500 truncate">
                             {order.formationLabel}
                           </p>
+                          <p className="text-xs text-gray-400 truncate">
+                            {order.paymentChannelLabel}
+                          </p>
                         </div>
                       </div>
                       <div className="text-right shrink-0 ml-2">

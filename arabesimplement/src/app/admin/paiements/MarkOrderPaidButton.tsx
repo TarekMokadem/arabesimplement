@@ -17,23 +17,13 @@ export function MarkOrderPaidButton({
   orderId,
   montantEuros,
   formationSummary,
-  disabledReason,
 }: {
   orderId: string;
   montantEuros: number;
   formationSummary: string;
-  disabledReason?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
-
-  if (disabledReason) {
-    return (
-      <span className="text-xs text-muted-foreground max-w-[200px] inline-block">
-        {disabledReason}
-      </span>
-    );
-  }
 
   const confirm = () => {
     startTransition(() => {
@@ -70,8 +60,8 @@ export function MarkOrderPaidButton({
           </DialogHeader>
           <div className="space-y-3 text-sm text-gray-700">
             <p>
-              Vous confirmez avoir reçu le règlement (ex. PayPal.me, virement)
-              pour cette commande en attente.
+              Vous confirmez avoir reçu le règlement (PayPal.me, PayPal via
+              Stripe, ou virement) pour cette commande en attente.
             </p>
             <ul className="list-disc pl-4 space-y-1 text-xs text-muted-foreground">
               <li>

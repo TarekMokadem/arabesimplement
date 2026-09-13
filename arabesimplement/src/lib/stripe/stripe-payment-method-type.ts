@@ -36,10 +36,26 @@ export async function stripePaymentMethodTypeFromPaymentIntent(
   return stripePaymentMethodTypeFromExpandedPaymentIntent(pi);
 }
 
+/** Réglé hors Stripe (lien PayPal.me), confirmé à la main par l’admin. */
+export const MANUAL_PAYPAL_ME_METHOD = "paypal_me";
+
+function stripeTunnelPresent(o: {
+  stripePaymentIntentId: string | null;
+  stripeSubscriptionId: string | null;
+}): boolean {
+  if (o.stripePaymentIntentId != null && o.stripePaymentIntentId !== "") {
+    return true;
+  }
+  const sid = o.stripeSubscriptionId;
+  return sid != null && sid !== "" && !sid.startsWith("mock_sub_");
+}
+
 /** Libellé admin lisible pour la colonne « Canal » (paiements via Stripe Connect / Elements). */
 export function stripeTunnelChannelLabel(pmType: string | null): string {
   if (!pmType) return "Stripe";
   switch (pmType) {
+    case MANUAL_PAYPAL_ME_METHOD:
+      return "PayPal.me";
     case "card":
       return "Stripe (carte)";
     case "paypal":
@@ -53,4 +69,31 @@ export function stripeTunnelChannelLabel(pmType: string | null): string {
     default:
       return `Stripe (${pmType})`;
   }
+}
+
+/**
+ * Canal affiché dans l’historique admin : PayPal.me n’est plus masqué
+ * derrière un PaymentIntent Stripe créé au checkout.
+ */
+export function paymentChannelLabel(o: {
+  statut: string;
+  stripePaymentIntentId: string | null;
+  stripeSubscriptionId: string | null;
+  stripePaymentMethodType: string | null;
+}): string {
+  if (o.stripePaymentMethodType === MANUAL_PAYPAL_ME_METHOD) {
+    return "PayPal.me";
+  }
+  if (o.stripePaymentMethodType === "paypal") {
+    return "Stripe (PayPal)";
+  }
+  if (stripeTunnelPresent(o)) {
+    if (o.statut === "PENDING" && !o.stripePaymentMethodType) {
+      return "Stripe / PayPal.me";
+    }
+    return stripeTunnelChannelLabel(o.stripePaymentMethodType);
+  }
+  if (o.statut === "PAID") return "PayPal.me";
+  if (o.statut === "PENDING") return "En attente de paiement";
+  return "—";
 }

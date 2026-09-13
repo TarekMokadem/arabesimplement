@@ -56,6 +56,11 @@ export default async function PaiementsPage() {
             Total commandes payées (liste affichée) :{" "}
             <span className="font-bold text-accent">{total.toFixed(2)} €</span>
           </p>
+          <p className="text-sm text-gray-500 mt-2 max-w-2xl">
+            Un paiement PayPal.me reste « en attente » jusqu’à ce que vous
+            cliquiez sur <strong>Marquer payé</strong> — PayPal.me ne prévient
+            pas le site automatiquement.
+          </p>
         </div>
         <Button variant="outline" disabled>
           <Download className="h-4 w-4 mr-2" />
@@ -141,11 +146,6 @@ export default async function PaiementsPage() {
                           orderId={p.id}
                           montantEuros={p.montant}
                           formationSummary={p.formationLabel}
-                          disabledReason={
-                            p.stripeTunnelCompletesAutomatically
-                              ? "Tunnel Stripe — le passage en « Payé » est automatique (webhook ou retour boutique)."
-                              : undefined
-                          }
                         />
                       ) : (
                         <span className="text-xs text-gray-400">—</span>
