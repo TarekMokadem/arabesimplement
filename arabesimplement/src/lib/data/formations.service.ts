@@ -172,6 +172,17 @@ export async function getFormationsForBoutique(): Promise<FormationBoutiqueCard[
   }
 }
 
+export async function getBoutiqueCardsBySlugs(
+  slugs: readonly string[]
+): Promise<FormationBoutiqueCard[]> {
+  const all = await getFormationsForBoutique();
+  const bySlug = new Map(all.map((f) => [f.slug, f]));
+  return slugs.flatMap((slug) => {
+    const card = bySlug.get(slug);
+    return card ? [card] : [];
+  });
+}
+
 export async function getFormationBySlug(
   slug: string
 ): Promise<(Formation & { creneaux: Creneau[] }) | null> {
