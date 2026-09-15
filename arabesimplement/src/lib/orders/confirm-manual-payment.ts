@@ -39,8 +39,7 @@ function canCancelPaymentIntent(status: Stripe.PaymentIntent.Status): boolean {
 
 /**
  * L’admin confirme avoir reçu le règlement (souvent PayPal.me).
- * Si Stripe a déjà encaissé, on aligne seulement le statut.
- * Sinon on annule le PaymentIntent / l’abonnement incomplet pour éviter un double prélèvement.
+ * Stripe est consulté en best-effort : un échec API ne bloque pas le passage en payé.
  */
 export async function confirmPendingOrderAsReceived(
   orderId: string
@@ -66,49 +65,53 @@ export async function confirmPendingOrderAsReceived(
   let alreadyPaidOnStripe = false;
 
   if (isStripeConfigured()) {
-    const stripe = getServerStripe();
+    try {
+      const stripe = getServerStripe();
 
-    if (order.stripePaymentIntentId) {
-      try {
-        const pi = await stripe.paymentIntents.retrieve(
-          order.stripePaymentIntentId,
-          { expand: ["payment_method"] }
-        );
-        if (pi.status === "succeeded") {
-          alreadyPaidOnStripe = true;
-          paymentMethodType =
-            stripePaymentMethodTypeFromExpandedPaymentIntent(pi) ??
-            paymentMethodType;
-        } else if (canCancelPaymentIntent(pi.status)) {
-          await stripe.paymentIntents.cancel(pi.id);
-        }
-      } catch (e) {
-        console.error("[confirmPendingOrderAsReceived] PaymentIntent", e);
-      }
-    }
-
-    if (
-      stripeSubscriptionId &&
-      !stripeSubscriptionId.startsWith("mock_sub_")
-    ) {
-      try {
-        const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId, {
-          expand: ["latest_invoice"],
-        });
-        if (subscriptionLooksPaid(sub)) {
-          alreadyPaidOnStripe = true;
-        } else {
-          await stripe.subscriptions.cancel(stripeSubscriptionId);
-          stripeSubscriptionId = hasHourlyItems
-            ? `mock_sub_${orderId}`
-            : null;
-        }
-      } catch (e) {
-        console.error("[confirmPendingOrderAsReceived] Subscription", e);
-        if (hasHourlyItems) {
-          stripeSubscriptionId = `mock_sub_${orderId}`;
+      if (order.stripePaymentIntentId) {
+        try {
+          const pi = await stripe.paymentIntents.retrieve(
+            order.stripePaymentIntentId,
+            { expand: ["payment_method"] }
+          );
+          if (pi.status === "succeeded") {
+            alreadyPaidOnStripe = true;
+            paymentMethodType =
+              stripePaymentMethodTypeFromExpandedPaymentIntent(pi) ??
+              paymentMethodType;
+          } else if (canCancelPaymentIntent(pi.status)) {
+            await stripe.paymentIntents.cancel(pi.id);
+          }
+        } catch (e) {
+          console.error("[confirmPendingOrderAsReceived] PaymentIntent", e);
         }
       }
+
+      if (
+        stripeSubscriptionId &&
+        !stripeSubscriptionId.startsWith("mock_sub_")
+      ) {
+        try {
+          const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId, {
+            expand: ["latest_invoice"],
+          });
+          if (subscriptionLooksPaid(sub)) {
+            alreadyPaidOnStripe = true;
+          } else {
+            await stripe.subscriptions.cancel(stripeSubscriptionId);
+            stripeSubscriptionId = hasHourlyItems
+              ? `mock_sub_${orderId}`
+              : null;
+          }
+        } catch (e) {
+          console.error("[confirmPendingOrderAsReceived] Subscription", e);
+          if (hasHourlyItems) {
+            stripeSubscriptionId = `mock_sub_${orderId}`;
+          }
+        }
+      }
+    } catch (e) {
+      console.error("[confirmPendingOrderAsReceived] Stripe", e);
     }
   }
 
@@ -128,14 +131,19 @@ export async function confirmPendingOrderAsReceived(
         stripeSubscriptionId,
       },
     });
-    await ensureEnrollmentsForPaidOrder(orderId);
   } catch (e) {
     console.error("[confirmPendingOrderAsReceived] persist", e);
     return {
       success: false,
       error:
-        "La commande n’a pas pu être finalisée complètement. Vérifiez les logs ou la base.",
+        "La commande n’a pas pu être marquée payée. Vérifiez les logs ou la base.",
     };
+  }
+
+  try {
+    await ensureEnrollmentsForPaidOrder(orderId);
+  } catch (e) {
+    console.error("[confirmPendingOrderAsReceived] fulfill", e);
   }
 
   return { success: true };

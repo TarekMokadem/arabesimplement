@@ -1,16 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { markOrderPaidManuallyAsAdmin } from "@/app/admin/paiements/mark-paid-actions";
 
 export function MarkOrderPaidButton({
@@ -22,7 +16,8 @@ export function MarkOrderPaidButton({
   montantEuros: number;
   formationSummary: string;
 }) {
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const [confirming, setConfirming] = useState(false);
   const [pending, startTransition] = useTransition();
 
   const confirm = () => {
@@ -32,8 +27,8 @@ export function MarkOrderPaidButton({
           toast.success(
             "Commande marquée comme payée — inscriptions et e-mail déclenchés si besoin."
           );
-          setOpen(false);
-          window.location.reload();
+          setConfirming(false);
+          router.refresh();
         } else {
           toast.error(r.error);
         }
@@ -41,64 +36,51 @@ export function MarkOrderPaidButton({
     });
   };
 
+  if (confirming) {
+    return (
+      <div className="space-y-2 min-w-[11rem]">
+        <p className="text-xs text-gray-600 leading-snug">
+          Confirmer {montantEuros.toFixed(2)} € reçu
+          {formationSummary ? ` — ${formationSummary}` : ""} ?
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          <Button
+            type="button"
+            size="sm"
+            disabled={pending}
+            className="bg-accent text-accent-foreground hover:bg-accent/90"
+            onClick={confirm}
+          >
+            {pending ? "Validation…" : "Oui, valider"}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={pending}
+            onClick={() => setConfirming(false)}
+          >
+            Annuler
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        className="border-accent text-accent hover:bg-accent/10 shrink-0"
-        onClick={() => setOpen(true)}
-      >
-        <CheckCircle className="h-3.5 w-3.5 mr-1" />
-        Marquer payé
-      </Button>
-      <Dialog open={open} onOpenChange={(o) => !o && setOpen(false)}>
-        <DialogContent className="sm:max-w-md" showCloseButton>
-          <DialogHeader>
-            <DialogTitle>Confirmer le paiement reçu ?</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 text-sm text-gray-700">
-            <p>
-              Vous confirmez avoir reçu le règlement (PayPal.me, PayPal via
-              Stripe, ou virement) pour cette commande en attente.
-            </p>
-            <ul className="list-disc pl-4 space-y-1 text-xs text-muted-foreground">
-              <li>
-                <strong className="text-foreground">{formationSummary}</strong>
-                <span className="text-foreground">
-                  {" "}
-                  — {montantEuros.toFixed(2)} €
-                </span>
-              </li>
-              <li className="font-mono break-all">Réf. : {orderId}</li>
-            </ul>
-            <p className="text-xs text-muted-foreground">
-              Le système appliquera la même suite que pour un paiement Stripe
-              validé : compte élève, inscriptions, créneaux et e-mail « prochaines
-              étapes » si besoin.
-            </p>
-          </div>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={pending}
-            >
-              Annuler
-            </Button>
-            <Button
-              type="button"
-              className="bg-accent text-accent-foreground hover:bg-accent/90"
-              disabled={pending}
-              onClick={confirm}
-            >
-              Oui, marquer comme payé
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+    <Button
+      type="button"
+      size="sm"
+      variant="outline"
+      className="border-accent text-accent hover:bg-accent/10 shrink-0"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setConfirming(true);
+      }}
+    >
+      <CheckCircle className="h-3.5 w-3.5 mr-1" />
+      Marquer payé
+    </Button>
   );
 }
