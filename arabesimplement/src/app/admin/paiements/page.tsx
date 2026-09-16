@@ -1,42 +1,20 @@
-import { Search, Download } from "lucide-react";
+import Link from "next/link";
+import { Search, Download, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { cn } from "@/lib/utils";
 import { getAdminOrdersList } from "@/lib/data/admin.service";
 import { isDatabaseConfigured } from "@/lib/utils/database";
-import type { OrderStatus } from "@prisma/client";
+import {
+  orderStatusBadgeClass,
+  orderStatusLabel,
+} from "@/lib/orders/order-status-display";
 import { MarkOrderPaidButton } from "@/app/admin/paiements/MarkOrderPaidButton";
 
 export const dynamic = "force-dynamic";
-
-function paiementStatutLabel(s: OrderStatus): string {
-  switch (s) {
-    case "PAID":
-      return "Payé";
-    case "PENDING":
-      return "En attente";
-    case "FAILED":
-      return "Échoué";
-    case "REFUNDED":
-      return "Remboursé";
-    default:
-      return s;
-  }
-}
-
-function paiementStatutClass(s: OrderStatus): string {
-  switch (s) {
-    case "PAID":
-      return "bg-accent/10 text-accent";
-    case "PENDING":
-      return "bg-amber-100 text-amber-900";
-    case "FAILED":
-      return "bg-red-100 text-red-800";
-    default:
-      return "bg-gray-100 text-gray-600";
-  }
-}
 
 export default async function PaiementsPage() {
   const db = isDatabaseConfigured();
@@ -59,7 +37,8 @@ export default async function PaiementsPage() {
           <p className="text-sm text-gray-500 mt-2 max-w-2xl">
             Un paiement PayPal.me reste « en attente » jusqu’à ce que vous
             cliquiez sur <strong>Marquer payé</strong> — PayPal.me ne prévient
-            pas le site automatiquement.
+            pas le site automatiquement. Cliquez sur une commande pour voir
+            toutes les informations saisies par l’élève.
           </p>
         </div>
         <Button variant="outline" disabled>
@@ -118,10 +97,23 @@ export default async function PaiementsPage() {
               ) : (
                 paiements.map((p) => (
                   <tr key={p.id} className="border-b hover:bg-gray-50">
-                    <td className="p-4 font-mono text-xs max-w-[120px] truncate" title={p.id}>
-                      {p.id.slice(0, 8)}…
+                    <td className="p-4 font-mono text-xs max-w-[120px] truncate">
+                      <Link
+                        href={`/admin/paiements/${p.id}`}
+                        className="text-primary hover:text-secondary hover:underline"
+                        title={p.id}
+                      >
+                        {p.id.slice(0, 8)}…
+                      </Link>
                     </td>
-                    <td className="p-4 text-primary">{p.userLabel}</td>
+                    <td className="p-4">
+                      <Link
+                        href={`/admin/paiements/${p.id}`}
+                        className="text-primary hover:text-secondary hover:underline"
+                      >
+                        {p.userLabel}
+                      </Link>
+                    </td>
                     <td className="p-4 text-gray-600">{p.formationLabel}</td>
                     <td className="p-4 font-bold">{p.montant.toFixed(2)} €</td>
                     <td className="p-4 text-gray-700 text-sm whitespace-nowrap">
@@ -133,23 +125,32 @@ export default async function PaiementsPage() {
                       )}
                     </td>
                     <td className="p-4">
-                      <Badge className={paiementStatutClass(p.statut)}>
-                        {paiementStatutLabel(p.statut)}
+                      <Badge className={orderStatusBadgeClass(p.statut)}>
+                        {orderStatusLabel(p.statut)}
                       </Badge>
                     </td>
                     <td className="p-4 text-gray-500 whitespace-nowrap">
                       {p.date.toLocaleDateString("fr-FR")}
                     </td>
                     <td className="p-4 align-top">
-                      {p.statut === "PENDING" ? (
-                        <MarkOrderPaidButton
-                          orderId={p.id}
-                          montantEuros={p.montant}
-                          formationSummary={p.formationLabel}
-                        />
-                      ) : (
-                        <span className="text-xs text-gray-400">—</span>
-                      )}
+                      <div className="flex items-start gap-1">
+                        <Link
+                          href={`/admin/paiements/${p.id}`}
+                          className={cn(
+                            buttonVariants({ variant: "ghost", size: "icon-sm" })
+                          )}
+                          aria-label={`Détail de la commande ${p.id.slice(0, 8)}`}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                        {p.statut === "PENDING" ? (
+                          <MarkOrderPaidButton
+                            orderId={p.id}
+                            montantEuros={p.montant}
+                            formationSummary={p.formationLabel}
+                          />
+                        ) : null}
+                      </div>
                     </td>
                   </tr>
                 ))

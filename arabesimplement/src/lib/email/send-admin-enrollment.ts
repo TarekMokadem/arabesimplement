@@ -49,7 +49,7 @@ export async function sendAdminEnrollmentEmailIfNeeded(
         ? `Code ${order.promoCodeSnapshot} : −${discount.toFixed(2)} €`
         : `Réduction : −${discount.toFixed(2)} €`
       : null;
-  const adminOrderUrl = toAbsoluteUrl("/admin/paiements");
+  const adminOrderUrl = toAbsoluteUrl(`/admin/paiements/${orderId}`);
 
   const ok = await sendAdminEnrollmentEmail({
     studentName: `${prenom} ${nom}`.trim() || "Élève",
@@ -122,7 +122,7 @@ async function sendAdminEnrollmentEmail(params: {
             : ""
         }</p>
         <p>
-          <a href="${escapeHtml(params.adminOrderUrl)}" style="display:inline-block;margin:8px 0;padding:10px 18px;background:#1e3a2f;color:#fff;text-decoration:none;border-radius:6px">Voir les paiements</a>
+          <a href="${escapeHtml(params.adminOrderUrl)}" style="display:inline-block;margin:8px 0;padding:10px 18px;background:#1e3a2f;color:#fff;text-decoration:none;border-radius:6px">Voir le détail du paiement</a>
         </p>
         <p>— Notification automatique ArabeSimplement</p>
       </div>

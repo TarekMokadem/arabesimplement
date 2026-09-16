@@ -21,29 +21,10 @@ import {
   getAdminRecentActivity,
 } from "@/lib/data/admin.service";
 import { isDatabaseConfigured } from "@/lib/utils/database";
-import type { OrderStatus } from "@prisma/client";
-
-function orderStatusLabel(s: OrderStatus): string {
-  switch (s) {
-    case "PAID":
-      return "Payé";
-    case "PENDING":
-      return "En attente";
-    case "FAILED":
-      return "Échoué";
-    case "REFUNDED":
-      return "Remboursé";
-    default:
-      return s;
-  }
-}
-
-function orderStatusClass(s: OrderStatus): string {
-  if (s === "PAID") return "bg-accent/10 text-accent";
-  if (s === "PENDING") return "bg-amber-100 text-amber-800";
-  if (s === "FAILED") return "bg-red-100 text-red-800";
-  return "bg-gray-100 text-gray-600";
-}
+import {
+  orderStatusBadgeClass,
+  orderStatusLabel,
+} from "@/lib/orders/order-status-display";
 
 export default async function AdminDashboardPage() {
   const db = isDatabaseConfigured();
@@ -161,9 +142,10 @@ export default async function AdminDashboardPage() {
               ) : (
                 <div className="space-y-4">
                   {recentOrders.map((order) => (
-                    <div
+                    <Link
                       key={order.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      href={`/admin/paiements/${order.id}`}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                     >
                       <div className="flex items-center gap-4 min-w-0">
                         <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center shrink-0">
@@ -186,12 +168,12 @@ export default async function AdminDashboardPage() {
                           {order.amount} €
                         </p>
                         <Badge
-                          className={`text-xs ${orderStatusClass(order.status)}`}
+                          className={`text-xs ${orderStatusBadgeClass(order.status)}`}
                         >
                           {orderStatusLabel(order.status)}
                         </Badge>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )}

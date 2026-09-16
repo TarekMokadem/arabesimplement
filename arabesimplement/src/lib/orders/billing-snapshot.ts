@@ -23,7 +23,8 @@ export function orderFormToBillingSnapshot(
   };
 }
 
-export function parseBillingSnapshot(
+/** Lecture souple pour l’admin : champs manquants restent vides. */
+export function readBillingSnapshotFields(
   raw: unknown
 ): OrderBillingSnapshot | null {
   if (!raw || typeof raw !== "object") return null;
@@ -37,6 +38,31 @@ export function parseBillingSnapshot(
   const sexeRaw = o.sexe;
   const sexe: StudentSex | null =
     sexeRaw === "FEMME" || sexeRaw === "HOMME" ? sexeRaw : null;
-  if (!prenom || !nom || !email || !telephone || !pays) return null;
+  if (!prenom && !nom && !email && !telephone && !pays && !sexe) {
+    return null;
+  }
   return { prenom, nom, email, telephone, pays, sexe };
+}
+
+export function studentSexLabel(sexe: StudentSex | null): string {
+  if (sexe === "FEMME") return "Femme";
+  if (sexe === "HOMME") return "Homme";
+  return "—";
+}
+
+export function parseBillingSnapshot(
+  raw: unknown
+): OrderBillingSnapshot | null {
+  const fields = readBillingSnapshotFields(raw);
+  if (!fields) return null;
+  if (
+    !fields.prenom ||
+    !fields.nom ||
+    !fields.email ||
+    !fields.telephone ||
+    !fields.pays
+  ) {
+    return null;
+  }
+  return fields;
 }

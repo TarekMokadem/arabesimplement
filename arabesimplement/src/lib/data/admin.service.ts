@@ -1,12 +1,20 @@
 import type {
   FormationStatus,
   OrderStatus,
+  StudentSex,
   WeeklySubscriptionStatus,
 } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/utils/database";
-import { parseBillingSnapshot } from "@/lib/orders/billing-snapshot";
+import {
+  parseBillingSnapshot,
+  readBillingSnapshotFields,
+} from "@/lib/orders/billing-snapshot";
 import { paymentChannelLabel } from "@/lib/stripe/stripe-payment-method-type";
+import {
+  formatCreneauSummaryForCart,
+  parseJourneeSlotsFromJson,
+} from "@/lib/creneau-display";
 
 export type AdminStats = {
   revenusThisMois: number;
@@ -75,6 +83,56 @@ export type AdminPaymentRow = {
   paymentChannelLabel: string;
   /** Résumé des lignes d’abonnement cours à la carte liées à la commande. */
   weeklySubscriptionHint: string | null;
+};
+
+export type AdminOrderDetailLine = {
+  id: string;
+  formationTitre: string;
+  schedulingMode: string;
+  creneauLabel: string | null;
+  hourlyMinutes: number | null;
+  hourlyQuantity: number;
+  unitPriceEuros: number;
+  lineTotalEuros: number;
+};
+
+export type AdminOrderWeeklyLine = {
+  status: WeeklySubscriptionStatus;
+  hourlyMinutes: number;
+  bundleQuantity: number;
+  currentPeriodEnd: Date | null;
+};
+
+export type AdminOrderDetail = {
+  id: string;
+  statut: OrderStatus;
+  createdAt: Date;
+  totalEuros: number;
+  subtotalEuros: number;
+  discountEuros: number;
+  promoCode: string | null;
+  paymentChannelLabel: string;
+  billing: {
+    prenom: string;
+    nom: string;
+    email: string;
+    telephone: string;
+    pays: string;
+    sexe: StudentSex | null;
+  } | null;
+  linkedUser: {
+    id: string;
+    prenom: string;
+    nom: string;
+    email: string;
+  } | null;
+  reglement: {
+    signedAt: Date | null;
+    ip: string | null;
+    version: string | null;
+  };
+  lines: AdminOrderDetailLine[];
+  weeklySubscriptions: AdminOrderWeeklyLine[];
 };
 
 function weeklySubscriptionHintFromRows(
@@ -389,4 +447,107 @@ export async function getAdminOrdersList(): Promise<AdminPaymentRow[]> {
       o.courseWeeklySubscriptions.map((s) => s.status)
     ),
   }));
+}
+
+export async function getAdminOrderById(
+  id: string
+): Promise<AdminOrderDetail | null> {
+  if (!isDatabaseConfigured() || !id.trim()) return null;
+
+  const order = await prisma.order.findUnique({
+    where: { id: id.trim() },
+    include: {
+      user: { select: { id: true, prenom: true, nom: true, email: true } },
+      orderItems: {
+        include: {
+          formation: { select: { titre: true, schedulingMode: true } },
+          creneau: {
+            select: {
+              nom: true,
+              jours: true,
+              heureDebut: true,
+              dureeMinutes: true,
+              journeeSlots: true,
+            },
+          },
+        },
+      },
+      courseWeeklySubscriptions: {
+        select: {
+          status: true,
+          hourlyMinutes: true,
+          bundleQuantity: true,
+          currentPeriodEnd: true,
+        },
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  });
+  if (!order) return null;
+
+  const billing = readBillingSnapshotFields(order.billingSnapshot);
+
+  return {
+    id: order.id,
+    statut: order.statut,
+    createdAt: order.createdAt,
+    totalEuros: Number(order.total),
+    subtotalEuros:
+      order.subtotalEuros != null
+        ? Number(order.subtotalEuros)
+        : Number(order.total),
+    discountEuros:
+      order.discountEuros != null ? Number(order.discountEuros) : 0,
+    promoCode: order.promoCodeSnapshot,
+    paymentChannelLabel: paymentChannelLabel({
+      statut: order.statut,
+      stripePaymentIntentId: order.stripePaymentIntentId,
+      stripeSubscriptionId: order.stripeSubscriptionId,
+      stripePaymentMethodType: order.stripePaymentMethodType,
+    }),
+    billing,
+    linkedUser: order.user
+      ? {
+          id: order.user.id,
+          prenom: order.user.prenom,
+          nom: order.user.nom,
+          email: order.user.email,
+        }
+      : null,
+    reglement: {
+      signedAt: order.reglementSigneAt,
+      ip: order.reglementIp,
+      version: order.reglementVersion,
+    },
+    lines: order.orderItems.map((oi) => {
+      const unit = Number(oi.prixUnitaire);
+      const qty = Math.max(1, oi.hourlyQuantity ?? 1);
+      return {
+        id: oi.id,
+        formationTitre: oi.formation.titre,
+        schedulingMode: oi.formation.schedulingMode,
+        creneauLabel: oi.creneau
+          ? formatCreneauSummaryForCart(
+              oi.creneau.nom,
+              parseJourneeSlotsFromJson(oi.creneau.journeeSlots),
+              {
+                jours: oi.creneau.jours,
+                heureDebut: oi.creneau.heureDebut,
+                dureeMinutes: oi.creneau.dureeMinutes,
+              }
+            )
+          : null,
+        hourlyMinutes: oi.hourlyMinutes,
+        hourlyQuantity: qty,
+        unitPriceEuros: unit,
+        lineTotalEuros: unit * qty,
+      };
+    }),
+    weeklySubscriptions: order.courseWeeklySubscriptions.map((s) => ({
+      status: s.status,
+      hourlyMinutes: s.hourlyMinutes,
+      bundleQuantity: s.bundleQuantity,
+      currentPeriodEnd: s.currentPeriodEnd,
+    })),
+  };
 }
