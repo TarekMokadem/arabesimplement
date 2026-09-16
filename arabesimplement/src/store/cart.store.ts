@@ -206,6 +206,7 @@ export function buildCartItemFromSelection(input: {
   imageUrl?: string;
   schedulingMode: FormationSchedulingMode;
   unitEuros: number;
+  promoEuros?: number;
   creneauId?: string;
   choiceSummary?: string;
   hourlyMinutes?: number;
@@ -214,12 +215,20 @@ export function buildCartItemFromSelection(input: {
   const monthlyFromBundle = input.hourlyBundle
     ? sumHourlyBundleEuros(input.hourlyBundle)
     : 0;
-  const prix =
+  const catalogPrix =
     input.schedulingMode === "HOURLY_PURCHASE"
       ? monthlyFromBundle > 0
         ? monthlyFromBundle
         : input.unitEuros
       : input.unitEuros;
+  const promo = input.promoEuros;
+  const prixPromo =
+    input.schedulingMode !== "HOURLY_PURCHASE" &&
+    promo != null &&
+    promo > 0 &&
+    promo < catalogPrix
+      ? promo
+      : undefined;
 
   return {
     lineId: newLineId(),
@@ -228,8 +237,8 @@ export function buildCartItemFromSelection(input: {
     slug: input.slug,
     imageUrl: input.imageUrl,
     schedulingMode: input.schedulingMode,
-    prix,
-    prixPromo: undefined,
+    prix: catalogPrix,
+    prixPromo,
     creneauId: input.creneauId,
     choiceSummary: input.choiceSummary,
     hourlyBundle:

@@ -5,6 +5,7 @@ import type { OrderConfirmationView } from "@/lib/data/order-confirmation.servic
 import { HOURLY_SLOTS_PRICING } from "@/lib/scheduling-mode";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
+import { CheckoutTotals } from "@/components/shop/CheckoutTotals";
 
 function durationLabel(minutes: number): string {
   const row = HOURLY_SLOTS_PRICING.find((r) => r.minutes === minutes);
@@ -107,42 +108,16 @@ export function OrderConfirmationRecap({
         ))}
       </ul>
 
-      <div className="flex justify-between items-center pt-2 border-t border-gray-200">
-        {view.discountEuros > 0 ? (
-          <div className="w-full space-y-2">
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>Sous-total</span>
-              <span>{formatPrice(view.subtotalEuros)}</span>
-            </div>
-            <div className="flex justify-between text-sm text-accent">
-              <span>
-                Code promo
-                {view.promoCode ? (
-                  <span className="font-mono text-xs ml-1.5">{view.promoCode}</span>
-                ) : null}
-              </span>
-              <span>− {formatPrice(view.discountEuros)}</span>
-            </div>
-            <div className="flex justify-between items-center pt-2">
-              <span className="font-bold text-primary">Total de la commande</span>
-              <span className="text-xl font-bold text-primary">
-                {formatPrice(view.totalEuros)}
-              </span>
-            </div>
-            {view.hasWeeklySubscription ? (
-              <p className="text-xs text-gray-500">
-                Réduction appliquée sur le premier mois.
-              </p>
-            ) : null}
-          </div>
-        ) : (
-          <>
-            <span className="font-bold text-primary">Total de la commande</span>
-            <span className="text-xl font-bold text-primary">
-              {formatPrice(view.totalEuros)}
-            </span>
-          </>
-        )}
+      <div className="pt-2 border-t border-gray-200">
+        <CheckoutTotals
+          subtotalEuros={view.subtotalEuros}
+          catalogSubtotalEuros={view.catalogSubtotalEuros}
+          formationDiscountEuros={view.formationDiscountEuros}
+          discountEuros={view.discountEuros}
+          payableEuros={view.totalEuros}
+          promoCode={view.promoCode}
+          firstPeriodOnly={view.hasWeeklySubscription && view.discountEuros > 0}
+        />
       </div>
 
       {view.hasWeeklySubscription ? (

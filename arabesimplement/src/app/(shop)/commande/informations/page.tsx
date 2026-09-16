@@ -25,12 +25,13 @@ import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
 import { useCart } from "@/hooks/useCart";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { orderFormSchema, type OrderFormInput } from "@/lib/validations/order.schema";
-import { formatPrice } from "@/lib/utils/format";
 import { toast } from "sonner";
 import { PromoCodeField } from "@/components/shop/PromoCodeField";
 import { CheckoutTotals } from "@/components/shop/CheckoutTotals";
+import { CartLinePrice } from "@/components/shop/CartLinePrice";
 import { useCheckoutPromo } from "@/hooks/useCheckoutPromo";
 import { classifyCheckoutCart } from "@/lib/orders/cart-hourly";
+import { summarizeCartPricing } from "@/lib/orders/cart-pricing";
 import { readStoredCheckoutPromoCode } from "@/lib/promo/checkout-promo-storage";
 
 const countries = [
@@ -57,7 +58,8 @@ export default function InformationsPage() {
   const router = useRouter();
   const { items, getTotal, isHydrated: cartHydrated } = useCart();
   const [isLoading, setIsLoading] = useState(false);
-  const subtotal = getTotal();
+  const pricing = summarizeCartPricing(items);
+  const subtotal = pricing.itemsSubtotalEuros;
   const checkoutKind =
     classifyCheckoutCart(items) === "hourly_only" ? "hourly_only" : "standard";
   const { applied, setApplied } = useCheckoutPromo(subtotal, checkoutKind);
@@ -447,9 +449,7 @@ export default function InformationsPage() {
                           </span>
                           <CartItemDetailList item={item} size="sm" />
                         </div>
-                        <span className="font-medium text-primary shrink-0">
-                          {formatPrice(item.prixPromo ?? item.prix)}
-                        </span>
+                        <CartLinePrice item={item} size="sm" />
                       </div>
                     ))}
                   </div>
@@ -463,6 +463,8 @@ export default function InformationsPage() {
                     />
                     <CheckoutTotals
                       subtotalEuros={subtotal}
+                      catalogSubtotalEuros={pricing.catalogSubtotalEuros}
+                      formationDiscountEuros={pricing.formationDiscountEuros}
                       discountEuros={applied?.discountEuros ?? 0}
                       payableEuros={payable}
                       promoCode={applied?.code}

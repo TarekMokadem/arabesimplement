@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { parseBillingSnapshot } from "@/lib/orders/billing-snapshot";
 import { isDatabaseConfigured } from "@/lib/utils/database";
+import { roundMoney } from "@/lib/promo/apply-discount";
 
 export type OrderConfirmationLine = {
   id: string;
@@ -23,6 +24,9 @@ export type OrderConfirmationView = {
   createdAt: string;
   billing: { prenom: string; nom: string; email: string };
   lines: OrderConfirmationLine[];
+  /** Somme des prix catalogue au moment de l’affichage (si supérieur au payé). */
+  catalogSubtotalEuros: number;
+  formationDiscountEuros: number;
   /** Abonnement Stripe cours à la carte (mensuel) rattaché à cette commande. */
   hasWeeklySubscription: boolean;
 };
@@ -51,7 +55,7 @@ export async function getOrderConfirmationView(
     include: {
       orderItems: {
         include: {
-          formation: { select: { titre: true, schedulingMode: true } },
+          formation: { select: { titre: true, schedulingMode: true, prix: true } },
           creneau: {
             select: {
               nom: true,
@@ -101,14 +105,32 @@ export async function getOrderConfirmationView(
   const statut: "PAID" | "PENDING" =
     order.statut === "PAID" ? "PAID" : "PENDING";
 
+  const paidSubtotal =
+    order.subtotalEuros != null
+      ? Number(order.subtotalEuros)
+      : Number(order.total);
+  const catalogSubtotalEuros = roundMoney(
+    order.orderItems.reduce((sum, oi) => {
+      const unit = Number(oi.prixUnitaire);
+      const qty = Math.max(1, oi.hourlyQuantity ?? 1);
+      const catalogUnit =
+        oi.formation.schedulingMode === "HOURLY_PURCHASE"
+          ? unit
+          : Math.max(Number(oi.formation.prix), unit);
+      return sum + catalogUnit * qty;
+    }, 0)
+  );
+  const formationDiscountEuros = roundMoney(
+    Math.max(0, catalogSubtotalEuros - paidSubtotal)
+  );
+
   return {
     orderId: order.id,
     statut,
     totalEuros: Number(order.total),
-    subtotalEuros:
-      order.subtotalEuros != null
-        ? Number(order.subtotalEuros)
-        : Number(order.total),
+    subtotalEuros: paidSubtotal,
+    catalogSubtotalEuros,
+    formationDiscountEuros,
     discountEuros:
       order.discountEuros != null ? Number(order.discountEuros) : 0,
     promoCode: order.promoCodeSnapshot,

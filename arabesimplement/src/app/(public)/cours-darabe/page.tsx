@@ -26,7 +26,7 @@ export default async function CoursDarabePage() {
             </h2>
             <p className="text-gray-600 leading-relaxed">
               Trois parcours pour avancer pas à pas : lire l&apos;arabe, lire le
-              Coran, puis les invocations du matin et du soir.
+              Coran, puis devenir arabophone.
             </p>
           </div>
 

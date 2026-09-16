@@ -11,12 +11,14 @@ import { StripePaymentSection } from "@/components/shop/StripePaymentSection";
 import { PaypalMeCheckoutBlock } from "@/components/shop/PaypalMeCheckoutBlock";
 import { PaymentExperiencePreface } from "@/components/shop/PaymentExperiencePreface";
 import { CheckoutTotals } from "@/components/shop/CheckoutTotals";
+import { CartLinePrice } from "@/components/shop/CartLinePrice";
 import { useCart } from "@/hooks/useCart";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { formatPrice } from "@/lib/utils/format";
 import { toast } from "sonner";
 import type { StoredCheckoutOrder } from "@/types/checkout.types";
 import { migrateRawCartItem, type CartItem } from "@/store/cart.store";
+import { summarizeCartPricing } from "@/lib/orders/cart-pricing";
 import {
   finalizeMockPayment,
   syncPaidOrderFromStripe,
@@ -33,7 +35,7 @@ function parseOrderInfo(raw: string | null): StoredCheckoutOrder | null {
 
 export default function PaiementPage() {
   const router = useRouter();
-  const { items, getTotal, isHydrated: cartHydrated } = useCart();
+  const { items, isHydrated: cartHydrated } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [orderInfo, setOrderInfo] = useState<StoredCheckoutOrder | null>(null);
 
@@ -57,12 +59,13 @@ export default function PaiementPage() {
     return raw.map((row) => migrateRawCartItem(row));
   }, [items, orderInfo]);
 
+  const pricing = summarizeCartPricing(displayItems);
   const total = useMemo(() => {
     if (orderInfo?.total != null) return orderInfo.total;
-    return getTotal();
-  }, [orderInfo, getTotal]);
+    return pricing.itemsSubtotalEuros;
+  }, [orderInfo, pricing.itemsSubtotalEuros]);
 
-  const subtotal = orderInfo?.subtotalEuros ?? total;
+  const subtotal = orderInfo?.subtotalEuros ?? pricing.itemsSubtotalEuros;
   const discountEuros = orderInfo?.discountEuros ?? 0;
   const promoCode = orderInfo?.promoCode ?? null;
 
@@ -295,15 +298,15 @@ export default function PaiementPage() {
                         </span>
                         <CartItemDetailList item={item} size="sm" />
                       </div>
-                      <span className="font-medium text-primary shrink-0">
-                        {formatPrice(item.prixPromo ?? item.prix)}
-                      </span>
+                        <CartLinePrice item={item} size="sm" />
                     </div>
                   ))}
                 </div>
 
                 <CheckoutTotals
                   subtotalEuros={subtotal}
+                  catalogSubtotalEuros={pricing.catalogSubtotalEuros}
+                  formationDiscountEuros={pricing.formationDiscountEuros}
                   discountEuros={discountEuros}
                   payableEuros={total}
                   promoCode={promoCode}

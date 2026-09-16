@@ -13,11 +13,14 @@ import {
 } from "@/components/ui/sheet";
 import { useCart } from "@/hooks/useCart";
 import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
+import { CartLinePrice } from "@/components/shop/CartLinePrice";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
 import { formatPrice } from "@/lib/utils/format";
+import { summarizeCartPricing } from "@/lib/orders/cart-pricing";
 
 export function CartDrawer() {
-  const { items, removeItem, getTotal } = useCart();
+  const { items, removeItem } = useCart();
+  const pricing = summarizeCartPricing(items);
 
   return (
     <Sheet>
@@ -80,21 +83,8 @@ export function CartDrawer() {
                         {item.titre}
                       </h3>
                       <CartItemDetailList item={item} size="sm" />
-                      <div className="flex items-center gap-2 mt-1">
-                        {item.prixPromo ? (
-                          <>
-                            <span className="text-accent font-bold">
-                              {formatPrice(item.prixPromo)}
-                            </span>
-                            <span className="text-gray-400 line-through text-sm">
-                              {formatPrice(item.prix)}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-primary font-bold">
-                            {formatPrice(item.prix)}
-                          </span>
-                        )}
+                      <div className="mt-1">
+                        <CartLinePrice item={item} size="sm" />
                       </div>
                     </div>
                     <Button
@@ -111,10 +101,30 @@ export function CartDrawer() {
               </div>
 
               <div className="pt-6 border-t mt-auto">
+                {pricing.formationDiscountEuros > 0 ? (
+                  <div className="mb-3 space-y-1 text-sm">
+                    <div className="flex items-center justify-between text-gray-500">
+                      <span>Prix habituel</span>
+                      <span className="line-through">
+                        {formatPrice(pricing.catalogSubtotalEuros)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-accent font-medium">
+                      <span>Réduction promo</span>
+                      <span>− {formatPrice(pricing.formationDiscountEuros)}</span>
+                    </div>
+                  </div>
+                ) : null}
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-gray-600">Total</span>
-                  <span className="text-xl font-bold text-primary">
-                    {formatPrice(getTotal())}
+                  <span
+                    className={
+                      pricing.formationDiscountEuros > 0
+                        ? "text-xl font-bold text-accent"
+                        : "text-xl font-bold text-primary"
+                    }
+                  >
+                    {formatPrice(pricing.itemsSubtotalEuros)}
                   </span>
                 </div>
                 <Link href="/panier">

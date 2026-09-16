@@ -9,16 +9,18 @@ import { CheckoutStepper } from "@/components/shop/CheckoutStepper";
 import { useCart } from "@/hooks/useCart";
 import { CartItemDetailList } from "@/components/shop/CartItemDetailList";
 import { BrandLogoMark } from "@/components/layout/BrandLogoMark";
-import { formatPrice } from "@/lib/utils/format";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { PromoCodeField } from "@/components/shop/PromoCodeField";
 import { CheckoutTotals } from "@/components/shop/CheckoutTotals";
+import { CartLinePrice } from "@/components/shop/CartLinePrice";
 import { useCheckoutPromo } from "@/hooks/useCheckoutPromo";
 import { classifyCheckoutCart } from "@/lib/orders/cart-hourly";
+import { summarizeCartPricing } from "@/lib/orders/cart-pricing";
 
 export default function PanierPage() {
-  const { items, removeItem, getTotal, isHydrated } = useCart();
-  const subtotal = getTotal();
+  const { items, removeItem, isHydrated } = useCart();
+  const pricing = summarizeCartPricing(items);
+  const subtotal = pricing.itemsSubtotalEuros;
   const checkoutKind =
     classifyCheckoutCart(items) === "hourly_only" ? "hourly_only" : "standard";
   const { applied, setApplied } = useCheckoutPromo(subtotal, checkoutKind);
@@ -107,20 +109,7 @@ export default function PanierPage() {
                       <CartItemDetailList item={item} className="max-w-xl" />
 
                       <div className="flex items-center gap-2 mt-2">
-                        {item.prixPromo ? (
-                          <>
-                            <span className="text-lg font-bold text-accent">
-                              {formatPrice(item.prixPromo)}
-                            </span>
-                            <span className="text-sm text-gray-400 line-through">
-                              {formatPrice(item.prix)}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-lg font-bold text-primary">
-                            {formatPrice(item.prix)}
-                          </span>
-                        )}
+                        <CartLinePrice item={item} />
                       </div>
                     </div>
 
@@ -156,6 +145,8 @@ export default function PanierPage() {
                   />
                   <CheckoutTotals
                     subtotalEuros={subtotal}
+                    catalogSubtotalEuros={pricing.catalogSubtotalEuros}
+                    formationDiscountEuros={pricing.formationDiscountEuros}
                     discountEuros={applied?.discountEuros ?? 0}
                     payableEuros={payable}
                     promoCode={applied?.code}

@@ -181,7 +181,13 @@ export function PurchaseFormationPanel({
       slug: formation.slug,
       imageUrl: formation.imageUrl,
       schedulingMode: mode,
-      unitEuros: unitPrice,
+      unitEuros: mode === "HOURLY_PURCHASE" ? unitPrice : Number(formation.prix),
+      promoEuros:
+        mode === "HOURLY_PURCHASE"
+          ? undefined
+          : formation.prixPromo != null
+            ? Number(formation.prixPromo)
+            : undefined,
       creneauId: creneauId ?? undefined,
       choiceSummary: buildChoiceSummary(),
       hourlyBundle: needsHourly ? bundle : undefined,
@@ -306,11 +312,31 @@ export function PurchaseFormationPanel({
           </p>
         )}
 
-        <div className="flex items-center justify-between pt-2 border-t">
+        <div className="flex items-end justify-between gap-3 pt-2 border-t">
           <span className="text-sm text-gray-600">Total pour cette ligne</span>
-          <span className="text-2xl font-bold text-primary">
-            {unitPrice > 0 ? formatPrice(unitPrice) : "—"}
-          </span>
+          <div className="text-right">
+            {unitPrice > 0 &&
+            mode !== "HOURLY_PURCHASE" &&
+            formation.prixPromo != null &&
+            Number(formation.prixPromo) > 0 &&
+            Number(formation.prixPromo) < Number(formation.prix) ? (
+              <>
+                <p className="text-sm text-gray-400 line-through leading-none mb-1">
+                  {formatPrice(Number(formation.prix))}
+                </p>
+                <p className="text-2xl font-bold text-accent">
+                  {formatPrice(unitPrice)}
+                </p>
+                <p className="text-xs font-medium text-accent mt-1">
+                  Prix promo
+                </p>
+              </>
+            ) : (
+              <span className="text-2xl font-bold text-primary">
+                {unitPrice > 0 ? formatPrice(unitPrice) : "—"}
+              </span>
+            )}
+          </div>
         </div>
 
         {needsHourly && monthlyHourlyEuros > 0 ? (

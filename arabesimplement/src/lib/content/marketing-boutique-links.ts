@@ -14,13 +14,14 @@ export const MARKETING_BOUTIQUE_SLUGS = {
    */
   tajwid: "apprends-a-lire-le-coran",
   lireCoran: "apprends-a-lire-le-coran",
+  devenirArabophone: "devenir-arabophone",
 } as const;
 
 /** Ordre des 3 formations mises en avant sur `/cours-darabe`. */
 export const COURS_DARABE_HIGHLIGHT_SLUGS = [
   MARKETING_BOUTIQUE_SLUGS.lectureArabe,
   MARKETING_BOUTIQUE_SLUGS.lireCoran,
-  MARKETING_BOUTIQUE_SLUGS.invocationsMatinSoir,
+  MARKETING_BOUTIQUE_SLUGS.devenirArabophone,
 ] as const;
 
 export function boutiqueFormationHref(slug: string): string {
