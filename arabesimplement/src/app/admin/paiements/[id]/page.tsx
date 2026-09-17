@@ -16,6 +16,7 @@ import {
 import { studentSexLabel } from "@/lib/orders/billing-snapshot";
 import { HOURLY_SLOTS_PRICING } from "@/lib/scheduling-mode";
 import { MarkOrderPaidButton } from "@/app/admin/paiements/MarkOrderPaidButton";
+import { DeleteOrderButton } from "@/app/admin/paiements/DeleteOrderButton";
 import type { WeeklySubscriptionStatus } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -133,6 +134,11 @@ export default async function AdminPaiementDetailPage({
                 formationSummary={formationSummary}
               />
             ) : null}
+            <DeleteOrderButton
+              orderId={order.id}
+              label={`${billingName || "commande"} · ${formatPrice(order.totalEuros)}`}
+              redirectToList
+            />
           </div>
         </div>
       </div>

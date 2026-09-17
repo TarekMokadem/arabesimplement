@@ -13,6 +13,7 @@ import {
   orderStatusLabel,
 } from "@/lib/orders/order-status-display";
 import { MarkOrderPaidButton } from "@/app/admin/paiements/MarkOrderPaidButton";
+import { DeleteOrderButton } from "@/app/admin/paiements/DeleteOrderButton";
 
 export const dynamic = "force-dynamic";
 
@@ -150,6 +151,10 @@ export default async function PaiementsPage() {
                             formationSummary={p.formationLabel}
                           />
                         ) : null}
+                        <DeleteOrderButton
+                          orderId={p.id}
+                          label={`${p.userLabel} · ${p.montant.toFixed(2)} €`}
+                        />
                       </div>
                     </td>
                   </tr>
