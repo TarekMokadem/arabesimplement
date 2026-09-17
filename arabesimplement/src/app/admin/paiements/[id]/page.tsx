@@ -138,6 +138,7 @@ export default async function AdminPaiementDetailPage({
               orderId={order.id}
               label={`${billingName || "commande"} · ${formatPrice(order.totalEuros)}`}
               redirectToList
+              withLabel
             />
           </div>
         </div>
