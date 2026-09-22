@@ -33,21 +33,7 @@ import { useCheckoutPromo } from "@/hooks/useCheckoutPromo";
 import { classifyCheckoutCart } from "@/lib/orders/cart-hourly";
 import { summarizeCartPricing } from "@/lib/orders/cart-pricing";
 import { readStoredCheckoutPromoCode } from "@/lib/promo/checkout-promo-storage";
-
-const countries = [
-  "France",
-  "Belgique",
-  "Suisse",
-  "Canada",
-  "Maroc",
-  "Algérie",
-  "Tunisie",
-  "Égypte",
-  "Émirats arabes unis",
-  "Arabie saoudite",
-  "Autre",
-];
-
+import { BILLING_COUNTRIES } from "@/lib/geo/billing-countries";
 import { REGLEMENT_INTERIEUR_HTML } from "@/lib/content/reglement-interieur";
 import {
   createOrder,
@@ -323,7 +309,7 @@ export default function InformationsPage() {
                           <SelectValue placeholder="Sélectionnez un pays" />
                         </SelectTrigger>
                         <SelectContent>
-                          {countries.map((country) => (
+                          {BILLING_COUNTRIES.map((country) => (
                             <SelectItem key={country} value={country}>
                               {country}
                             </SelectItem>

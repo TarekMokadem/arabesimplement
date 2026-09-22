@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { billingCountriesInclude } from "@/lib/geo/billing-countries";
+import { discoveryReadingLevelsInclude } from "@/lib/discovery/reading-level";
 
 const whatsappDigitsMin = 8;
 
@@ -13,6 +15,14 @@ export const discoveryLeadSchema = z.object({
       (s) => s.replace(/\D/g, "").length >= whatsappDigitsMin,
       "Numéro invalide : au moins 8 chiffres (indicatif inclus si besoin)"
     ),
+  pays: z
+    .string()
+    .min(1, "Veuillez sélectionner un pays")
+    .refine(billingCountriesInclude, "Veuillez sélectionner un pays"),
+  niveau: z
+    .string()
+    .min(1, "Veuillez indiquer votre niveau")
+    .refine(discoveryReadingLevelsInclude, "Veuillez indiquer votre niveau"),
   /** URI Calendly de l’événement réservé (optionnel). */
   calendlyEventUri: z.string().url().optional(),
   /** Honeypot anti-spam : doit rester vide. */

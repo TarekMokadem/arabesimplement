@@ -18,9 +18,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   discoveryLeadSchema,
   type DiscoveryLeadInput,
 } from "@/lib/validations/discovery-lead.schema";
+import { BILLING_COUNTRIES } from "@/lib/geo/billing-countries";
+import { DISCOVERY_READING_LEVELS } from "@/lib/discovery/reading-level";
 import {
   calendlyInlineEmbedUrl,
   calendlyScheduledEventUri,
@@ -99,6 +108,8 @@ export function DiscoveryLessonPopup({
       nom: "",
       email: "",
       whatsapp: "",
+      pays: "",
+      niveau: "",
       website: "",
     },
   });
@@ -107,6 +118,8 @@ export function DiscoveryLessonPopup({
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = form;
 
@@ -191,6 +204,8 @@ export function DiscoveryLessonPopup({
       nom: data.nom.trim(),
       email: data.email.trim(),
       whatsapp: data.whatsapp.trim(),
+      pays: data.pays,
+      niveau: data.niveau,
     };
     setLead(nextLead);
     notifyAdmin({
@@ -304,6 +319,60 @@ export function DiscoveryLessonPopup({
               />
               {errors.email && (
                 <p className="text-xs text-red-600">{errors.email.message}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="discovery-pays">Pays</Label>
+              <Select
+                value={watch("pays") ?? ""}
+                onValueChange={(value) => {
+                  setValue("pays", value ?? "", { shouldValidate: true });
+                }}
+              >
+                <SelectTrigger
+                  id="discovery-pays"
+                  className={errors.pays ? "border-red-500 w-full" : "w-full"}
+                >
+                  <SelectValue placeholder="Sélectionnez un pays" />
+                </SelectTrigger>
+                <SelectContent>
+                  {BILLING_COUNTRIES.map((country) => (
+                    <SelectItem key={country} value={country}>
+                      {country}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.pays && (
+                <p className="text-xs text-red-600">{errors.pays.message}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="discovery-niveau">Niveau</Label>
+              <Select
+                value={watch("niveau") ?? ""}
+                onValueChange={(value) => {
+                  setValue("niveau", value ?? "", { shouldValidate: true });
+                }}
+              >
+                <SelectTrigger
+                  id="discovery-niveau"
+                  className={
+                    errors.niveau ? "border-red-500 w-full" : "w-full"
+                  }
+                >
+                  <SelectValue placeholder="Sélectionnez votre niveau" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DISCOVERY_READING_LEVELS.map((level) => (
+                    <SelectItem key={level.id} value={level.id}>
+                      {level.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.niveau && (
+                <p className="text-xs text-red-600">{errors.niveau.message}</p>
               )}
             </div>
             <Button

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { billingCountriesInclude } from "@/lib/geo/billing-countries";
 
 export const studentSexSchema = z.enum(["FEMME", "HOMME"], {
   message:
@@ -17,7 +18,10 @@ export const orderFormSchema = z.object({
       /^[\d\s+.-]{10,20}$/,
       "Numéro de téléphone invalide (ex: 0612345678 ou +33612345678)"
     ),
-  pays: z.string().min(2, "Veuillez sélectionner un pays"),
+  pays: z
+    .string()
+    .min(2, "Veuillez sélectionner un pays")
+    .refine(billingCountriesInclude, "Veuillez sélectionner un pays"),
   acceptReglement: z.boolean().refine((val) => val === true, {
     message: "Vous devez accepter le règlement intérieur",
   }),

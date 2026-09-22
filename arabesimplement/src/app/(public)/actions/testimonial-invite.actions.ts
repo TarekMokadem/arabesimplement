@@ -9,6 +9,7 @@ import {
   studentTestimonialSchema,
   type StudentTestimonialInput,
 } from "@/lib/validations/student-testimonial.schema";
+import { isTestimonialInviteExpired } from "@/lib/testimonials/invite-duration";
 
 export type SubmitStudentTestimonialResult =
   | { success: true }
@@ -39,10 +40,10 @@ export async function submitStudentTestimonial(
   if (!invite) {
     return { success: false, error: "Ce lien n’est pas valide." };
   }
-  if (invite.expiresAt.getTime() < Date.now()) {
+  if (isTestimonialInviteExpired(invite.expiresAt)) {
     return {
       success: false,
-      error: "Ce lien a expiré (validité 7 jours). Demandez un nouveau lien à l’équipe.",
+      error: "Ce lien a expiré. Demandez un nouveau lien à l’équipe.",
     };
   }
 

@@ -10,6 +10,8 @@ export type DiscoveryLeadEmailParams = {
   nom: string;
   email: string;
   whatsapp: string;
+  pays: string;
+  niveauLabel: string;
   calendlyEventUri?: string;
 };
 
@@ -30,6 +32,8 @@ export async function sendDiscoveryLeadEmail(
         fullName,
         params.email,
         params.whatsapp,
+        params.pays,
+        params.niveauLabel,
         params.calendlyEventUri ?? "sans créneau"
       );
       return true;
@@ -55,7 +59,9 @@ export async function sendDiscoveryLeadEmail(
           <strong>Prénom :</strong> ${escapeHtml(params.prenom)}<br />
           <strong>Nom :</strong> ${escapeHtml(params.nom)}<br />
           <strong>E-mail :</strong> ${escapeHtml(params.email)}<br />
-          <strong>WhatsApp :</strong> ${escapeHtml(params.whatsapp)}
+          <strong>WhatsApp :</strong> ${escapeHtml(params.whatsapp)}<br />
+          <strong>Pays :</strong> ${escapeHtml(params.pays)}<br />
+          <strong>Niveau :</strong> ${escapeHtml(params.niveauLabel)}
         </p>
         ${slotLine}
         <p>— Notification automatique ArabeSimplement</p>

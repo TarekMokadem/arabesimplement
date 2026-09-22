@@ -6,24 +6,44 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { createTestimonialInviteLink } from "./actions";
+import {
+  type TestimonialInviteDurationId,
+  isTestimonialInviteDurationId,
+  testimonialInviteDurationLabel,
+  TESTIMONIAL_INVITE_DURATION_IDS,
+} from "@/lib/testimonials/invite-duration";
 
 export function TestimonialInviteGenerator() {
   const [url, setUrl] = useState<string | null>(null);
   const [expiresLabel, setExpiresLabel] = useState<string | null>(null);
+  const [infinite, setInfinite] = useState(false);
+  const [duration, setDuration] =
+    useState<TestimonialInviteDurationId>("7d");
   const [pending, startTransition] = useTransition();
 
   const generate = () => {
     startTransition(async () => {
-      const r = await createTestimonialInviteLink();
+      const r = await createTestimonialInviteLink(duration);
       if (r.success) {
         setUrl(r.url);
+        setInfinite(r.expiresAt == null);
         setExpiresLabel(
-          new Date(r.expiresAt).toLocaleDateString("fr-FR", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })
+          r.expiresAt
+            ? new Date(r.expiresAt).toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })
+            : null
         );
         toast.success("Lien généré — copiez-le et envoyez-le à l’élève.");
       } else {
@@ -53,9 +73,33 @@ export function TestimonialInviteGenerator() {
       <CardContent className="space-y-4">
         <p className="text-sm text-gray-600">
           Générez un lien personnel : l’élève peut envoyer autant d’avis que
-          souhaité pendant <strong>7 jours</strong>. Chaque avis reste en attente
+          souhaité. Choisissez{" "}
+          <strong>7 jours</strong> ou un lien{" "}
+          <strong>sans expiration</strong>. Chaque avis reste en attente
           jusqu’à votre validation.
         </p>
+        <div className="space-y-1.5 max-w-xs">
+          <Label htmlFor="invite-duration">Durée du lien</Label>
+          <Select
+            value={duration}
+            onValueChange={(value) => {
+              if (value && isTestimonialInviteDurationId(value)) {
+                setDuration(value);
+              }
+            }}
+          >
+            <SelectTrigger id="invite-duration" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {TESTIMONIAL_INVITE_DURATION_IDS.map((id) => (
+                <SelectItem key={id} value={id}>
+                  {testimonialInviteDurationLabel(id)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <Button
           type="button"
           onClick={generate}
@@ -74,7 +118,9 @@ export function TestimonialInviteGenerator() {
         {url && (
           <div className="space-y-2 rounded-lg border bg-gray-50 p-4">
             <p className="text-xs text-gray-500">
-              Valide 7 jours (jusqu’au {expiresLabel ?? "—"}) · envois illimités
+              {infinite
+                ? "Sans expiration · envois illimités"
+                : `Valide 7 jours (jusqu’au ${expiresLabel ?? "—"}) · envois illimités`}
             </p>
             <div className="flex flex-col sm:flex-row gap-2">
               <Input readOnly value={url} className="font-mono text-xs bg-white" />

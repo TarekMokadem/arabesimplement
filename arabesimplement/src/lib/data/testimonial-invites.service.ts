@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { hashPasswordResetToken } from "@/lib/auth/password-reset-crypto";
+import { isTestimonialInviteExpired } from "@/lib/testimonials/invite-duration";
 
 export type TestimonialInviteStatus = "valid" | "invalid" | "expired";
 
@@ -16,6 +17,6 @@ export async function getTestimonialInviteStatus(
   });
 
   if (!invite) return "invalid";
-  if (invite.expiresAt.getTime() < Date.now()) return "expired";
+  if (isTestimonialInviteExpired(invite.expiresAt)) return "expired";
   return "valid";
 }

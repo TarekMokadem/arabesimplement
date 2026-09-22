@@ -1,5 +1,6 @@
 import { discoveryLeadSchema } from "@/lib/validations/discovery-lead.schema";
 import { sendDiscoveryLeadEmail } from "@/lib/email/send-discovery-lead";
+import { discoveryReadingLevelLabel } from "@/lib/discovery/reading-level";
 
 export type DiscoveryLeadResult =
   | { success: true }
@@ -23,6 +24,8 @@ export async function recordDiscoveryLead(
     nom: parsed.data.nom.trim(),
     email: parsed.data.email.trim(),
     whatsapp: parsed.data.whatsapp.trim(),
+    pays: parsed.data.pays,
+    niveauLabel: discoveryReadingLevelLabel(parsed.data.niveau),
     calendlyEventUri: parsed.data.calendlyEventUri,
   });
 

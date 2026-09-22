@@ -12,8 +12,8 @@ import { toAbsoluteUrl } from "@/lib/site-url";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { prismaActionErrorMessage } from "@/lib/utils/prisma-action-error";
 import { adminTestimonialWriteSchema } from "@/lib/validations/admin-testimonial.schema";
-
-const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+import { testimonialInviteDurationSchema } from "@/lib/validations/testimonial-invite-duration.schema";
+import { expiresAtForInviteDuration } from "@/lib/testimonials/invite-duration";
 
 export type TestimonialActionResult =
   | { success: true }
@@ -24,11 +24,13 @@ function zodFirstMessage(err: z.ZodError): string {
 }
 
 export type CreateTestimonialInviteLinkResult =
-  | { success: true; url: string; expiresAt: string }
+  | { success: true; url: string; expiresAt: string | null }
   | { success: false; error: string };
 
 /** Génère un lien unique pour qu’un élève dépose un avis (modération ensuite). */
-export async function createTestimonialInviteLink(): Promise<CreateTestimonialInviteLinkResult> {
+export async function createTestimonialInviteLink(
+  duration: unknown
+): Promise<CreateTestimonialInviteLinkResult> {
   const admin = await requireAdminSession();
   if (!admin) return { success: false, error: "Non autorisé." };
   if (!isDatabaseConfigured()) {
@@ -38,9 +40,14 @@ export async function createTestimonialInviteLink(): Promise<CreateTestimonialIn
     };
   }
 
+  const parsedDuration = testimonialInviteDurationSchema.safeParse(duration);
+  if (!parsedDuration.success) {
+    return { success: false, error: zodFirstMessage(parsedDuration.error) };
+  }
+
   const plain = generatePasswordResetPlainToken();
   const tokenHash = hashPasswordResetToken(plain);
-  const expiresAt = new Date(Date.now() + INVITE_TTL_MS);
+  const expiresAt = expiresAtForInviteDuration(parsedDuration.data);
 
   try {
     await prisma.testimonialInvite.create({
@@ -49,7 +56,11 @@ export async function createTestimonialInviteLink(): Promise<CreateTestimonialIn
     const url = toAbsoluteUrl(
       `/donner-son-avis?token=${encodeURIComponent(plain)}`
     );
-    return { success: true, url, expiresAt: expiresAt.toISOString() };
+    return {
+      success: true,
+      url,
+      expiresAt: expiresAt ? expiresAt.toISOString() : null,
+    };
   } catch (e) {
     return {
       success: false,
