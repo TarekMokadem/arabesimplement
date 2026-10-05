@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Clock,
   CreditCard,
+  Sparkles,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,7 @@ import {
   getAdminCreneauOccupancy,
   getAdminRecentActivity,
 } from "@/lib/data/admin.service";
+import { getAdminDiscoveryLeadSummary } from "@/lib/data/discovery-leads.service";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import {
   orderStatusBadgeClass,
@@ -28,12 +30,13 @@ import {
 
 export default async function AdminDashboardPage() {
   const db = isDatabaseConfigured();
-  const [stats, recentOrders, creneaux, recentActivity] = db
+  const [stats, recentOrders, creneaux, recentActivity, discovery] = db
     ? await Promise.all([
         getAdminStats(),
         getAdminRecentOrders(5),
         getAdminCreneauOccupancy(12),
         getAdminRecentActivity(8),
+        getAdminDiscoveryLeadSummary(),
       ])
     : [
         {
@@ -47,6 +50,7 @@ export default async function AdminDashboardPage() {
         [],
         [],
         [],
+        { total: 0, aTraiter: 0 },
       ];
 
   const revenusChange =
@@ -182,6 +186,30 @@ export default async function AdminDashboardPage() {
         </div>
 
         <div className="space-y-6">
+          <Card className="bg-white">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="font-serif text-lg flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-secondary" />
+                Cours découverte
+              </CardTitle>
+              <Link href="/admin/cours-decouverte">
+                <Button variant="ghost" size="sm" className="text-secondary">
+                  Voir tout
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-primary">
+                {discovery.aTraiter}
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                {discovery.aTraiter === 1 ? "demande à traiter" : "demandes à traiter"}
+                {discovery.total > 0 ? ` · ${discovery.total} au total` : ""}
+              </p>
+            </CardContent>
+          </Card>
+
           <Card className="bg-white">
             <CardHeader>
               <CardTitle className="font-serif text-lg flex items-center gap-2">

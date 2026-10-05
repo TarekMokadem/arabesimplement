@@ -357,6 +357,28 @@ model ContactMessage {
   @@map("contact_messages")
 }
 
+/** Demande de cours découverte (formulaire + créneau Calendly éventuel). */
+model DiscoveryLead {
+  id               String   @id @default(uuid())
+  prenom           String
+  nom              String
+  email            String
+  whatsapp         String
+  pays             String
+  /** Identifiant de niveau (`DISCOVERY_READING_LEVELS`). */
+  niveau           String
+  calendlyEventUri String?  @map("calendly_event_uri") @db.Text
+  notes            String?  @db.Text
+  traite           Boolean  @default(false)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@index([email])
+  @@index([createdAt])
+  @@index([traite])
+  @@map("discovery_leads")
+}
+
 /** Configuration globale (singleton id = global). */
 model SiteConfig {
   id                  String            @id

@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { randomBytes } from "crypto";
 
 const ROUNDS = 12;
 
@@ -11,4 +12,9 @@ export async function verifyPassword(
   hash: string
 ): Promise<boolean> {
   return bcrypt.compare(plain, hash);
+}
+
+/** Mot de passe provisoire pour un compte créé par l’admin ou après un achat invité. */
+export function generateProvisionalPassword(): string {
+  return randomBytes(12).toString("base64url").slice(0, 16);
 }

@@ -306,7 +306,7 @@ export async function getAdminRecentActivity(
 ): Promise<AdminActivityEntry[]> {
   if (!isDatabaseConfigured()) return [];
 
-  const [enrollments, messages, orders] = await Promise.all([
+  const [enrollments, messages, orders, discoveryLeads] = await Promise.all([
     prisma.enrollment.findMany({
       orderBy: { createdAt: "desc" },
       take: 4,
@@ -325,6 +325,16 @@ export async function getAdminRecentActivity(
       take: 4,
       include: { user: { select: { prenom: true, nom: true } } },
     }),
+    prisma.discoveryLead
+      .findMany({
+        orderBy: { createdAt: "desc" },
+        take: 4,
+        select: { id: true, prenom: true, nom: true, createdAt: true },
+      })
+      .catch((e) => {
+        console.error("[getAdminRecentActivity] discovery leads", e);
+        return [];
+      }),
   ]);
 
   type Tagged = { at: Date; entry: AdminActivityEntry };
@@ -358,6 +368,16 @@ export async function getAdminRecentActivity(
         id: `ord-${o.id}`,
         text: `Paiement reçu de ${label} (${Number(o.total)} €)`,
         timeLabel: formatRelativeTime(o.createdAt),
+      },
+    });
+  }
+  for (const d of discoveryLeads) {
+    items.push({
+      at: d.createdAt,
+      entry: {
+        id: `disc-${d.id}`,
+        text: `Cours découverte — ${d.prenom} ${d.nom.charAt(0)}.`,
+        timeLabel: formatRelativeTime(d.createdAt),
       },
     });
   }

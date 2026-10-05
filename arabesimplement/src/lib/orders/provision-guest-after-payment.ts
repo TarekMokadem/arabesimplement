@@ -1,17 +1,12 @@
 import { after } from "next/server";
-import { randomBytes } from "crypto";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { hashPassword } from "@/lib/auth/password";
+import { generateProvisionalPassword, hashPassword } from "@/lib/auth/password";
 import { sendWelcomeCredentialsEmail } from "@/lib/email/send-welcome-credentials";
 import {
   parseBillingSnapshot,
   type OrderBillingSnapshot,
 } from "@/lib/orders/billing-snapshot";
-
-function generateProvisionalPassword(): string {
-  return randomBytes(12).toString("base64url").slice(0, 16);
-}
 
 /**
  * Après paiement réussi : rattache un compte à la commande invité (création ou compte existant sans mot de passe),

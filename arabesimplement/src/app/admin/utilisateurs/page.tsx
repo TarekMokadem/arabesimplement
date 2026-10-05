@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, Mail, Pencil, UserCircle } from "lucide-react";
+import { Search, Mail, Pencil, UserCircle, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,9 +30,18 @@ export default async function UtilisateursPage() {
             {utilisateurs.length} compte(s) — données issues de la base
           </p>
         </div>
-        <Button variant="outline" disabled>
-          Exporter CSV
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/admin/utilisateurs/nouveau"
+            className={cn(buttonVariants({ variant: "secondary" }))}
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Ajouter un client
+          </Link>
+          <Button variant="outline" disabled>
+            Exporter CSV
+          </Button>
+        </div>
       </div>
       {!db && (
         <p className="mb-6 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2">

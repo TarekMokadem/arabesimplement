@@ -8,10 +8,41 @@ import { isStripeConfigured } from "@/lib/stripe/config";
 import { getServerStripe } from "@/lib/stripe/server";
 import {
   adminUserUpdateSchema,
+  adminUserCreateSchema,
   type AdminUserUpdateInput,
+  type AdminUserCreateInput,
 } from "@/lib/validations/admin-user.schema";
+import { createStudentAsAdmin } from "@/lib/users/create-student-as-admin";
 
 export type UserAdminResult = { success: true } | { success: false; error: string };
+
+export type CreateUserAdminResult =
+  | {
+      success: true;
+      userId: string;
+      plainPassword: string;
+      emailed: boolean;
+    }
+  | { success: false; error: string };
+
+export async function createAdminUser(
+  data: AdminUserCreateInput
+): Promise<CreateUserAdminResult> {
+  const admin = await requireAdminSession();
+  if (!admin) return { success: false, error: "Non autorisé." };
+
+  const parsed = adminUserCreateSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false, error: zodFirstMessage(parsed.error) };
+  }
+
+  const result = await createStudentAsAdmin(parsed.data);
+  if (result.success) {
+    revalidatePath("/admin/utilisateurs");
+    revalidatePath("/admin");
+  }
+  return result;
+}
 
 function zodFirstMessage(err: z.ZodError): string {
   return err.issues[0]?.message ?? "Données invalides";

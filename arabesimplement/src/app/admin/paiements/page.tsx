@@ -1,6 +1,9 @@
-import { Search, Download } from "lucide-react";
+import { Search, Download, Plus } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { cn } from "@/lib/utils";
 import { getAdminOrdersList } from "@/lib/data/admin.service";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { PaiementsHistoryTable } from "@/app/admin/paiements/PaiementsHistoryTable";
@@ -31,10 +34,19 @@ export default async function PaiementsPage() {
             <strong>Marquer payé</strong>.
           </p>
         </div>
-        <Button variant="outline" disabled>
-          <Download className="h-4 w-4 mr-2" />
-          Exporter CSV
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/admin/paiements/nouveau"
+            className={cn(buttonVariants({ variant: "secondary" }))}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Ajouter un paiement
+          </Link>
+          <Button variant="outline" disabled>
+            <Download className="h-4 w-4 mr-2" />
+            Exporter CSV
+          </Button>
+        </div>
       </div>
       {!db && (
         <p className="mb-6 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2">

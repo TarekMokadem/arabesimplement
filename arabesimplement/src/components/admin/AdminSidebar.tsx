@@ -13,6 +13,7 @@ import {
   FileText,
   Settings,
   Tag,
+  Sparkles,
   LogOut,
   Menu,
 } from "lucide-react";
@@ -28,6 +29,7 @@ const sidebarLinks = [
   { href: "/admin/paiements", label: "Paiements", icon: CreditCard },
   { href: "/admin/codes-promo", label: "Codes promo", icon: Tag },
   { href: "/admin/messages", label: "Messages", icon: MessageSquare },
+  { href: "/admin/cours-decouverte", label: "Cours découverte", icon: Sparkles },
   { href: "/admin/temoignages", label: "Témoignages", icon: Star },
   { href: "/admin/blog", label: "Blog", icon: FileText },
   { href: "/admin/parametres", label: "Paramètres", icon: Settings },

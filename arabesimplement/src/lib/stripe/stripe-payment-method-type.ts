@@ -1,4 +1,5 @@
 import type Stripe from "stripe";
+import { adminRecordedChannelLabel } from "@/lib/orders/admin-recorded-channel";
 
 /** L’API Stripe renvoie encore `payment_intent` sur les factures ; les typings peuvent être incomplets selon la version du SDK. */
 export function paymentIntentIdFromStripeInvoice(
@@ -84,6 +85,8 @@ export function paymentChannelLabel(o: {
   if (o.stripePaymentMethodType === MANUAL_PAYPAL_ME_METHOD) {
     return "PayPal.me";
   }
+  const recorded = adminRecordedChannelLabel(o.stripePaymentMethodType ?? "");
+  if (recorded) return recorded;
   if (o.stripePaymentMethodType === "paypal") {
     return "Stripe (PayPal)";
   }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil, Plus } from "lucide-react";
 import { getUserForAdminById } from "@/lib/data/admin.service";
 import { getGroupedLearnerCoursesForAdmin } from "@/lib/data/learner-courses.service";
 import { getWeeklySubscriptionsForLearner } from "@/lib/data/weekly-subscriptions.service";
@@ -130,16 +130,30 @@ export default async function AdminLearnerDetailPage({
             <p className="text-sm text-gray-500">{user.telephone}</p>
           ) : null}
         </div>
-        <Link
-          href={`/admin/utilisateurs/${user.id}/modifier`}
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "shrink-0 inline-flex gap-2"
-          )}
-        >
-          <Pencil className="h-4 w-4" />
-          Modifier le profil
-        </Link>
+        <div className="flex flex-wrap gap-2 shrink-0">
+          {user.role === "STUDENT" ? (
+            <Link
+              href={`/admin/paiements/nouveau?userId=${encodeURIComponent(user.id)}`}
+              className={cn(
+                buttonVariants({ variant: "secondary" }),
+                "inline-flex gap-2"
+              )}
+            >
+              <Plus className="h-4 w-4" />
+              Ajouter un paiement
+            </Link>
+          ) : null}
+          <Link
+            href={`/admin/utilisateurs/${user.id}/modifier`}
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "inline-flex gap-2"
+            )}
+          >
+            <Pencil className="h-4 w-4" />
+            Modifier le profil
+          </Link>
+        </div>
       </div>
 
       {user.role !== "STUDENT" ? (

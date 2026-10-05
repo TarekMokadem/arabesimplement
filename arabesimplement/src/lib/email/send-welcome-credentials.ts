@@ -5,6 +5,8 @@ type Params = {
   to: string;
   prenom: string;
   plainPassword: string;
+  /** Compte créé par l’admin (hors tunnel d’achat). */
+  createdByAdmin?: boolean;
 };
 
 /**
@@ -42,6 +44,10 @@ export async function sendWelcomeCredentialsEmail(
       ? from
       : `ArabeSimplement <${from}>`;
 
+  const intro = params.createdByAdmin
+    ? "Un compte a été créé pour vous sur ArabeSimplement."
+    : "Votre paiement a bien été enregistré. Un compte a été créé pour accéder à vos formations.";
+
   const { data, error } = await resend.emails.send({
     from: fromHeader,
     to: params.to,
@@ -49,7 +55,7 @@ export async function sendWelcomeCredentialsEmail(
     html: `
       <div style="font-family:Georgia,serif;line-height:1.6;color:#1a1a1a;max-width:560px">
         <p>Bonjour ${escapeHtml(params.prenom)},</p>
-        <p>Votre paiement a bien été enregistré. Un compte a été créé pour accéder à vos formations.</p>
+        <p>${escapeHtml(intro)}</p>
         <p><strong>E-mail de connexion :</strong> ${escapeHtml(params.to)}</p>
         <p><strong>Mot de passe provisoire :</strong><br />
         <code style="font-size:16px;letter-spacing:0.02em">${escapeHtml(params.plainPassword)}</code></p>

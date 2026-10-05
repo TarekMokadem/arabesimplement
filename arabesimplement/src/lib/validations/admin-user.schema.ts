@@ -9,3 +9,13 @@ export const adminUserUpdateSchema = z.object({
 });
 
 export type AdminUserUpdateInput = z.infer<typeof adminUserUpdateSchema>;
+
+export const adminUserCreateSchema = adminUserUpdateSchema.extend({
+  sexe: z.preprocess(
+    (v) => (v === "" || v == null ? undefined : v),
+    z.enum(["FEMME", "HOMME"]).optional()
+  ),
+  sendCredentials: z.boolean().optional(),
+});
+
+export type AdminUserCreateInput = z.infer<typeof adminUserCreateSchema>;
