@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { billingCountriesInclude } from "@/lib/geo/billing-countries";
+import { discoveryCountriesInclude } from "@/lib/geo/billing-countries";
 import { discoveryReadingLevelsInclude } from "@/lib/discovery/reading-level";
 
 const whatsappDigitsMin = 8;
@@ -18,7 +18,7 @@ export const discoveryLeadSchema = z.object({
   pays: z
     .string()
     .min(1, "Veuillez sélectionner un pays")
-    .refine(billingCountriesInclude, "Veuillez sélectionner un pays"),
+    .refine(discoveryCountriesInclude, "Veuillez sélectionner un pays"),
   niveau: z
     .string()
     .min(1, "Veuillez indiquer votre niveau")

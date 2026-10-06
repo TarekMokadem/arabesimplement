@@ -28,7 +28,7 @@ import {
   discoveryLeadSchema,
   type DiscoveryLeadInput,
 } from "@/lib/validations/discovery-lead.schema";
-import { BILLING_COUNTRIES } from "@/lib/geo/billing-countries";
+import { DISCOVERY_COUNTRIES } from "@/lib/geo/billing-countries";
 import { DISCOVERY_READING_LEVELS } from "@/lib/discovery/reading-level";
 import {
   calendlyInlineEmbedUrl,
@@ -322,21 +322,23 @@ export function DiscoveryLessonPopup({
               )}
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="discovery-pays">Pays</Label>
+              <Label htmlFor="discovery-pays">Pays *</Label>
               <Select
                 value={watch("pays") ?? ""}
                 onValueChange={(value) => {
                   setValue("pays", value ?? "", { shouldValidate: true });
                 }}
+                required
               >
                 <SelectTrigger
                   id="discovery-pays"
+                  aria-required="true"
                   className={errors.pays ? "border-red-500 w-full" : "w-full"}
                 >
                   <SelectValue placeholder="Sélectionnez un pays" />
                 </SelectTrigger>
                 <SelectContent>
-                  {BILLING_COUNTRIES.map((country) => (
+                  {DISCOVERY_COUNTRIES.map((country) => (
                     <SelectItem key={country} value={country}>
                       {country}
                     </SelectItem>
