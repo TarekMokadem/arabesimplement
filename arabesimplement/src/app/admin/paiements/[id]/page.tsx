@@ -267,6 +267,11 @@ export default async function AdminPaiementDetailPage({
                         {line.creneauLabel}
                       </p>
                     ) : null}
+                    {line.printedBooklet ? (
+                      <p className="text-xs text-accent mt-1">
+                        Livret imprimé (+20 €)
+                      </p>
+                    ) : null}
                   </div>
                   <p className="font-semibold text-primary sm:text-right shrink-0">
                     {formatPrice(line.lineTotalEuros)}

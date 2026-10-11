@@ -15,6 +15,11 @@ import {
   formatCreneauSummaryForCart,
   parseJourneeSlotsFromJson,
 } from "@/lib/creneau-display";
+import {
+  printedBookletCartLabel,
+  printedBookletIsOffered,
+  printedBookletSurchargeEuros,
+} from "@/lib/shop/printed-booklet";
 
 function formatCreneauLineFromDb(c: {
   nom: string;
@@ -175,15 +180,20 @@ export async function normalizeCartItemsForCheckout(
       };
     }
     const unit = promo != null && promo > 0 ? promo : prix;
+    const wantsBooklet =
+      printedBookletIsOffered(mode) && line.printedBooklet === true;
+    const bookletExtra = printedBookletSurchargeEuros(wantsBooklet);
     const creneau = effectiveCreneauId
       ? modeCreneaux.find((x) => x.id === effectiveCreneauId)
       : undefined;
-    const choiceSummary =
+    const summaryParts = [
       creneau != null
         ? formatCreneauLineFromDb(creneau)
         : mode === "FLEXIBLE_FORMATION"
           ? "Forfait — organisation avec le professeur"
-          : undefined;
+          : undefined,
+      wantsBooklet ? printedBookletCartLabel() : undefined,
+    ].filter(Boolean);
 
     const normalized: CartItem = {
       lineId: line.lineId,
@@ -196,10 +206,11 @@ export async function normalizeCartItemsForCheckout(
       prixPromo: promo != null && promo > 0 && promo < prix ? promo : undefined,
       creneauId: effectiveCreneauId,
       hourlyMinutes: undefined,
-      choiceSummary,
+      choiceSummary: summaryParts.join(" · ") || undefined,
+      printedBooklet: wantsBooklet || undefined,
     };
     out.push(normalized);
-    totalEuros += unit;
+    totalEuros += unit + bookletExtra;
   }
 
   if (totalEuros <= 0) {

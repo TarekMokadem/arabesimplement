@@ -92,6 +92,7 @@ export type AdminOrderDetailLine = {
   creneauLabel: string | null;
   hourlyMinutes: number | null;
   hourlyQuantity: number;
+  printedBooklet: boolean;
   unitPriceEuros: number;
   lineTotalEuros: number;
 };
@@ -559,6 +560,7 @@ export async function getAdminOrderById(
           : null,
         hourlyMinutes: oi.hourlyMinutes,
         hourlyQuantity: qty,
+        printedBooklet: oi.printedBooklet,
         unitPriceEuros: unit,
         lineTotalEuros: unit * qty,
       };

@@ -38,7 +38,8 @@ export async function sendAdminEnrollmentEmailIfNeeded(
   const telephone = order.user?.telephone ?? snap?.telephone ?? "—";
   const formations = order.orderItems.map((item) => {
     const creneau = item.creneau?.nom ? ` (${item.creneau.nom})` : "";
-    return `${item.formation.titre}${creneau}`;
+    const booklet = item.printedBooklet ? " — livret imprimé" : "";
+    return `${item.formation.titre}${creneau}${booklet}`;
   });
   const total = Number(order.total).toFixed(2);
   const discount =

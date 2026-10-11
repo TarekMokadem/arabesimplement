@@ -124,6 +124,7 @@ export interface OrderItem {
   hourlyMinutes?: number;
   hourlyQuantity?: number;
   cartLineId?: string;
+  printedBooklet?: boolean;
   prixUnitaire: number;
   formation?: Formation;
 }

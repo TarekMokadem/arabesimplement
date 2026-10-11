@@ -31,6 +31,7 @@ import { ensureEnrollmentsForPaidOrder } from "@/lib/orders/fulfill-order";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/app/(auth)/actions";
 import { createStripeOnceAmountOffCoupon } from "@/lib/stripe/promo-coupon";
+import { cartLinePayableEuros } from "@/lib/orders/cart-pricing";
 
 export type CreateOrderResult =
   | {
@@ -72,7 +73,7 @@ export async function createOrder(
     const checkoutKind =
       classified === "hourly_only" ? "hourly_only" : "standard";
     const totalEuros = items.reduce(
-      (s, i) => s + (i.prixPromo ?? i.prix),
+      (s, i) => s + cartLinePayableEuros(i),
       0
     );
     return {

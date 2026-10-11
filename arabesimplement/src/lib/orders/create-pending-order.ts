@@ -16,6 +16,7 @@ import {
   MIXED_CART_CHECKOUT_ERROR,
 } from "@/lib/orders/cart-hourly";
 import { resolvePromoForCheckout } from "@/lib/promo/resolve-promo-for-checkout";
+import { printedBookletSurchargeEuros } from "@/lib/shop/printed-booklet";
 
 export type CheckoutOrderKind = "hourly_only" | "standard";
 
@@ -62,6 +63,10 @@ function buildOrderItemCreateInputs(
         });
       }
     } else {
+      const bookletExtra = printedBookletSurchargeEuros(
+        item.printedBooklet === true
+      );
+      const unit = (item.prixPromo ?? item.prix) + bookletExtra;
       rows.push({
         orderId,
         formationId: item.formationId,
@@ -69,9 +74,8 @@ function buildOrderItemCreateInputs(
         hourlyMinutes: item.hourlyMinutes ?? null,
         hourlyQuantity: 1,
         cartLineId: item.lineId,
-        prixUnitaire: new Prisma.Decimal(
-          (item.prixPromo ?? item.prix).toFixed(2)
-        ),
+        printedBooklet: item.printedBooklet === true,
+        prixUnitaire: new Prisma.Decimal(unit.toFixed(2)),
       });
     }
   }

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { parseBillingSnapshot } from "@/lib/orders/billing-snapshot";
 import { isDatabaseConfigured } from "@/lib/utils/database";
 import { roundMoney } from "@/lib/promo/apply-discount";
+import { printedBookletSurchargeEuros } from "@/lib/shop/printed-booklet";
 
 export type OrderConfirmationLine = {
   id: string;
@@ -10,6 +11,7 @@ export type OrderConfirmationLine = {
   creneauLabel: string | null;
   hourlyMinutes: number | null;
   hourlyQuantity: number;
+  printedBooklet: boolean;
   unitPriceEuros: number;
   lineTotalEuros: number;
 };
@@ -97,6 +99,7 @@ export async function getOrderConfirmationView(
       creneauLabel: oi.creneau?.nom ?? null,
       hourlyMinutes: oi.hourlyMinutes,
       hourlyQuantity: qty,
+      printedBooklet: oi.printedBooklet,
       unitPriceEuros: unit,
       lineTotalEuros: lineTotal,
     };
@@ -113,10 +116,11 @@ export async function getOrderConfirmationView(
     order.orderItems.reduce((sum, oi) => {
       const unit = Number(oi.prixUnitaire);
       const qty = Math.max(1, oi.hourlyQuantity ?? 1);
+      const bookletExtra = printedBookletSurchargeEuros(oi.printedBooklet);
       const catalogUnit =
         oi.formation.schedulingMode === "HOURLY_PURCHASE"
           ? unit
-          : Math.max(Number(oi.formation.prix), unit);
+          : Number(oi.formation.prix) + bookletExtra;
       return sum + catalogUnit * qty;
     }, 0)
   );

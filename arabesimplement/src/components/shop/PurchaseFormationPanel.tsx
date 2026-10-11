@@ -24,6 +24,14 @@ import {
   normalizeJourneeSlots,
 } from "@/lib/creneau-display";
 import { creneauIsBookable } from "@/lib/availability";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  printedBookletChoiceQuestion,
+  printedBookletIsOffered,
+  printedBookletSurchargeEuros,
+  PRINTED_BOOKLET_EUROS,
+} from "@/lib/shop/printed-booklet";
 
 type CreneauLite = Pick<
   Creneau,
@@ -74,6 +82,11 @@ export function PurchaseFormationPanel({
   const [creneauId, setCreneauId] = useState<string | null>(null);
   const [hourlyQty, setHourlyQty] = useState<HourlyQtyState>(() =>
     emptyHourlyBundle()
+  );
+  const [wantsBooklet, setWantsBooklet] = useState(false);
+  const offersBooklet = printedBookletIsOffered(mode);
+  const bookletExtra = printedBookletSurchargeEuros(
+    offersBooklet && wantsBooklet
   );
 
   const needsCreneau = mode === "FIXED_SLOTS";
@@ -191,6 +204,7 @@ export function PurchaseFormationPanel({
       creneauId: creneauId ?? undefined,
       choiceSummary: buildChoiceSummary(),
       hourlyBundle: needsHourly ? bundle : undefined,
+      printedBooklet: offersBooklet && wantsBooklet,
     });
     addItem(item);
     toast.success("Ajouté au panier !");
@@ -312,6 +326,29 @@ export function PurchaseFormationPanel({
           </p>
         )}
 
+        {offersBooklet ? (
+          <div className="flex items-start gap-3 rounded-lg border border-secondary/25 bg-secondary/5 px-3 py-3">
+            <Checkbox
+              id="printed-booklet"
+              checked={wantsBooklet}
+              onCheckedChange={(checked) => setWantsBooklet(checked === true)}
+              data-testid="checkbox-printed-booklet"
+              className="mt-0.5"
+            />
+            <Label
+              htmlFor="printed-booklet"
+              className="flex-1 flex-col items-start cursor-pointer leading-snug"
+            >
+              <span className="block font-medium text-primary text-sm">
+                {printedBookletChoiceQuestion()}
+              </span>
+              <span className="block text-sm font-semibold text-accent mt-0.5">
+                +{PRINTED_BOOKLET_EUROS} €
+              </span>
+            </Label>
+          </div>
+        ) : null}
+
         <div className="flex items-end justify-between gap-3 pt-2 border-t">
           <span className="text-sm text-gray-600">Total pour cette ligne</span>
           <div className="text-right">
@@ -322,10 +359,10 @@ export function PurchaseFormationPanel({
             Number(formation.prixPromo) < Number(formation.prix) ? (
               <>
                 <p className="text-sm text-gray-400 line-through leading-none mb-1">
-                  {formatPrice(Number(formation.prix))}
+                  {formatPrice(Number(formation.prix) + bookletExtra)}
                 </p>
                 <p className="text-2xl font-bold text-accent">
-                  {formatPrice(unitPrice)}
+                  {formatPrice(unitPrice + bookletExtra)}
                 </p>
                 <p className="text-xs font-medium text-accent mt-1">
                   Prix promo
@@ -333,7 +370,7 @@ export function PurchaseFormationPanel({
               </>
             ) : (
               <span className="text-2xl font-bold text-primary">
-                {unitPrice > 0 ? formatPrice(unitPrice) : "—"}
+                {unitPrice > 0 ? formatPrice(unitPrice + bookletExtra) : "—"}
               </span>
             )}
           </div>

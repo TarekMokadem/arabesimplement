@@ -237,6 +237,11 @@ export default async function HistoriqueAchatsPage() {
                                 : `${item.hourlyMinutes} min / semaine (créneau)`}
                             </span>
                           ) : null}
+                          {item.printedBooklet ? (
+                            <span className="text-gray-600 block text-xs mt-0.5">
+                              Livret imprimé
+                            </span>
+                          ) : null}
                           <span className="text-gray-500 block text-xs">
                             {formatPrice(Number(item.prixUnitaire))}
                           </span>

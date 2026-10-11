@@ -236,6 +236,8 @@ model OrderItem {
   hourlyQuantity Int    @default(1) @map("hourly_quantity")
   /** Identifiant stable de ligne panier (abonnement Stripe / rattachement des metadata). */
   cartLineId    String? @map("cart_line_id")
+  /** Livret imprimé envoyé chez l’élève (+20 €, paiement unique). */
+  printedBooklet Boolean @default(false) @map("printed_booklet")
   prixUnitaire  Decimal @map("prix_unitaire") @db.Decimal(10, 2)
 
   order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)

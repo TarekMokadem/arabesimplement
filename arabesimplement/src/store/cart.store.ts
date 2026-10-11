@@ -6,6 +6,10 @@ import {
   sumHourlyBundleEuros,
   type HourlyDurationBundle,
 } from "@/lib/scheduling-mode";
+import {
+  printedBookletIsOffered,
+  printedBookletSurchargeEuros,
+} from "@/lib/shop/printed-booklet";
 
 export interface CartItem {
   /** Identifiant unique de la ligne panier */
@@ -28,6 +32,8 @@ export interface CartItem {
   hourlyBundle?: HourlyDurationBundle;
   /** @deprecated Préférer `hourlyBundle` ; conservé pour paniers persistés anciens. */
   hourlyMinutes?: number;
+  /** Livret imprimé à envoyer chez l’élève (+20 €, hors cours à la carte). */
+  printedBooklet?: boolean;
 }
 
 function newLineId(): string {
@@ -44,7 +50,8 @@ export function sameCartSelection(a: CartItem, b: CartItem): boolean {
   return (
     a.formationId === b.formationId &&
     (a.creneauId ?? "") === (b.creneauId ?? "") &&
-    (a.hourlyMinutes ?? 0) === (b.hourlyMinutes ?? 0)
+    (a.hourlyMinutes ?? 0) === (b.hourlyMinutes ?? 0) &&
+    Boolean(a.printedBooklet) === Boolean(b.printedBooklet)
   );
 }
 
@@ -99,6 +106,10 @@ export function migrateRawCartItem(raw: unknown): CartItem {
       hourlyBundle && Object.keys(hourlyBundle).length > 0
         ? undefined
         : hourlyMinutes,
+    printedBooklet:
+      schedulingMode !== "HOURLY_PURCHASE" && r.printedBooklet === true
+        ? true
+        : undefined,
   };
 }
 
@@ -182,7 +193,11 @@ export const useCartStore = create<CartStore>()(
           ) {
             return sum + sumHourlyBundleEuros(item.hourlyBundle);
           }
-          return sum + (item.prixPromo ?? item.prix);
+          return (
+            sum +
+            (item.prixPromo ?? item.prix) +
+            printedBookletSurchargeEuros(item.printedBooklet === true)
+          );
         }, 0),
 
       getItemCount: () => get().items.length,
@@ -211,6 +226,7 @@ export function buildCartItemFromSelection(input: {
   choiceSummary?: string;
   hourlyMinutes?: number;
   hourlyBundle?: HourlyDurationBundle;
+  printedBooklet?: boolean;
 }): CartItem {
   const monthlyFromBundle = input.hourlyBundle
     ? sumHourlyBundleEuros(input.hourlyBundle)
@@ -249,5 +265,10 @@ export function buildCartItemFromSelection(input: {
       input.schedulingMode === "HOURLY_PURCHASE" && input.hourlyBundle
         ? undefined
         : input.hourlyMinutes,
+    printedBooklet:
+      printedBookletIsOffered(input.schedulingMode) &&
+      input.printedBooklet === true
+        ? true
+        : undefined,
   };
 }

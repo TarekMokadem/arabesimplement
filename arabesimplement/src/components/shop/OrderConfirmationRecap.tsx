@@ -97,6 +97,11 @@ export function OrderConfirmationRecap({
                   Créneau : {line.creneauLabel}
                 </p>
               ) : null}
+              {line.printedBooklet ? (
+                <p className="text-gray-500 text-xs mt-1">
+                  Livret imprimé (+20 €)
+                </p>
+              ) : null}
             </div>
             <p className="font-semibold text-primary sm:text-right shrink-0">
               {formatPrice(line.lineTotalEuros)}

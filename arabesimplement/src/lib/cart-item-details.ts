@@ -5,6 +5,7 @@ import {
   schedulingModeCartHeadline,
   type FormationSchedulingMode,
 } from "@/lib/scheduling-mode";
+import { printedBookletCartLabel } from "@/lib/shop/printed-booklet";
 
 /** Anciens libellés panier encore présents dans `choiceSummary` (localStorage). */
 function isStaleSchedulingHeadline(
@@ -110,6 +111,11 @@ export function getCartItemDetailLines(item: CartItem): string[] {
       if (lines.includes(part)) continue;
       lines.push(part);
     }
+  }
+
+  if (item.printedBooklet) {
+    const booklet = printedBookletCartLabel();
+    if (!lines.includes(booklet)) lines.push(booklet);
   }
 
   return lines;
