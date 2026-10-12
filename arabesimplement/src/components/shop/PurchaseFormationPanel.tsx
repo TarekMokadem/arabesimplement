@@ -1,15 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/hooks/useCart";
 import { buildCartItemFromSelection } from "@/store/cart.store";
 import { formatPrice } from "@/lib/utils/format";
-import { toast } from "sonner";
 import type { FormationCartInput } from "@/types/domain.types";
 import type { Creneau } from "@/types/domain.types";
+import { PrintedBookletOption } from "@/components/shop/PrintedBookletOption";
 import {
   HOURLY_SLOTS_PRICING,
   emptyHourlyBundle,
@@ -24,13 +25,9 @@ import {
   normalizeJourneeSlots,
 } from "@/lib/creneau-display";
 import { creneauIsBookable } from "@/lib/availability";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import {
-  printedBookletChoiceQuestion,
   printedBookletIsOffered,
   printedBookletSurchargeEuros,
-  PRINTED_BOOKLET_EUROS,
 } from "@/lib/shop/printed-booklet";
 
 type CreneauLite = Pick<
@@ -68,7 +65,8 @@ export function PurchaseFormationPanel({
   creneaux,
   formationPurchasable = true,
 }: Props) {
-  const { addItem } = useCart();
+  const router = useRouter();
+  const { addItem, hasSameSelection } = useCart();
   const mode = formation.schedulingMode;
   const modeCreneaux = useMemo(
     () => creneauxForSchedulingMode(creneaux, mode),
@@ -180,7 +178,7 @@ export function PurchaseFormationPanel({
     return parts.join(" · ");
   };
 
-  const handleAdd = () => {
+  const handleCheckout = () => {
     if (!canAdd) return;
     const bundle: HourlyDurationBundle = {};
     if (needsHourly) {
@@ -206,8 +204,10 @@ export function PurchaseFormationPanel({
       hourlyBundle: needsHourly ? bundle : undefined,
       printedBooklet: offersBooklet && wantsBooklet,
     });
-    addItem(item);
-    toast.success("Ajouté au panier !");
+    if (!hasSameSelection(item)) {
+      addItem(item);
+    }
+    router.push("/commande/informations");
   };
 
   return (
@@ -319,34 +319,11 @@ export function PurchaseFormationPanel({
           </div>
         )}
 
-        {mode === "FLEXIBLE_FORMATION" && bookableCreneaux.length === 0 && (
-          <p className="text-sm text-gray-600">
-            Forfait unique : après paiement, vos horaires se fixent directement
-            avec le professeur (aucun créneau à choisir ici).
-          </p>
-        )}
-
         {offersBooklet ? (
-          <div className="flex items-start gap-3 rounded-lg border border-secondary/25 bg-secondary/5 px-3 py-3">
-            <Checkbox
-              id="printed-booklet"
-              checked={wantsBooklet}
-              onCheckedChange={(checked) => setWantsBooklet(checked === true)}
-              data-testid="checkbox-printed-booklet"
-              className="mt-0.5"
-            />
-            <Label
-              htmlFor="printed-booklet"
-              className="flex-1 flex-col items-start cursor-pointer leading-snug"
-            >
-              <span className="block font-medium text-primary text-sm">
-                {printedBookletChoiceQuestion()}
-              </span>
-              <span className="block text-sm font-semibold text-accent mt-0.5">
-                +{PRINTED_BOOKLET_EUROS} €
-              </span>
-            </Label>
-          </div>
+          <PrintedBookletOption
+            checked={wantsBooklet}
+            onCheckedChange={setWantsBooklet}
+          />
         ) : null}
 
         <div className="flex items-end justify-between gap-3 pt-2 border-t">
@@ -388,7 +365,7 @@ export function PurchaseFormationPanel({
         ) : null}
 
         <Button
-          onClick={handleAdd}
+          onClick={handleCheckout}
           disabled={!canAdd}
           className={cn(
             "w-full py-6 text-lg",
@@ -396,8 +373,8 @@ export function PurchaseFormationPanel({
           )}
           data-testid="add-to-cart-detail"
         >
-          <ShoppingCart className="h-5 w-5 mr-2" />
-          Ajouter au panier
+          Procéder au paiement
+          <ArrowRight className="h-5 w-5 ml-2" />
         </Button>
       </CardContent>
     </Card>

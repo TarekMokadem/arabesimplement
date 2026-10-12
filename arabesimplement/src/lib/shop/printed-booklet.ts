@@ -13,8 +13,16 @@ export function printedBookletSurchargeEuros(wantsBooklet: boolean): number {
   return wantsBooklet ? PRINTED_BOOKLET_EUROS : 0;
 }
 
-export function printedBookletChoiceQuestion(): string {
-  return "Tu souhaites recevoir le livret chez toi ?";
+export function printedBookletOptionalLabel(): string {
+  return "Supplément facultatif";
+}
+
+export function printedBookletBenefitText(): string {
+  return "Profitez de votre support de cours en version papier pour suivre les leçons, prendre des notes et réviser plus facilement.";
+}
+
+export function printedBookletDeliveryLabel(): string {
+  return "Livraison à domicile";
 }
 
 export function printedBookletCartLabel(): string {
