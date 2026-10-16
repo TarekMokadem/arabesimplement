@@ -82,7 +82,7 @@ export function PurchaseFormationPanel({
     emptyHourlyBundle()
   );
   const [wantsBooklet, setWantsBooklet] = useState(false);
-  const offersBooklet = printedBookletIsOffered(mode);
+  const offersBooklet = printedBookletIsOffered(formation.slug);
   const bookletExtra = printedBookletSurchargeEuros(
     offersBooklet && wantsBooklet
   );

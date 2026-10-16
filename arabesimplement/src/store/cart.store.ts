@@ -107,7 +107,7 @@ export function migrateRawCartItem(raw: unknown): CartItem {
         ? undefined
         : hourlyMinutes,
     printedBooklet:
-      schedulingMode !== "HOURLY_PURCHASE" && r.printedBooklet === true
+      printedBookletIsOffered(String(r.slug ?? "")) && r.printedBooklet === true
         ? true
         : undefined,
   };
@@ -266,8 +266,7 @@ export function buildCartItemFromSelection(input: {
         ? undefined
         : input.hourlyMinutes,
     printedBooklet:
-      printedBookletIsOffered(input.schedulingMode) &&
-      input.printedBooklet === true
+      printedBookletIsOffered(input.slug) && input.printedBooklet === true
         ? true
         : undefined,
   };

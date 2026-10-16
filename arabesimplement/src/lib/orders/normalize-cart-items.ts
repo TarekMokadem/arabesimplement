@@ -181,7 +181,7 @@ export async function normalizeCartItemsForCheckout(
     }
     const unit = promo != null && promo > 0 ? promo : prix;
     const wantsBooklet =
-      printedBookletIsOffered(mode) && line.printedBooklet === true;
+      printedBookletIsOffered(f.slug) && line.printedBooklet === true;
     const bookletExtra = printedBookletSurchargeEuros(wantsBooklet);
     const creneau = effectiveCreneauId
       ? modeCreneaux.find((x) => x.id === effectiveCreneauId)

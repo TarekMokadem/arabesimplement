@@ -1,12 +1,11 @@
-import type { FormationSchedulingMode } from "@/types/domain.types";
+import { MARKETING_BOUTIQUE_SLUGS } from "@/lib/content/marketing-boutique-links";
 
 /** Supplément unique pour l’envoi du livret imprimé. */
 export const PRINTED_BOOKLET_EUROS = 20;
 
-export function printedBookletIsOffered(
-  mode: FormationSchedulingMode
-): boolean {
-  return mode === "FLEXIBLE_FORMATION" || mode === "FIXED_SLOTS";
+/** Le livret papier n’est proposé que pour Devenir Arabophone. */
+export function printedBookletIsOffered(slug: string): boolean {
+  return slug === MARKETING_BOUTIQUE_SLUGS.devenirArabophone;
 }
 
 export function printedBookletSurchargeEuros(wantsBooklet: boolean): number {
